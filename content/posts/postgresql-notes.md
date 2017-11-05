@@ -1,28 +1,23 @@
-title: PostgreSQL Commands and SQL Examples for Data Science
-slug: PostgreSQL for Data Science
+title: PostgreSQL for Data Science
+slug: Commands and Examples
 category: database
 date: 2017-11-04
 modified: 2017-11-05
 
-# PostgreSQL Commands and SQL Examples for Data Science
-* **Debugging**
-    * Finding all postgres processes:  `ps aux | grep postgres`
-    * Finding process using a port: `lsof -i tcp:5432`
-    * Finding process using a port: `netstat -vanp tÂcp | grep 5432`
-    * Finding all running processes: `ps -A`
 * **MacOS Installation and Configuration**
-    * brew install postres
-    * Login as admin user: `sudo -u user_name sql db_name`
+    * Login to MacOS as user with Administrative rights
+    * Install: `brew install postres`
+    * Login to PostgreSQL as a admin user: `sudo -u user_name sql db_name`
+        - Note: PostgreSQL and MacOS admin users are different and independent.
     * Creating a db_user:  `CREATE ROLE user_name WITH LOGIN PASSWORD 'your secret here’;`
-    * Changing persimmons: `ALTER ROLE user_name CREATEDB;`
+    * Changing permissions: `ALTER ROLE user_name CREATEDB;`
     * Connecting to a server running as a regular user
         * pgAdmin > right-click server > Create > Sever
             * Main tab: Name it
             * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin user / pw > role to operate as
-* Invoke psql command shell
-    - `psql -d <database> -U <user> -W <password>`
-    - Note: Add `-E` to echo queries for learning
-
+    * Invoke psql command shell
+        - `psql -d <database> -U <user> -W <password>`
+        - Note: Add `-E` to echo queries for learning
 
 Command          | What it does
 -----------------|--------------
@@ -43,13 +38,18 @@ Command          | What it does
 `q`              | Quit current task and return to command line
 `\x`             | Improves output formatting
 
+* **Troubleshooting**
+    * Finding all postgres processes:  `ps aux | grep postgres`
+    * Finding process using a port: `lsof -i tcp:5432`
+    * Finding process using a port: `netstat -vanp tÂcp | grep 5432`
+    * Finding all running processes: `ps -A`
 * **Starting and Stopping the Server on MacOS**
-        * `su - <admin_user>` # start and stop the server
-        * `alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'`
-        * `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’`
+    * `su - <admin_user>` # start and stop the server
+    * `alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'`
+    * `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’`
     * Use `psql` to work with PostgreSQL on the command line or the `pgAdmin4` GUI application (available as a homebrew cask)
 * **SQL Commands**
-    * Creating
+    * Creating a tables
         * Database: Right-click on Databases > Create > Database
         * Tables:  
             * pgAdmin
@@ -66,12 +66,12 @@ Command          | What it does
                     num_legs int4,
                     CONSTRAINT animal_pkey PRIMARY KEY (species)
                 );```
-            * Import data
-                * pgadmin: right-click table > Import / Export > Define location, delimiter, header … > OK
-                * Check:
-                    ```sql
-                    SELECT *
-                    FROM pets;```
+        * Import data
+            * pgadmin: right-click table > Import / Export > Define location, delimiter, header … > OK
+            * Check:
+                ```sql
+                SELECT *
+                FROM pets;```
     * **Statistics**
         * Limit number of results:
             ```sql
