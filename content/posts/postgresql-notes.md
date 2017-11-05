@@ -1,3 +1,9 @@
+title: PostgreSQL Commands and SQL Examples for Data Science
+slug: PostgreSQL for Data Science
+category: database
+date: 2017-11-04
+modified: 2017-11-05
+
 # PostgreSQL Commands and SQL Examples for Data Science
 * **Debugging**
     * Finding all postgres processes:  `ps aux | grep postgres`
