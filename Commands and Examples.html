@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>PostgreSQL for Data Science</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Dealing with Data </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="/category/database.html">database</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/Commands and Examples.html" rel="bookmark"
+           title="Permalink to PostgreSQL for Data Science">PostgreSQL for Data Science</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2017-11-04T00:00:00-06:00">
+                Published: Sat 04 November 2017
+        </abbr>
+		<br />
+        <abbr class="modified" title="2017-11-05T00:00:00-06:00">
+                Updated: Sun 05 November 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+
+</footer><!-- /.post-info -->      <ul>
+<li><strong>MacOS Installation and Configuration</strong><ul>
+<li>Login to MacOS as user with Administrative rights</li>
+<li>Install: <code>brew install postres</code></li>
+<li>Login to PostgreSQL as a admin user: <code>sudo -u user_name sql db_name</code><ul>
+<li>Note: PostgreSQL and MacOS admin users are different and independent.</li>
+</ul>
+</li>
+<li>Creating a db_user:  <code>CREATE ROLE user_name WITH LOGIN PASSWORD 'your secret here’;</code></li>
+<li>Changing permissions: <code>ALTER ROLE user_name CREATEDB;</code></li>
+<li>Connecting to a server running as a regular user<ul>
+<li>pgAdmin &gt; right-click server &gt; Create &gt; Sever<ul>
+<li>Main tab: Name it</li>
+<li>Connection tab:  Specify IP address (e.g. 127.0.0.1)  &gt; admin user / pw &gt; role to operate as</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Invoke psql command shell<ul>
+<li><code>psql -d &lt;database&gt; -U &lt;user&gt; -W &lt;password&gt;</code></li>
+<li>Note: Add <code>-E</code> to echo queries for learning</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\l</code></td>
+<td>List available databases</td>
+</tr>
+<tr>
+<td><code>\c &lt;database&gt;</code></td>
+<td>Connect to a database</td>
+</tr>
+<tr>
+<td><code>\dt</code></td>
+<td>List tables</td>
+</tr>
+<tr>
+<td><code>\dt *.*</code></td>
+<td>List tables from all schemas</td>
+</tr>
+<tr>
+<td><code>\d &lt;table&gt;</code></td>
+<td>Show table definition</td>
+</tr>
+<tr>
+<td><code>\dv</code></td>
+<td>List views</td>
+</tr>
+<tr>
+<td><code>\dn</code></td>
+<td>List schemas</td>
+</tr>
+<tr>
+<td><code>\df</code></td>
+<td>List functions</td>
+</tr>
+<tr>
+<td><code>\df+ &lt;function&gt;</code></td>
+<td>Show SQL of function</td>
+</tr>
+<tr>
+<td><code>\h</code></td>
+<td>psql help</td>
+</tr>
+<tr>
+<td><code>\? &lt;psql cmd&gt;</code></td>
+<td>psql command help</td>
+</tr>
+<tr>
+<td><code>\h &lt;sql&gt;</code></td>
+<td>SQL command syntax help</td>
+</tr>
+<tr>
+<td><code>\i &lt;script&gt;</code></td>
+<td>Runs the SQL script file</td>
+</tr>
+<tr>
+<td><code>\q</code></td>
+<td>Quit psql</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td>Quit current task and return to command line</td>
+</tr>
+<tr>
+<td><code>\x</code></td>
+<td>Improves output formatting</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Troubleshooting</strong><ul>
+<li>Finding all postgres processes:  <code>ps aux | grep postgres</code></li>
+<li>Finding process using a port: <code>lsof -i tcp:5432</code></li>
+<li>Finding process using a port: <code>netstat -vanp tÂcp | grep 5432</code></li>
+<li>Finding all running processes: <code>ps -A</code></li>
+</ul>
+</li>
+<li><strong>Starting and Stopping the Server on MacOS</strong><ul>
+<li><code>su - &lt;admin_user&gt;</code> # start and stop the server</li>
+<li><code>alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'</code></li>
+<li><code>alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’</code></li>
+<li>Use <code>psql</code> to work with PostgreSQL on the command line or the <code>pgAdmin4</code> GUI application (available as a homebrew cask)</li>
+</ul>
+</li>
+<li><strong>SQL Commands</strong><ul>
+<li>Creating a tables<ul>
+<li>Database: Right-click on Databases &gt; Create &gt; Database</li>
+<li>Tables:  <ul>
+<li>pgAdmin<ul>
+<li>Double-click on database &gt; Double click on Schemes &gt; Right-click on tables &gt; Create</li>
+<li>Columns:  Right-click on table &gt; Create &gt; Column &gt; Give it a name &gt; Give it a type</li>
+<li>Constraint:  Right-click on table &gt; Properties &gt; Constraints tab &gt; Add an constraint &gt; Edit icon &gt; Name it &gt; Select Definition tab &gt; Select column</li>
+</ul>
+</li>
+<li>Command
+    <code>sql
+    CREATE TABLE animals
+    (
+        species character varying (25),
+        vertebrate_class character varying(25),
+        appearance character varying(25),
+        num_legs int4,
+        CONSTRAINT animal_pkey PRIMARY KEY (species)
+    );</code></li>
+</ul>
+</li>
+<li>Import data<ul>
+<li>pgadmin: right-click table &gt; Import / Export &gt; Define location, delimiter, header … &gt; OK</li>
+<li>Check:
+    <code>sql
+    SELECT *
+    FROM pets;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Statistics</strong><ul>
+<li>Limit number of results:
+    <code>sql
+    SELECT *
+    FROM staff
+    LIMIT 10;</code></li>
+<li>Counting and grouping results
+    <code>sql
+    SELECT gender, count(*)
+    FROM staff
+    GROUP BY gender;</code></li>
+<li>Finding the max and min
+    <code>sql
+    SELECT max(salary), min(salary)
+    FROM staff;</code></li>
+<li>Apply that across all departments:
+    <code>sql
+    SELECT department, max(salary), min(salary)
+    FROM staff
+    GROUP BY department;</code></li>
+<li>Aggregate and round values<br>
+<code>sql
+    SELECT department, round(sum(salary), 0), round(avg(salary), 0), round(var_pop(salary), 0), round(stddev_pop(salary), 0)
+    FROM staff
+    GROUP BY department;</code></li>
+<li>Truncating, ceil and rounding
+    <code>sql
+    SELECT department, avg(salary), trunc(avg(salary),2 ), ceil(avg(salary)), round(avg(salary), 2)  from staff
+    GROUP BY department;</code></li>
+</ul>
+</li>
+<li>Documentation: <a href="https://www.postgresql.org/docs/current/static/functions-aggregate.html">PostrgreSQL Aggregation Functions</a></li>
+<li><strong>Classification</strong><ul>
+<li>Use CASE to show pet names and a column to indicate whether the pet's name is long or short (a long name is strictly more than 6 characters long). Filter to select only female pets.
+    <code>sql
+    SELECT name ,
+        CASE WHEN length(name) &gt; 6
+        THEN 'long'
+        ELSE 'short' END  
+    FROM pets
+    WHERE gender = 'female';</code></li>
+</ul>
+</li>
+<li><strong>Filtering</strong><ul>
+<li>Find data that meets a condition
+    <code>sql
+    SELECT last_name, department, salary
+    FROM staff
+    WHERE salary &gt; 100000;</code></li>
+<li>Adding multiple conditions to the WHERE clause
+    <code>sql
+    SELECT last_name, department, salary
+    FROM staff
+    WHERE department = 'Tools' AND salary &gt; 100000;</code></li>
+<li>Wild card in where clause
+    <code>sql
+    SELECT last_name, department, salary
+    FROM staff
+    WHERE department
+    LIKE 'B%’;</code></li>
+<li>Combining filters and aggregates
+    <code>sql
+    SELECT department, sum(salary)
+    FROM staff WHERE department
+    LIKE 'B%'
+    GROUP BY department;
+    -- NOTE:  Slow queries result from putting ‘&amp;’ first as scans every row ignoring the index</code></li>
+<li>Find distinct values
+    <code>sql
+    SELECT DISTINCT LOWER(department)
+    FROM staff;</code></li>
+</ul>
+</li>
+<li><strong>Munging</strong><ul>
+<li>Concatenating values
+    <code>sql
+    SELECT job_title || '-' || department
+    FROM staff;</code></li>
+<li>… and create a new column
+    <code>sql
+    SELECT job_title || '-' || department title_dept
+    FROM staff;</code></li>
+<li>trim and length functions
+    <code>sql
+    SELECT length(' software engineer '), length(trim(' software engineer ‘));  
+    —-Results in: 19, 17</code></li>
+<li>Create new boolean field
+    <code>sql
+    SELECT job_title, (job_title LIKE '%Assistant%') is_assist
+    FROM staff;</code></li>
+<li>Extracting substring of length 3
+    <code>sql
+    SELECT SUBSTRING('abcdefghijkl'
+        FROM 6 FOR 3) test_string;
+        —- Results: fgh;</code></li>
+<li>Extracting remainder of a string
+    <code>sql
+    SELECT SUBSTRING('abcdefghijkl' FOR 4) test_string;
+    —- Results: abcd;</code></li>
+<li>Replacing text
+    <code>sql
+    SELECT OVERLAY(job_title PLACING 'Asst.'
+    FROM 1 FOR 9)
+    FROM staff
+    WHERE job_title
+    LIKE 'Assistant%’;</code></li>
+</ul>
+</li>
+<li><strong>Regex</strong><ul>
+<li>Find assistants at specified levels
+    <code>sql
+    SELECT job_title
+    FROM staff
+    WHERE job_title
+    SIMILAR TO '%Assistant%(III|IV)’;</code></li>
+<li>… now match levels starting with I
+    <code>sql
+    SELECT job_title
+    FROM staff
+    HERE job_title
+    SIMILAR TO '%Assistant% I_’;</code></li>
+<li>… or job title that start with E, P or S<br>
+<code>sql
+    SELECT job_title
+    FROM staff
+    WHERE job_title
+    SIMILAR TO '[EPS]%’;</code></li>
+</ul>
+</li>
+<li><strong>Sub-Queries</strong><ul>
+<li><em>Consider using a view and or a windowing functions for simpler, more readable code.</em></li>
+<li>Adding a calculated field
+    <code>sql
+    SELECT s1.last_name, s1.salary, s1.department,
+        (SELECT round(avg(salary))
+        FROM staff s2
+        WHERE s2.department = s1.department )
+    FROM staff s1;</code></li>
+<li>Using a sub-query instead of a table name
+    <code>sql
+    SELECT s1.department, round(avg(s1.salary))
+    FROM
+        (SELECT department, salary
+        FROM staff
+        WHERE salary &gt; 100000) s1
+    GROUP BY department;</code><ul>
+<li>using a sub-query to find max salary
+<code>sql
+SELECT s1.department, s1.last_name, s1.salary
+FROM staff s1
+WHERE s1.salary = (SELECT max(s2.salary)
+FROM staff s2);</code></li>
+</ul>
+</li>
+<li>Documentation:<a href="https://www.postgresql.org/docs/current/static/functions-subquery.html">PostgreSQL SubQuery Expressions</a></li>
+</ul>
+</li>
+<li><strong>Joining Tables</strong><ul>
+<li>Join two tables using department name
+    <code>sql
+    SELECT s.last_name, s.department, cd.company_division
+    FROM staff
+    JOIN company_divisions cd
+    ON s.department = cd.department;
+        -- Note:  it is missing rows because not all departments
+        -- in the staff table are found in the company_divisions table,
+        -- so we need to prefer the division from the staff table.  
+        -- This is called a left outer join.</code></li>
+<li>Left outer-join gets all rows
+    <code>sql
+    SELECT s.last_name, s.department, cd.company_division
+    FROM staff s
+    LEFT JOIN company_divisions cd
+    ON s.department = cd.department;</code></li>
+<li>… find departments without a division
+    <code>sql
+    SELECT s.last_name, s.department, cd.company_division
+    FROM staff s
+    LEFT JOIN company_divisions cd
+    ON s.department = cd.department
+    WHERE cd.company_division IS NULL;
+        -- Note:  Turns out it is the Books department</code></li>
+</ul>
+</li>
+<li><strong>Using Views</strong><ul>
+<li>Save a long join by creating a view
+    <code>sql
+    CREATE VIEW staff_div_reg AS
+        SELECT s.*, cd.company_division, cr.company_regions
+        FROM staff s
+        LEFT JOIN company_divisions cd
+        ON s.department = cd.department
+        LEFT JOIN company_regions cr
+        ON s.region_id = cr.region_id;</code></li>
+<li>Check that all rows are present in the view
+    <code>sql
+    SELECT count(*)
+    FROM staff_div_reg;</code></li>
+<li>Query to be stored as a view
+    <code>sql
+    SELECT company_regions, count(*)
+    FROM staff_div_reg  
+    GROUP BY company_regions
+    ORDER BY company_regions;</code></li>
+<li>Use view to provide counts of staff in each region
+    <code>sql
+    CREATE OR REPLACE VIEW staff_div_reg_country
+    AS
+        SELECT s.*, cd.company_division, cr.company_regions, cr.country
+        FROM staff s, company_divisions cd, company_regions cr;</code></li>
+<li>Create a view that joins user and sales tables
+    <code>sql
+    CREATE VIEW sales_by_person
+    AS
+        SELECT s.name, s.id, o.amount
+        FROM salesperson s
+        LEFT JOIN orders o
+        ON s.id = o.salesperson_id;
+            -- Note: Every time the view is used
+            --       its SQL is re-evaluated.</code></li>
+<li>Create a materialized view that is stored on the server
+    <code>sql
+    CREATE MATERIALIZED VIEW sales_by_person
+    AS
+        SELECT s.name, s.id, o.amount
+        FROM salesperson s
+        LEFT JOIN orders o
+        ON s.id = o.salesperson_id;
+            -- Note: Once created materialized views
+            --       can be queried many times but are
+            --       not automatically updated.</code></li>
+<li>Updating a materialized view
+    <code>sql
+    REFRESH MATERIALIZED VIEW sales_by_person;</code></li>
+<li>Report number and amount of successful sales by name
+    <code>sql
+    SELECT name, count(amount), sum(amount)
+    FROM sales_by_person
+    GROUP BY name
+    HAVING count(amount) &gt; 1
+    ORDER BY name;</code></li>
+<li>Documentation:<ul>
+<li><a href="https://www.postgresql.org/docs/current/static/rules-views.html">PostgreSQL Views and the Rule System</a></li>
+<li><a href="https://www.postgresql.org/docs/current/static/rules-materializedviews.html">PostgreSQL Materialized Views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Temporary Tables<ul>
+<li>Temporary tables are alternative to Views and Subqueries</li>
+<li>Here are two ways to create a temporary table in SQL</li>
+<li>
+<p>Create and drop
+    ```sql
+    -- create a temporary table
+    CREATE TABLE temp_table AS
+    (
+        SELECT col1, col2, col3
+        FROM another_table;
+    )</p>
+<p>-- select the data you need
+SELECT tt.col1, tt.col2
+FROM temp_table AS tt;</p>
+<p>-- delete the temporary table from the database
+DROP TABLE temp_table;
+<code>* True temporary table created using WITH</code>sql
+-- create the temporary table
+WITH temp_table AS
+(
+    SELECT col1, col2, col3
+    FROM another_table
+);</p>
+<p>-- select the data you need
+SELECT tt.col1, tt.col2
+FROM temp_table AS tt;
+<code>* **Grouping &amp; Totaling**
+        * Breakout sales number and amount of sales by name</code>sql
+SELECT s.name, count(o.amount), sum(o.amount)
+FROM salesperson s
+LEFT JOIN orders o
+ON s.id = o.salesperson_id
+GROUP BY s.name
+HAVING count(o.amount) &gt; 1
+ORDER BY s.name;<code>*  Breakout the total number of employees by division and region using grouping set</code>sql
+SELECT company_division, company_regions, count(<em>)
+FROM staff_div_reg
+GROUP BY GROUPING SETS (company_division, company_regions)
+ORDER BY company_regions, company_division;
+    -- Note: Cells are blank when sub-totaled by another quantity<code>* Create subtotals using rollup</code>sql
+SELECT company_regions, country, count(</em>)
+FROM staff_div_reg_country
+GROUP BY ROLLUP(country, company_regions)
+ORDER BY country, company_regions;<code>* Create all possible subtotals using cube</code>sql
+SELECT company_division, company_regions, count(<em>)
+FROM staff_div_reg_country
+GROUP BY CUBE(company_division, company_regions);<code>* Documentation: [PostgreSQL Grouping, Cube and Rollup](https://www.postgresql.org/docs/10/static/queries-table-expressions.html#queries-grouping-sets)
+    * **Sorting / Ordering**
+        * Find the top N values</code>sql
+SELECT last_name, job_title, salary
+FROM staff
+ORDER BY salary DESC
+FETCH FIRST 10 ROWS ONLY;
+    -- Note:  LIMIT get the first N elements, FETCH scans all
+    --        the rows and get the highest N values.<code>* Ascending ordering by count</code>sql
+SELECT company_division, count(</em>)
+FROM staff_div_reg_country
+GROUP BY company_division
+ORDER BY count(<em>);<code>* Descending order by count</code>sql
+SELECT company_division, count(</em>)
+FROM staff_div_reg_country
+GROUP BY company_division
+ORDER BY count(<em>) DESC;<code>* Limit to first 3 rows</code>sql
+SELECT company_division, count(</em>)
+FROM staff_div_reg_country GROUP BY company_division
+ORDER BY count(<em>) DESC
+FETCH FIRST 3 ROWS ONLY;<code>* Sorting by date</code>sql
+SELECT facility_id, bed_census_date
+FROM beds
+WHERE facility_id = '6057'
+ORDER BY bed_census_date::timestamp ASC;<code>* Finding the largest totals by sorting an aggregated field</code>sql
+SELECT facility_name, facility_id, bed_census_date, sum(available_residential_beds::integer)
+FROM beds
+GROUP BY facility_name, facility_id, bed_census_date
+ORDER BY sum(available_residential_beds::integer) DESC
+FETCH FIRST 10 ROWS ONLY;<code>* Documentation: [PostgreSQL Sorting Documentation](https://www.postgresql.org/docs/current/static/queries-order.html)
+    * **Window Functions**
+        * Window functions are simpler than subqueries and produce similar results
+        * Operates on rows adjacent to the current row</code>sql
+SELECT company_regions, last_name, salary, min(salary)
+OVER
+    (
+        PARTITION BY company_regions
+    )
+FROM staff_div_reg;<code>* Employees by department sorted by salary</code>sql
+SELECT department, last_name, salary, first_value(salary)
+OVER
+    (
+        PARTITION BY department
+        ORDER BY salary DESC
+    )
+FROM staff;<code>* Employees by department sorted by last_name</code>sql
+SELECT department, last_name, salary, first_value(salary)
+OVER
+    (
+        PARTITION BY department
+        ORDER BY last_name
+    )
+FROM staff;<code>* Ranking employees within a department by salary</code>sql
+SELECT department, last_name, salary, rank()
+OVER
+(
+    PARTITION BY department
+    ORDER BY salary DESC
+)
+FROM staff;<code>* Lag function references previous row</code>sql
+SELECT department, last_name, salary, lag(salary)
+OVER
+    (
+        PARTITION BY department
+        ORDER BY salary DESC
+    )
+FROM staff;<code>* Lead function references the next row</code>sql
+SELECT department, last_name, salary, lead(salary)
+OVER
+(
+    PARTITION BY department
+    ORDER BY salary DESC
+)
+FROM staff;<code>* Calculating salary quartiles using ntile</code>sql
+SELECT department, last_name, salary, ntile(4)
+OVER
+(
+    PARTITION BY department
+    ORDER BY salary DESC
+)
+FROM staff;```
+        * Documentation: <a href="https://www.postgresql.org/docs/current/static/functions-window.html">PostgreSQL Windowing Function Expressions</a>
+</em> <strong>Telling Stories with Data</strong>
+    * Start with a problem
+        * Losing customers
+        * Product sales decreasing
+    * Gather data it will take time, figure in more time when using different data sources to make them all consistently encoded
+    * Understand your data using statistics
+    * Reformat and check it before attempting to do joins
+    * Use views to capture complex SQL statements
+    * Use joins
+        * Inner joins only return row that both table share
+        * Use an outer join if you want all rows from one table even if they are missing from the other table
+    * For cross tabulations use cubes, rollups, and grouping sets rather than subqueries
+    * Use window functions to work on sets of related rows
+* <strong>Resources</strong>
+    * Tutorial: <a href="https://www.tutorialspoint.com/postgresql/index.htm">https://www.tutorialspoint.com/postgresql/index.htm</a>
+    * Tutorial: [http://www.postgresqltutorial.com/(http://www.postgresqltutorial.com/)]
+    * PostrgreSQL Aggregation Functions: <a href="https://www.postgresql.org/docs/current/static/functions-aggregate.html">https://www.postgresql.org/docs/current/static/functions-aggregate.html</a>
+    * Joins explained visually: <a href="https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins">https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins</a>
+    * SQL for Data Science from Lynda.com: <a href="https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html">https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html</a>.  I highly recommend this course. Increasingly Lynda.com's excellent courses are available through your local library.  Library patrons in Denver can access this course through <a href="">Denver Public Library Teach Yourself Technology page</a>
+    * SQL for Data Science from Lynda.com: <a href="https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html">https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html</a>. This is an excellent course and increasingly Lynda's courses are available through your local library.  Here in Denver library patrons can access all of Lynda's courses through the <a href="https://www.denverlibrary.org/teach-yourself-technology">Denver Public Library Teach Yourself Technology page</a>.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
