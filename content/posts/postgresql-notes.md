@@ -1,4 +1,4 @@
-# PostgreSQL Commands for Data Science
+# PostgreSQL Commands and SQL Examples for Data Science
 * **Debugging**
     * Finding all postgres processes:  `ps aux | grep postgres`
     * Finding process using a port: `lsof -i tcp:5432`
@@ -13,23 +13,35 @@
         * pgAdmin > right-click server > Create > Sever
             * Main tab: Name it
             * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin user / pw > role to operate as
-* Invoke psql command shell: `psql -d <database> -u <user> -W <password>`
+* Invoke psql command shell
+    - `psql -d <database> -U <user> -W <password>`
+    - Note: Add `-E` to echo queries for learning
+
 
 Command          | What it does
 -----------------|--------------
 `\l`             | List available databases
 `\c <database>`  | Connect to a database
- `\dt`           | List tables
- `\h`            | Help
- `\h <command>`  | PostgreSQL command Help
- `\h <sql>`      | SQL Help
-`\q`             | Quit
+`\dt`            | List tables
+`\dt *.*`        | List tables from all schemas
+`\d <table>`     | Show table definition
+`\dv`            | List views  
+`\dn`            | List schemas  
+`\df`            | List functions
+`\df+ <function>`| Show SQL of function
+`\h`             | psql help
+`\? <psql cmd>`  | psql command help
+`\h <sql>`       | SQL command syntax help
+`\i <script>`    | Runs the SQL script file
+`\q`             | Quit psql
+`q`              | Quit current task and return to command line
+`\x`             | Improves output formatting
 
-* **Starting and Stopping the Server**
-    * su - <admin_user>  # to install postgres
-        * alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'
-        * alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’
-    * Use pgAdmin to work with the database
+* **Starting and Stopping the Server on MacOS**
+        * `su - <admin_user>` # start and stop the server
+        * `alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'`
+        * `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’`
+    * Use `psql` to work with PostgreSQL on the command line or the `pgAdmin4` GUI application (available as a homebrew cask)
 * **SQL Commands**
     * Creating
         * Database: Right-click on Databases > Create > Database
@@ -83,7 +95,8 @@ Command          | What it does
             ```sql
             SELECT department, avg(salary), trunc(avg(salary),2 ), ceil(avg(salary)), round(avg(salary), 2)  from staff
             GROUP BY department;```
-    * **Classication**
+    * Documentation: [PostrgreSQL Aggregation Functions](https://www.postgresql.org/docs/current/static/functions-aggregate.html)
+    * **Classification**
         * Use CASE to show pet names and a column to indicate whether the pet's name is long or short (a long name is strictly more than 6 characters long). Filter to select only female pets.
             ```sql
             SELECT name ,
@@ -195,6 +208,7 @@ Command          | What it does
             FROM staff s1
             WHERE s1.salary = (SELECT max(s2.salary)
             FROM staff s2);```
+        * Documentation:[PostgreSQL SubQuery Expressions](https://www.postgresql.org/docs/current/static/functions-subquery.html)
     * **Joining Tables**
         * Join two tables using department name
             ```sql
@@ -253,7 +267,25 @@ Command          | What it does
                 SELECT s.name, s.id, o.amount
                 FROM salesperson s
                 LEFT JOIN orders o
-                ON s.id = o.salesperson_id;```
+                ON s.id = o.salesperson_id;
+                    -- Note: Every time the view is used
+                    --       its SQL is re-evaluated.
+                ```
+        * Create a materialized view that is stored on the server
+            ```sql
+            CREATE MATERIALIZED VIEW sales_by_person
+            AS
+                SELECT s.name, s.id, o.amount
+                FROM salesperson s
+                LEFT JOIN orders o
+                ON s.id = o.salesperson_id;
+                    -- Note: Once created materialized views
+                    --       can be queried many times but are
+                    --       not automatically updated.
+                ```
+        * Updating a materialized view
+            ```sql
+            REFRESH MATERIALIZED VIEW sales_by_person;```
         * Report number and amount of successful sales by name
             ```sql
             SELECT name, count(amount), sum(amount)
@@ -261,14 +293,42 @@ Command          | What it does
             GROUP BY name
             HAVING count(amount) > 1
             ORDER BY name;```
+        * Documentation:
+            - [PostgreSQL Views and the Rule System](https://www.postgresql.org/docs/current/static/rules-views.html)
+            - [PostgreSQL Materialized Views](https://www.postgresql.org/docs/current/static/rules-materializedviews.html)
+    * Temporary Tables
+        * Temporary tables are alternative to Views and Subqueries
+        * Here are two ways to create a temporary table in SQL
+        *  Create and drop
+            ```sql
+            -- create a temporary table
+            CREATE TABLE temp_table AS
+            (
+                SELECT col1, col2, col3
+                FROM another_table;
+            )
+
+            -- select the data you need
+            SELECT tt.col1, tt.col2
+            FROM temp_table AS tt;
+
+            -- delete the temporary table from the database
+            DROP TABLE temp_table;
+            ```
+        * True temporary table created using WITH
+            ```sql
+            -- create the temporary table
+            WITH temp_table AS
+            (
+                SELECT col1, col2, col3
+                FROM another_table
+            );
+
+            -- select the data you need
+            SELECT tt.col1, tt.col2
+            FROM temp_table AS tt;
+            ```
     * **Grouping & Totaling**
-        *  Breakout the total number of employees by division and region
-             ```sql
-            SELECT company_division, company_regions, count(*)
-            FROM staff_div_reg
-            GROUP BY GROUPING SETS (company_division, company_regions)
-            ORDER BY company_regions, company_division;
-                -- Note: Cells are blank when sub-totaled by another quantity```
         * Breakout sales number and amount of sales by name
             ```sql
             SELECT s.name, count(o.amount), sum(o.amount)
@@ -278,18 +338,25 @@ Command          | What it does
             GROUP BY s.name
             HAVING count(o.amount) > 1
             ORDER BY s.name;```
-    * **Rollups and Cubes**
-        * Create subtotals
+        *  Breakout the total number of employees by division and region using grouping set
+             ```sql
+            SELECT company_division, company_regions, count(*)
+            FROM staff_div_reg
+            GROUP BY GROUPING SETS (company_division, company_regions)
+            ORDER BY company_regions, company_division;
+                -- Note: Cells are blank when sub-totaled by another quantity```
+        * Create subtotals using rollup
             ```sql
             SELECT company_regions, country, count(*)
             FROM staff_div_reg_country
             GROUP BY ROLLUP(country, company_regions)
             ORDER BY country, company_regions;```  
-        * Create all possible subtotals
+        * Create all possible subtotals using cube
             ```sql
             SELECT company_division, company_regions, count(*)
             FROM staff_div_reg_country
             GROUP BY CUBE(company_division, company_regions);```
+        * Documentation: [PostgreSQL Grouping, Cube and Rollup](https://www.postgresql.org/docs/10/static/queries-table-expressions.html#queries-grouping-sets)
     * **Sorting / Ordering**
         * Find the top N values
             ```sql
@@ -330,6 +397,7 @@ Command          | What it does
             GROUP BY facility_name, facility_id, bed_census_date
             ORDER BY sum(available_residential_beds::integer) DESC
             FETCH FIRST 10 ROWS ONLY;```
+        * Documentation: [PostgreSQL Sorting Documentation](https://www.postgresql.org/docs/current/static/queries-order.html)
     * **Window Functions**
         * Window functions are simpler than subqueries and produce similar results
         * Operates on rows adjacent to the current row
@@ -394,6 +462,7 @@ Command          | What it does
                 ORDER BY salary DESC
             )
             FROM staff;```
+        * Documentation: [PostgreSQL Windowing Function Expressions](https://www.postgresql.org/docs/current/static/functions-window.html)
 * **Telling Stories with Data**
     * Start with a problem
         * Losing customers
@@ -408,6 +477,9 @@ Command          | What it does
     * For cross tabulations use cubes, rollups, and grouping sets rather than subqueries
     * Use window functions to work on sets of related rows
 * **Resources**
-    * Tutorial: https://www.tutorialspoint.com/postgresql/index.htm
-    * Tutorial: http://www.postgresqltutorial.com/
-    * Joins explained visually: https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins
+    * Tutorial: [https://www.tutorialspoint.com/postgresql/index.htm](https://www.tutorialspoint.com/postgresql/index.htm)
+    * Tutorial: [http://www.postgresqltutorial.com/(http://www.postgresqltutorial.com/)]
+    * PostrgreSQL Aggregation Functions: [https://www.postgresql.org/docs/current/static/functions-aggregate.html](https://www.postgresql.org/docs/current/static/functions-aggregate.html)
+    * Joins explained visually: [https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins](https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins)
+    * SQL for Data Science from Lynda.com: [https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html](https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html).  I highly recommend this course. Increasingly Lynda.com's excellent courses are available through your local library.  Library patrons in Denver can access this course through [Denver Public Library Teach Yourself Technology page]()
+    * SQL for Data Science from Lynda.com: [https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html](https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html). This is an excellent course and increasingly Lynda's courses are available through your local library.  Here in Denver library patrons can access all of Lynda's courses through the [Denver Public Library Teach Yourself Technology page](https://www.denverlibrary.org/teach-yourself-technology).
