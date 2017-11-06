@@ -14,10 +14,11 @@ modified: 2017-11-05
     * Connecting to a server running as a regular user
         * pgAdmin > right-click server > Create > Sever
             * Main tab: Name it
-            * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin user / pw > role to operate as
-    * Invoke psql command shell
-        - `psql -d <database> -U <user> -W <password>`
-        - Note: Add `-E` to echo queries for learning
+            * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin db-user role
+
+* **Invoke psql command shell**
+    * `psql -d <database> -U <user> -W <password>`
+    * Note: Add `-E` to echo queries for learning
 
 Command          | What it does
 -----------------|--------------
@@ -305,7 +306,7 @@ Command          | What it does
     * Temporary Tables
         * Temporary tables are alternative to Views and Subqueries
         * Here are two ways to create a temporary table in SQL
-        *  Create and drop
+        * Create and drop
             ```sql
             -- create a temporary table
             CREATE TABLE temp_table AS
@@ -344,7 +345,7 @@ Command          | What it does
             GROUP BY s.name
             HAVING count(o.amount) > 1
             ORDER BY s.name;```
-        *  Breakout the total number of employees by division and region using grouping set
+        * Breakout the total number of employees by division and region using grouping set
              ```sql
             SELECT company_division, company_regions, count(*)
             FROM staff_div_reg
