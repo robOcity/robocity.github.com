@@ -4,7 +4,9 @@ category: database
 date: 2017-11-04
 modified: 2017-11-05
 
-* **MacOS Installation and Configuration**
+
+## MacOS Installation and Configuration
+
     * Login to MacOS as user with Administrative rights
     * Install: `brew install postres`
     * Login to PostgreSQL as a admin user: `sudo -u user_name sql db_name`
@@ -16,7 +18,9 @@ modified: 2017-11-05
             * Main tab: Name it
             * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin db-user role
 
-* **Invoke psql command shell**
+
+## Invoke psql command shell
+
     * `psql -d <database> -U <user> -W <password>`
     * Note: Add `-E` to echo queries for learning
 
@@ -39,41 +43,56 @@ Command          | What it does
 `q`              | Quit current task and return to command line
 `\x`             | Improves output formatting
 
-* **Troubleshooting**
+
+## Troubleshooting
+
     * Finding all postgres processes:  `ps aux | grep postgres`
     * Finding process using a port: `lsof -i tcp:5432`
     * Finding process using a port: `netstat -vanp tÂcp | grep 5432`
     * Finding all running processes: `ps -A`
-* **Starting and Stopping the Server on MacOS**
+
+
+## Starting and Stopping the Server on MacOS
+
     * `su - <admin_user>` # start and stop the server
-    * `alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'`
-    * `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’`
+    * create aliases to manage the server storing them in ~/.bash_profile
+        * `alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'`
+        * `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’`
     * Use `psql` to work with PostgreSQL on the command line or the `pgAdmin4` GUI application (available as a homebrew cask)
-* **SQL Commands**
-    * Creating a tables
-        * Database: Right-click on Databases > Create > Database
-        * Tables:  
-            * pgAdmin
-                * Double-click on database > Double click on Schemes > Right-click on tables > Create
-                * Columns:  Right-click on table > Create > Column > Give it a name > Give it a type
-                * Constraint:  Right-click on table > Properties > Constraints tab > Add an constraint > Edit icon > Name it > Select Definition tab > Select column
-            * Command
-                ```sql
-                CREATE TABLE animals
-                (
-                    species character varying (25),
-                    vertebrate_class character varying(25),
-                    appearance character varying(25),
-                    num_legs int4,
-                    CONSTRAINT animal_pkey PRIMARY KEY (species)
-                );```
-        * Import data
-            * pgadmin: right-click table > Import / Export > Define location, delimiter, header … > OK
-            * Check:
-                ```sql
-                SELECT *
-                FROM pets;```
-    * **Statistics**
+
+
+## Creating a tables
+
+* Using pgAdmin
+    * Database: Right-click on Databases > Create > Database
+    * Double-click on database > Double click on Schemes > Right-click on tables > Create
+    * Columns:  Right-click on table > Create > Column > Give it a name > Give it a type
+    * Constraint:  Right-click on table > Properties > Constraints tab > Add an constraint > Edit icon > Name it > Select Definition tab > Select column
+
+* Using psql command line
+
+```sql
+CREATE TABLE animals
+(
+    species character varying (25),
+    vertebrate_class character varying(25),
+    appearance character varying(25),
+    num_legs int4,
+    CONSTRAINT animal_pkey PRIMARY KEY (species)
+);
+```
+
+## Import data
+
+* pgadmin: right-click table > Import / Export > Define location, delimiter, header … > OK
+* Check:
+        ```sql
+        SELECT *
+        FROM pets;```
+
+
+## Statistics
+
         * Limit number of results:
             ```sql
             SELECT *
@@ -103,7 +122,10 @@ Command          | What it does
             SELECT department, avg(salary), trunc(avg(salary),2 ), ceil(avg(salary)), round(avg(salary), 2)  from staff
             GROUP BY department;```
     * Documentation: [PostrgreSQL Aggregation Functions](https://www.postgresql.org/docs/current/static/functions-aggregate.html)
-    * **Classification**
+
+
+## Classification
+
         * Use CASE to show pet names and a column to indicate whether the pet's name is long or short (a long name is strictly more than 6 characters long). Filter to select only female pets.
             ```sql
             SELECT name ,
@@ -112,7 +134,10 @@ Command          | What it does
                 ELSE 'short' END  
             FROM pets
             WHERE gender = 'female';```
-    * **Filtering**
+
+
+## Filtering
+
         * Find data that meets a condition
             ```sql
             SELECT last_name, department, salary
@@ -140,7 +165,10 @@ Command          | What it does
             ```sql
             SELECT DISTINCT LOWER(department)
             FROM staff;```
-    * **Munging**
+
+
+## Munging
+
         * Concatenating values
             ```sql
             SELECT job_title || '-' || department
@@ -173,7 +201,10 @@ Command          | What it does
             FROM staff
             WHERE job_title
             LIKE 'Assistant%’;```
-    * **Regex**
+
+
+## Regex
+
         * Find assistants at specified levels
             ```sql
             SELECT job_title
@@ -192,7 +223,10 @@ Command          | What it does
             FROM staff
             WHERE job_title
             SIMILAR TO '[EPS]%’;```
-    * **Sub-Queries**
+
+
+## Sub-Queries
+
         * _Consider using a view and or a windowing functions for simpler, more readable code._
         * Adding a calculated field
             ```sql
@@ -216,7 +250,9 @@ Command          | What it does
             WHERE s1.salary = (SELECT max(s2.salary)
             FROM staff s2);```
         * Documentation:[PostgreSQL SubQuery Expressions](https://www.postgresql.org/docs/current/static/functions-subquery.html)
-    * **Joining Tables**
+
+
+## Joining Tables
         * Join two tables using department name
             ```sql
             SELECT s.last_name, s.department, cd.company_division
@@ -241,7 +277,10 @@ Command          | What it does
             ON s.department = cd.department
             WHERE cd.company_division IS NULL;
                 -- Note:  Turns out it is the Books department```
-    * **Using Views**
+
+
+## Using Views
+
         * Save a long join by creating a view
             ```sql
             CREATE VIEW staff_div_reg AS
@@ -303,7 +342,10 @@ Command          | What it does
         * Documentation:
             - [PostgreSQL Views and the Rule System](https://www.postgresql.org/docs/current/static/rules-views.html)
             - [PostgreSQL Materialized Views](https://www.postgresql.org/docs/current/static/rules-materializedviews.html)
-    * Temporary Tables
+
+
+ ## Temporary Tables
+
         * Temporary tables are alternative to Views and Subqueries
         * Here are two ways to create a temporary table in SQL
         * Create and drop
@@ -335,7 +377,10 @@ Command          | What it does
             SELECT tt.col1, tt.col2
             FROM temp_table AS tt;
             ```
-    * **Grouping & Totaling**
+
+
+## Grouping & Totaling
+
         * Breakout sales number and amount of sales by name
             ```sql
             SELECT s.name, count(o.amount), sum(o.amount)
@@ -364,7 +409,10 @@ Command          | What it does
             FROM staff_div_reg_country
             GROUP BY CUBE(company_division, company_regions);```
         * Documentation: [PostgreSQL Grouping, Cube and Rollup](https://www.postgresql.org/docs/10/static/queries-table-expressions.html#queries-grouping-sets)
-    * **Sorting / Ordering**
+
+
+ ## Sorting / Ordering
+
         * Find the top N values
             ```sql
             SELECT last_name, job_title, salary
@@ -405,7 +453,10 @@ Command          | What it does
             ORDER BY sum(available_residential_beds::integer) DESC
             FETCH FIRST 10 ROWS ONLY;```
         * Documentation: [PostgreSQL Sorting Documentation](https://www.postgresql.org/docs/current/static/queries-order.html)
-    * **Window Functions**
+
+
+ ## Window Functions
+
         * Window functions are simpler than subqueries and produce similar results
         * Operates on rows adjacent to the current row
             ```sql
@@ -470,7 +521,10 @@ Command          | What it does
             )
             FROM staff;```
         * Documentation: [PostgreSQL Windowing Function Expressions](https://www.postgresql.org/docs/current/static/functions-window.html)
-* **Telling Stories with Data**
+
+
+## Telling Stories with Data
+
     * Start with a problem
         * Losing customers
         * Product sales decreasing
@@ -483,7 +537,10 @@ Command          | What it does
         * Use an outer join if you want all rows from one table even if they are missing from the other table
     * For cross tabulations use cubes, rollups, and grouping sets rather than subqueries
     * Use window functions to work on sets of related rows
-* **Resources**
+
+
+## Resources
+
     * Tutorial: [https://www.tutorialspoint.com/postgresql/index.htm](https://www.tutorialspoint.com/postgresql/index.htm)
     * Tutorial: [http://www.postgresqltutorial.com/(http://www.postgresqltutorial.com/)]
     * PostrgreSQL Aggregation Functions: [https://www.postgresql.org/docs/current/static/functions-aggregate.html](https://www.postgresql.org/docs/current/static/functions-aggregate.html)

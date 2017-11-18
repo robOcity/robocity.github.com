@@ -6,18 +6,8 @@ modified: 2017-11-07
 
 # Web Scraping with Python: An Introductory Tutorial
 
-#### Rob Osterburg
-##### Data Scientist / Software Engineer / Instructor
+#### Rob Osterburg -- Data Scientist / Software Engineer / Instructor
 
-## Acknowledgements
-
-* The generous [sponsors](http://denverdatascienceday.com/index.php/sponsors/) of [Denver Data Science Day 2017](http://denverdatascienceday.com/)
-
-* [Galvanize](https://www.galvanize.com/pick-a-location?page=%2F) for hosting [Denver Data Science Day 2017](http://denverdatascienceday.com/)
-
-* Bob Mickus, Tyler B. and all the volunteers from [PyData Denver](https://www.meetup.com/PyData-Denver/) who organized [Denver Data Science Day](http://denverdatascienceday.com/)
-
-* Miguel Grinberg whose [Easy Web Scraping with Python](https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python) blog post inspired this tutorial.  Miguel's posted his tutorial in 2014 and PyVideo.org has recently undergone a significant revision.
 
 ## Topics
 
@@ -54,18 +44,27 @@ from bs4 import BeautifulSoup
 ## Warning! Warning!
 
 * Only scrape as a last resort, first see if the site has an API or other means of accessing their data
+
 * Web scraping is commonly frowned upon by the site's owners
-* **Always check the site's Terms of service, Conditions of use, and robots.txt file**   
+
+* **Always check the site's Terms of service, Conditions of use, and robots.txt file**
+
 * Aggressive scrapers can take a site down, owner's can rightfully consider that a denial of service attack
+
 * If in doubt, talk to a lawyer, especially for *anything* work related
+
 * Watch [Sustainable Scrapers, PyData DC, 2016](http://pyvideo.org/pydata-dc-2016/sustainable-scrapers.html) to understand how a data journalist deals with these issues. It's a good talk and quite entertaining -- in a geeky way
 
 ## PyVideo.org -- Is it OK to scrape?
 
 * [PyVideo.org](http://pyvideo.org) provides valuable meta-data about Python presentations
+
 * It makes finding talks easy and can be searched by event, presenter, or topic
-* But what restrictions does it have against scraping?  
+
+* But what restrictions does it have against scraping?
+
 * Let's take a look
+
 
 ## PyVideo.org - Terms and Conditions?
 
@@ -104,7 +103,7 @@ resp.raise_for_status()
 HTTP Verb | Effect | Success | Failure
 --------- | ------ | ------- | --------
 POST      | Create | 200     | 400, 40X, 500
-**GET**       | **Read**   | **200**     | **400, 40X, 500**
+**GET** | **Read** | **200** | **400, 40X, 500**
 PUT       | Update | 200     | 400, 40X, 500
 DELETE    | Delete | 200     | 400, 40X, 500
 
@@ -119,18 +118,25 @@ soup = BeautifulSoup(resp.text, 'html.parser')
 ## BeautifulSoup - Parses the page
 
 * Models the page as a tree
+
 * Similar to the Document Object Model
  ![tags page structure](./images/htmltree.png)
 
 * Parsers build the tree, pick one
+
  - html.parser -> Default parser for Python 3
+
  - HTMLParser  -> Default parser for Python 2
+
  - lxml        -> Fast requires installing a C library and a PyPI package
+
  - html5lib    -> Pure Python and part of the standard library
 
  cite: https://interactivepython.org/runestone/static/pythonds/Trees/ExamplesofTrees.html
 
+
 ## BeautifulSoup - Well documented and easy to use API
+
 * [select](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors)('css selector') --> [List of Tags]
 
 * [find_all](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all)(tags, keyword_args, attrs={'attr', 'value'})  --> [List of Tags]
@@ -138,6 +144,7 @@ soup = BeautifulSoup(resp.text, 'html.parser')
 * [find](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find)(tags, keyword_args, attrs={'attr', 'value'}) --> Tag
 
 * [BeautifulSoup 4 Documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+
 
 ## Understanding Page Structure
 
@@ -151,13 +158,21 @@ soup = BeautifulSoup(resp.text, 'html.parser')
 Visiting the [Tags page](http://pyvideo.org/tags) you can see the structure of the page  
 ![tags page structure](./images/structure-of-tags-page.png)
 
+
 ## Developer Tools - Getting a CSS selector
+
 * Use the element inspector to locate items you want to scrape
+
 * Right-click on the element > Copy > Copy CSS Selector
+
 * Paste the selector into your code
+
 * Make it more general by removing aspects that specific to *a* particular tag
+
 * In this case, `nth-child()` and `.col-md-3`
+
 * The idea here is to tune the selector to the data you want to scrape
+
 * Tutorial: [An Intro to CSS: Finding CSS Selectors](https://dailypost.wordpress.com/2013/07/25/css-selectors/)
 
 
@@ -174,6 +189,7 @@ topics[:8]
 
 
 
+Let's look at the links that I found.
 
     [<a href="http://pyvideo.org/index.html"><i class="fa fa-fw fa-home"></i> <span>Start</span></a>,
      <a href="http://pyvideo.org/events.html"><i class="fa fa-fw fa-list-ul"></i> <span>Events</span></a>,
@@ -189,10 +205,15 @@ topics[:8]
 ## Why List Comprehensions?
 
 * List comprehensions are a powerful way to create lists
+
 * For-loop code above == List comprehension below
+
 * The CSS selector got us 90% of the way there
+
 * List comprehension can do the rest
+
 * I find them very handy, I think you will too
+
 * Tutorial: [Understanding List Comprehensions in Python 3](https://www.digitalocean.com/community/tutorials/understanding-list-comprehensions-in-python-3)
 
 
@@ -204,8 +225,7 @@ topics = [topic                                        # adds the topic to the l
 topics[:8]
 ```
 
-
-
+Here's are the links that I found.
 
     [<a href="http://pyvideo.org/index.html"><i class="fa fa-fw fa-home"></i> <span>Start</span></a>,
      <a href="http://pyvideo.org/events.html"><i class="fa fa-fw fa-list-ul"></i> <span>Events</span></a>,
@@ -219,9 +239,13 @@ topics[:8]
 
 
 * Now lets look at one of the elements in our list
+
 * Each element is a BeautifulSoup Tag object
+
 * *Tag* allows access to all the element's data including
+
     - *attributes* that are accessed using dictionary like syntax
+
     - *contents* that are displayed on the page
 
 
@@ -243,8 +267,11 @@ type(topic), topic, topic.contents, topic['href']
 
 
 * List comprehensions are concise and powerful to process data
+
 * From the list of anchor elements
+
 * Let's create a list of links to topics pages
+
 * Filtering out all unrelated links
 
 
@@ -293,6 +320,7 @@ soup = BeautifulSoup(resp.text, 'html.parser')
 ## Using Tag.find_all()
 
 * We have used `select()`, not let's try out `find_all()`
+
 * Our goal is create a list of the links to all the talks on a particular topic
 
 
@@ -316,6 +344,7 @@ h4_tags[0]
 ## BeautifulSoup in Action
 
 * Methods: `find_all()` and `select()` both return list of Tag objects
+
 * Accessing descendents:  Tag.Descendent_Tag['attribute']
 
 
@@ -352,6 +381,7 @@ len(select_talks), select_talks[0]
 ## Moving on to extract presentation meta data
 
 * Our ultimate destination is now in sight -- The video's presentation page
+
 * It's the talk page -- that's where the best data are found
 
 
@@ -461,21 +491,29 @@ print(description)
 * Use namedtuple to capture information about PyVideo talk
 
 * What do we need to capture
+
     - Talk title (string)
+
     - Name of presenter(s) (list)
+
     - Description (string)
+
     - Tags (list)
+
     - Link to video (string)
 
 * Let's use JSON
     - Awesome for persisting structured data
+
     - Excellent data exchange format
 
 
 ## Why namedtuples?
 
 * namedtuples are a lightweight container for data
+
 * Using a name to access data elements is their advantage
+
 * Numeric indexing is all that regular tuple provides
 
 
@@ -503,10 +541,15 @@ print(fmt.format(talk_data.title, talk_data.names, talk_data.tags, talk_data.lin
 ## Why JSON?
 
 * Handles structured data well
+
 * Excellent data exchange format
+
 * Python supports round-tripping between namedtuples and JSON
+
     - namedtuple objects can be saved a JSON formatted text
+
     - JSON formatted text can be convert back to namedtuple objects
+
     - Of course, text can be written to file
 
 
@@ -552,6 +595,18 @@ type(talk_data), type(restored_talk_data)
 
 * Getting blocked, banned, sued ...
 
+
+## Acknowledgements
+
+* The generous [sponsors](http://denverdatascienceday.com/index.php/sponsors/) of [Denver Data Science Day 2017](http://denverdatascienceday.com/)
+
+* [Galvanize](https://www.galvanize.com/pick-a-location?page=%2F) for hosting [Denver Data Science Day 2017](http://denverdatascienceday.com/)
+
+* Bob Mickus, Tyler B. and all the volunteers from [PyData Denver](https://www.meetup.com/PyData-Denver/) who organized [Denver Data Science Day](http://denverdatascienceday.com/)
+
+* Miguel Grinberg whose [Easy Web Scraping with Python](https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python) blog post inspired this tutorial.  Miguel's posted his tutorial in 2014 and PyVideo.org has recently undergone a significant revision.
+
+
 ## Resources
 
 1. [Automate the Boring Stuff](https://automatetheboringstuff.com/), [Chapter 11 — Web Scraping](https://automatetheboringstuff.com/chapter11/) by Al Sweigart (Free PDF version online).  Takes you through topics step-by-step, includes using Selenium to fill out forms and simulate mouse clicks.
@@ -567,5 +622,7 @@ type(talk_data), type(restored_talk_data)
 1. [Awesome Python](https://awesome-python.com/) -- PyPI has over 100,000 packages.  Awesome Python is a curated list of the best, see their recommended web scraping packages [here](https://awesome-python.com/#web-crawling).
 
 1. Other Practice Sites
+
     * [Books to Scrape](http://books.toscrape.com/)
+
     * [Quotes to Scrape](http://quotes.toscrape.com/)
