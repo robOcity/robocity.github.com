@@ -6,16 +6,16 @@
 #
 
 ### ---------- Project Specific ---------- ###
-
+*.pid
+output/
 
 ### ---------- General ---------- ###
-
-# Content of the .gitignore file:
-*.pid
 *.pyc
 *.swp
-output/
 __pycache__/
+.cache/
+.idea/
+
 
 ### OS Generated Files ###
 .DS_Store
