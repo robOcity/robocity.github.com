@@ -88,7 +88,7 @@ Command          | What it does
     * pgadmin: right-click table > Import / Export > Define location, delimiter, header … > OK
 
     * Check by showing the data
-    
+
     ```sql
     SELECT *
     FROM pets;```
