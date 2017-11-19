@@ -200,7 +200,7 @@ topics[:8]
 
 
 Let's look at the links that I found.
-```html
+```pyth
 [<a href="http://pyvideo.org/index.html"><i class="fa fa-fw fa-home"></i> <span>Start</span></a>,
  <a href="http://pyvideo.org/events.html"><i class="fa fa-fw fa-list-ul"></i> <span>Events</span></a>,
  <a href="http://pyvideo.org/tags.html"><i class="fa fa-fw fa-tags"></i> <span>Tags</span></a>,
