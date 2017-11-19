@@ -413,7 +413,7 @@ For more information see:
 * [PostgreSQL Materialized Views Documentation](https://www.postgresql.org/docs/current/static/rules-materializedviews.html)
 
 
- ## Temporary Tables
+## Temporary Tables
 
 Temporary tables are alternative to Views and Subqueries.  Here are two ways to
 create a temporary table in SQL.
@@ -490,7 +490,7 @@ GROUP BY CUBE(company_division, company_regions);
 For more information see: [PostgreSQL Grouping, Cube and Rollup Documentation](https://www.postgresql.org/docs/10/static/queries-table-expressions.html#queries-grouping-sets)
 
 
- ## Sorting / Ordering
+## Sorting / Ordering
 
 Find the top N values
 ```sql
@@ -546,7 +546,7 @@ FETCH FIRST 10 ROWS ONLY;
 For more information see: [PostgreSQL Sorting Documentation](https://www.postgresql.org/docs/current/static/queries-order.html)
 
 
- ## Window Functions
+## Window Functions
 
 Window functions are simpler than subqueries and produce similar results they
 operate rows adjacent to the current row.

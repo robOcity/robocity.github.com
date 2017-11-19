@@ -18,6 +18,12 @@ CATEGORY_FEED_ATOM = 'feeds/%s.atom.xml'
 
 DELETE_OUTPUT_DIRECTORY = True
 
+# adding support for jupyter notebooks
+# see: https://www.scribd.com/document/359497520/Building-a-Data-Science-Portfolio-Making-a-Data-Science-Blog
+MARKUP = ('md', 'ipynb')
+PLUGIN_PATH = './plugins'
+PLUGINS = ['ipynb.markup']
+
 # Following items are often useful when publishing
 
 #DISQUS_SITENAME = ""
