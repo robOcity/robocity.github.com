@@ -1,7 +1,7 @@
 title: PostgreSQL for Data Science
 slug: Commands and Examples
 name: Rob Osterburg
-category: database
+category: Database
 date: 2017-11-04
 modified: 2017-11-05
 
