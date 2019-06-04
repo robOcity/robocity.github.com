@@ -2,21 +2,22 @@
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
 
-AUTHOR = 'Rob Osterburg'
-SITENAME = 'Dealing with Data'
-SITEURL = ''
+AUTHOR = "Rob Osterburg"
+SITENAME = "Dealing with Data"
+SITEURL = ""
 
-PATH = 'content'
+PATH = "content"
 
-TIMEZONE = 'America/Denver'
+TIMEZONE = "America/Denver"
 
-DEFAULT_LANG = 'en'
+DEFAULT_LANG = "en"
 
 # adding support for jupyter notebooks
 # see: https://www.scribd.com/document/359497520/Building-a-Data-Science-Portfolio-Making-a-Data-Science-Blog
-MARKUP = ('md', 'ipynb')
-PLUGIN_PATHS = './plugins'
-PLUGINS = ['ipynb.markup']
+MARKUP = ("md", "ipynb")
+PLUGIN_PATHS = "./plugins"
+PLUGINS = ["ipynb.markup"]
+IPYNB_USE_METACELL = True
 
 
 # Feed generation is usually not desired when developing
@@ -27,14 +28,15 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-LINKS = (('Pelican', 'http://getpelican.com/'),
-         ('Python.org', 'http://python.org/'),
-         ('Jinja2', 'http://jinja.pocoo.org/'),
-         ('You can modify those links in your config file', '#'),)
+LINKS = (
+    ("Pelican", "http://getpelican.com/"),
+    ("Python.org", "http://python.org/"),
+    ("Jinja2", "http://jinja.pocoo.org/"),
+    ("You can modify those links in your config file", "#"),
+)
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (("You can add links in your config file", "#"), ("Another social link", "#"))
 
 DEFAULT_PAGINATION = 5
 
