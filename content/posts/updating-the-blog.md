@@ -4,7 +4,7 @@ Slug: using-jupyter-notebooks-to-blog-with-pelican
 Date: 2019-05-15
 Category: Tutorial
 Tags: pelican, jupyter lab, github pages
-Summary: Using Pelican to generate a blog from Jupyter notebook files
+Summary: Using Pelican to generate a blog from jupyter notebook files
 
 ## Jupyter Notebook Support
 
@@ -15,7 +15,6 @@ If you have an existing Pelican blog that uses Jupyter notebooks as content,and 
 Make sure you have the following lines to `pelicanconf.py`:
 
 ```# adding support for jupyter notebooks
-# see: https://www.scribd.com/document/359497520/Building-a-Data-Science-Portfolio-Making-a-Data-Science-Blog
 MARKUP = ("md", "ipynb")
 PLUGIN_PATHS = ["./plugins"]
 PLUGINS = ["ipynb.markup"]
@@ -23,17 +22,35 @@ IGNORE_FILES = [".ipynb_checkpoints"]
 IPYNB_USE_METACELL = True
 ```
 
+## Update Pelican Plugins
+
+Pelican uses plugins to add capabilities for generating blog content.  I publish my blog on github pages and that requires plugins be installed as a git submodule.  Now, this can be intimidating the first time you see it, but simply put, a submodule is a repository within a repository -- that surprisingly -- it is not as bad as it sounds.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  Below are the steps to install install the [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin (see link for more configuration and usage details).
+
+1. Run `git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb`
+2. Add the meta data from your blog post in a markdown cell containing the following tags:
+
+    ```text
+    Title:
+    Slug:
+    Date:
+    Category:
+    Tags:
+    Author:
+    Summary:
+    ```
+
 Now you are ready to generate blog posts from your Jupyter notebooks.
 
-## Generating Content
+## Generating and Reviewing Content
 
 1. Run `pelican content` from your blogs root directory and automatically detects changes in content
 2. Fix warnings and errors in your development environment.  
 3. `cd output` and open `http://localhost:8000` in your browser
-4. Keep editing and refreshing to see your latest changes
-5. Control-c to halt `pelican content`
+4. Start Python's build-in web server by running: `python -m http.server 8000`
+5. Keep editing and refreshing to see your latest changes
+6. Control-c to halt `pelican content`
 
-## Github Pages
+## Publishing to Github Pages
 
 1. Check in your changes to your `source` branch
 2. Run `pelican content -o output pelicanconf.py`
@@ -42,6 +59,8 @@ Now you are ready to generate blog posts from your Jupyter notebooks.
 
 ## Resources
 
-1. [Matt Makai's Excellent Pelican Posts](https://www.fullstackpython.com/pelican.html)
-2. [pelican-ipynb plugin]([pelican-ipynb](https://github.com/danielfrg/pelican-ipynb))
-3. [Pelican Docs](https://docs.getpelican.com/en/stable/index.html)
+1. [Documentation: Pelican Stable](https://docs.getpelican.com/en/stable/index.html)
+2. [Repository: pelican-ipynb plugin]([pelican-ipynb](https://github.com/danielfrg/pelican-ipynb))
+3. [Blog: Matt Makai's Excellent Pelican Posts](https://www.fullstackpython.com/pelican.html)
+4. [Blog: Some Tips for Using Jupyter Notebooks with Pelican](https://pmbaumgartner.github.io/blog/jupyter-notebooks-for-pelican/)
+5. [Blog: Hacking my way to a Jupyter notebook powered blog](https://nipunbatra.github.io/blog/2017/Jupyter-powered-blog.html)
