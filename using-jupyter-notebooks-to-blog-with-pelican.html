@@ -37,35 +37,58 @@
 <p>If you are just getting starting blogging with Pelican and Jupyter Notebooks, then you need to install a plugin to generate HTML from your <code>.ipynb</code> files.  To do this add the <a href="https://github.com/danielfrg/pelican-ipynb">pelican-ipynb</a> plugin for Pelican by entering <code>git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb</code>.  Now you have added a submodule to your repository.</p>
 <p>If you have an existing Pelican blog that uses Jupyter notebooks as content,and have cloned a fresh version of your blog.  Then you will need to re-initialize your <code>pelican-ipynb</code> submodule.  First, re-initialize it by entering <code>git submodule init</code> followed by <code>git submodule update --rebase --remote</code>.  </p>
 <p>Make sure you have the following lines to <code>pelicanconf.py</code>:</p>
-<p>```# adding support for jupyter notebooks</p>
-<h1>see: https://www.scribd.com/document/359497520/Building-a-Data-Science-Portfolio-Making-a-Data-Science-Blog</h1>
-<p>MARKUP = ("md", "ipynb")
+<p><code># adding support for jupyter notebooks
+MARKUP = ("md", "ipynb")
 PLUGIN_PATHS = ["./plugins"]
 PLUGINS = ["ipynb.markup"]
 IGNORE_FILES = [".ipynb_checkpoints"]
-IPYNB_USE_METACELL = True
-```</p>
+IPYNB_USE_METACELL = True</code></p>
+<h2>Update Pelican Plugins</h2>
+<p>Pelican uses plugins to add capabilities for generating blog content.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  This requires a plugin to generate the HTML and CSS from the ipynb file.  Generating the content requires a plugin and posting it on GitHub requires that the plugin be installed as a git submodule.  Having a repository within another repository -- especially one you are maintaining --  is rather intimidating.  Surprisingly, it is not as bad as it sounds.  Below are the steps to install install the <a href="https://github.com/danielfrg/pelican-ipynb">pelican-ipynb</a> plugin for posting to Github pages.</p>
+<ol>
+<li>Run <code>git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb</code></li>
+<li>Run <code>git submodule init</code></li>
+<li>Run <code>git submodule update</code> which downloads the latest version of pelican-ipynb into your <code>./plugins/ipynb</code> directory.</li>
+</ol>
+<h2>Preparing your Post</h2>
+<ol>
+<li>Pelican uses metadata from your post to generate the post including the title, category, date, etc.  The <a href="https://github.com/danielfrg/pelican-ipynb">pelican-ipynb</a> plugin offers several choices on how to do this.  I am choosing to add a cell to my notebook file and add the metadata there.  To do so you need to add a line with <code>IPYNB_USE_METACELL = True</code> to your <code>pelicanconf.py</code> file in the root directory of your blog.</li>
+<li>
+<p>Add the meta data from your blog post in a markdown cell containing the following tags:</p>
+<p><code>text
+Title:
+Slug:
+Date:
+Category:
+Tags:
+Author:
+Summary:</code></p>
+</li>
+</ol>
 <p>Now you are ready to generate blog posts from your Jupyter notebooks.</p>
-<h2>Generating Content</h2>
+<h2>Generating and Reviewing Content</h2>
 <ol>
 <li>Run <code>pelican content</code> from your blogs root directory and automatically detects changes in content</li>
-<li>Fix warnings and errors in your development environment.  </li>
-<li><code>cd output</code> and open <code>http://localhost:8000</code> in your browser</li>
+<li>Fix any warnings or errors that Pelican reports  </li>
+<li><code>cd output</code> and open <code>http://localhost:8000</code> in your browser and review your blogs appearance</li>
+<li>Start Python's build-in web server by running: <code>python -m http.server 8000</code></li>
 <li>Keep editing and refreshing to see your latest changes</li>
 <li>Control-c to halt <code>pelican content</code></li>
 </ol>
-<h2>Github Pages</h2>
+<h2>Publishing to Github Pages</h2>
 <ol>
 <li>Check in your changes to your <code>source</code> branch</li>
-<li>Run <code>pelican content -o output pelicanconf.py</code></li>
+<li>Run <code>pelican content -o output -s pelicanconf.py</code></li>
 <li>Run <code>ghp-import output -b gh-pages</code></li>
 <li>Run <code>git push git@github.com:robocity.github.io.git gh-pages:master</code></li>
 </ol>
 <h2>Resources</h2>
 <ol>
-<li><a href="https://www.fullstackpython.com/pelican.html">Matt Makai's Excellent Pelican Posts</a></li>
-<li><a href="[pelican-ipynb](https://github.com/danielfrg/pelican-ipynb)">pelican-ipynb plugin</a></li>
-<li><a href="https://docs.getpelican.com/en/stable/index.html">Pelican Docs</a></li>
+<li><a href="https://docs.getpelican.com/en/stable/index.html">Documentation: Pelican Stable</a></li>
+<li><a href="[pelican-ipynb](https://github.com/danielfrg/pelican-ipynb)">Repository: pelican-ipynb plugin</a></li>
+<li><a href="https://www.fullstackpython.com/pelican.html">Blog: Matt Makai's Excellent Pelican Posts</a></li>
+<li><a href="https://pmbaumgartner.github.io/blog/jupyter-notebooks-for-pelican/">Blog: Some Tips for Using Jupyter Notebooks with Pelican</a></li>
+<li><a href="https://nipunbatra.github.io/blog/2017/Jupyter-powered-blog.html">Blog: Hacking my way to a Jupyter notebook powered blog</a></li>
 </ol>
     </div><!-- /.entry-content -->
 
