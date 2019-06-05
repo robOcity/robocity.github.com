@@ -1,8 +1,9 @@
 Title: Using Jupyter Notebooks to Blog with Pelican
-Date: 2019-06-04
+Author: Rob Osterburg
+Slug: using-jupyter-notebooks-to-blog-with-pelican
+Date: 2019-05-15
 Category: Tutorial
-Tag: pelican, jupyter lab, github pages
-Authors: Rob Osterburg
+Tags: pelican, jupyter lab, github pages
 Summary: Using Pelican to generate a blog from Jupyter notebook files
 
 ## Jupyter Notebook Support
