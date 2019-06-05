@@ -17,6 +17,7 @@ DEFAULT_LANG = "en"
 MARKUP = ("md", "ipynb")
 PLUGIN_PATHS = "./plugins"
 PLUGINS = ["ipynb.markup"]
+IGNORE_FILES = [".ipynb_checkpoints"]
 IPYNB_USE_METACELL = True
 
 
