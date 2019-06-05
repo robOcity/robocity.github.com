@@ -19,7 +19,7 @@ PLUGIN_PATHS = ["./plugins"]
 PLUGINS = ["ipynb.markup"]
 IGNORE_FILES = [".ipynb_checkpoints"]
 IPYNB_USE_METACELL = True
-IPYNB_SKIP_CSS = True
+# IPYNB_SKIP_CSS = True
 
 
 # Feed generation is usually not desired when developing
