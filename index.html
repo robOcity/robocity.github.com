@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Dealing with Data</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Dealing with Data </a></h1>
+                <nav><ul>
+                    <li><a href="/category/data-science.html">Data Science</a></li>
+                    <li><a href="/category/tutorial.html">Tutorial</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/how-do-college-town-home-prices-fare-during-recession.html">How do college town home prices fare during recession?</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2019-05-30T00:00:00-06:00">
+                Published: Thu 30 May 2019
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/data-science.html">Data Science</a>.</p>
+<p>tags: <a href="/tag/pandas.html">pandas</a> <a href="/tag/statistics.html">statistics</a> <a href="/tag/analysis-wrangling.html">analysis wrangling</a> </p>
+</footer><!-- /.post-info --><body>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>During recession home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first a few definitions.</p>
+<ul>
+<li><p>A <em>quarter</em> is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December.</p>
+</li>
+<li><p>A <em>recession</em> is defined as starting with two consecutive quarters of GDP decline, and ending with two consecutive quarters of GDP growth.</p>
+</li>
+<li><p>A <em>recession bottom</em> is the quarter within a recession which had the lowest GDP.</p>
+</li>
+<li><p>A <em>university town</em> is a city which has a high percentage of college students compared to the total population of the city.</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Hypothesis">Hypothesis<a class="anchor-link" href="#Hypothesis">&#182;</a></h2><p><strong>College towns have their mean housing prices less effected by recessions. Run a t-test to compare the ratio of the mean price of houses in university towns the quarter before the recession starts compared to the recession bottom.  Values less than one show home price increases and greater than one show home price declines.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Data">Data<a class="anchor-link" href="#Data">&#182;</a></h2><ul>
+<li><p>From the <a href="http://www.zillow.com/research/data/">Zillow research data site</a> there is housing data for the United States. In particular the datafile for <a href="http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv">all homes at a city level</a>, <code>zillow_homes_prices_by_city.csv</code>, has median home sale prices at a fine grained level.</p>
+</li>
+<li><p>From the Wikipedia page on college towns is a list of <a href="https://en.wikipedia.org/wiki/List_of_college_towns#College_towns_in_the_United_States">college towns in the United States</a> which has been pasted into the file <code>college_towns.txt</code>.</p>
+</li>
+<li><p>From Bureau of Economic Analysis, US Department of Commerce, the <a href="http://www.bea.gov/national/index.htm#gdp">GDP over time</a> of the United States in current dollars (use the chained value in 2009 dollars), in quarterly intervals, in the file <code>gdplev.xls</code>. For this project, I will only look at GDP data from the first quarter of 2000 onward.</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">ttest_ind</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Use fully spelled out place names</span>
+<span class="n">states</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;OH&#39;</span><span class="p">:</span> <span class="s1">&#39;Ohio&#39;</span><span class="p">,</span> <span class="s1">&#39;KY&#39;</span><span class="p">:</span> <span class="s1">&#39;Kentucky&#39;</span><span class="p">,</span> <span class="s1">&#39;AS&#39;</span><span class="p">:</span> <span class="s1">&#39;American Samoa&#39;</span><span class="p">,</span> <span class="s1">&#39;NV&#39;</span><span class="p">:</span> <span class="s1">&#39;Nevada&#39;</span><span class="p">,</span> <span class="s1">&#39;WY&#39;</span><span class="p">:</span> <span class="s1">&#39;Wyoming&#39;</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">:</span> <span class="s1">&#39;National&#39;</span><span class="p">,</span> <span class="s1">&#39;AL&#39;</span><span class="p">:</span> <span class="s1">&#39;Alabama&#39;</span><span class="p">,</span> <span class="s1">&#39;MD&#39;</span><span class="p">:</span> <span class="s1">&#39;Maryland&#39;</span><span class="p">,</span> <span class="s1">&#39;AK&#39;</span><span class="p">:</span> <span class="s1">&#39;Alaska&#39;</span><span class="p">,</span> <span class="s1">&#39;UT&#39;</span><span class="p">:</span> <span class="s1">&#39;Utah&#39;</span><span class="p">,</span> <span class="s1">&#39;OR&#39;</span><span class="p">:</span> <span class="s1">&#39;Oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;MT&#39;</span><span class="p">:</span> <span class="s1">&#39;Montana&#39;</span><span class="p">,</span> <span class="s1">&#39;IL&#39;</span><span class="p">:</span> <span class="s1">&#39;Illinois&#39;</span><span class="p">,</span> <span class="s1">&#39;TN&#39;</span><span class="p">:</span> <span class="s1">&#39;Tennessee&#39;</span><span class="p">,</span> <span class="s1">&#39;DC&#39;</span><span class="p">:</span> <span class="s1">&#39;District of Columbia&#39;</span><span class="p">,</span> <span class="s1">&#39;VT&#39;</span><span class="p">:</span> <span class="s1">&#39;Vermont&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">:</span> <span class="s1">&#39;Idaho&#39;</span><span class="p">,</span> <span class="s1">&#39;AR&#39;</span><span class="p">:</span> <span class="s1">&#39;Arkansas&#39;</span><span class="p">,</span> <span class="s1">&#39;ME&#39;</span><span class="p">:</span> <span class="s1">&#39;Maine&#39;</span><span class="p">,</span> <span class="s1">&#39;WA&#39;</span><span class="p">:</span> <span class="s1">&#39;Washington&#39;</span><span class="p">,</span> <span class="s1">&#39;HI&#39;</span><span class="p">:</span> <span class="s1">&#39;Hawaii&#39;</span><span class="p">,</span> <span class="s1">&#39;WI&#39;</span><span class="p">:</span> <span class="s1">&#39;Wisconsin&#39;</span><span class="p">,</span> <span class="s1">&#39;MI&#39;</span><span class="p">:</span> <span class="s1">&#39;Michigan&#39;</span><span class="p">,</span> <span class="s1">&#39;IN&#39;</span><span class="p">:</span> <span class="s1">&#39;Indiana&#39;</span><span class="p">,</span> <span class="s1">&#39;NJ&#39;</span><span class="p">:</span> <span class="s1">&#39;New Jersey&#39;</span><span class="p">,</span> <span class="s1">&#39;AZ&#39;</span><span class="p">:</span> <span class="s1">&#39;Arizona&#39;</span><span class="p">,</span> <span class="s1">&#39;GU&#39;</span><span class="p">:</span> <span class="s1">&#39;Guam&#39;</span><span class="p">,</span> <span class="s1">&#39;MS&#39;</span><span class="p">:</span> <span class="s1">&#39;Mississippi&#39;</span><span class="p">,</span> <span class="s1">&#39;PR&#39;</span><span class="p">:</span> <span class="s1">&#39;Puerto Rico&#39;</span><span class="p">,</span> <span class="s1">&#39;NC&#39;</span><span class="p">:</span> <span class="s1">&#39;North Carolina&#39;</span><span class="p">,</span> <span class="s1">&#39;TX&#39;</span><span class="p">:</span> <span class="s1">&#39;Texas&#39;</span><span class="p">,</span> <span class="s1">&#39;SD&#39;</span><span class="p">:</span> <span class="s1">&#39;South Dakota&#39;</span><span class="p">,</span> <span class="s1">&#39;MP&#39;</span><span class="p">:</span> <span class="s1">&#39;Northern Mariana Islands&#39;</span><span class="p">,</span> <span class="s1">&#39;IA&#39;</span><span class="p">:</span> <span class="s1">&#39;Iowa&#39;</span><span class="p">,</span> <span class="s1">&#39;MO&#39;</span><span class="p">:</span> <span class="s1">&#39;Missouri&#39;</span><span class="p">,</span> <span class="s1">&#39;CT&#39;</span><span class="p">:</span> <span class="s1">&#39;Connecticut&#39;</span><span class="p">,</span> <span class="s1">&#39;WV&#39;</span><span class="p">:</span> <span class="s1">&#39;West Virginia&#39;</span><span class="p">,</span> <span class="s1">&#39;SC&#39;</span><span class="p">:</span> <span class="s1">&#39;South Carolina&#39;</span><span class="p">,</span> <span class="s1">&#39;LA&#39;</span><span class="p">:</span> <span class="s1">&#39;Louisiana&#39;</span><span class="p">,</span> <span class="s1">&#39;KS&#39;</span><span class="p">:</span> <span class="s1">&#39;Kansas&#39;</span><span class="p">,</span> <span class="s1">&#39;NY&#39;</span><span class="p">:</span> <span class="s1">&#39;New York&#39;</span><span class="p">,</span> <span class="s1">&#39;NE&#39;</span><span class="p">:</span> <span class="s1">&#39;Nebraska&#39;</span><span class="p">,</span> <span class="s1">&#39;OK&#39;</span><span class="p">:</span> <span class="s1">&#39;Oklahoma&#39;</span><span class="p">,</span> <span class="s1">&#39;FL&#39;</span><span class="p">:</span> <span class="s1">&#39;Florida&#39;</span><span class="p">,</span> <span class="s1">&#39;CA&#39;</span><span class="p">:</span> <span class="s1">&#39;California&#39;</span><span class="p">,</span> <span class="s1">&#39;CO&#39;</span><span class="p">:</span> <span class="s1">&#39;Colorado&#39;</span><span class="p">,</span> <span class="s1">&#39;PA&#39;</span><span class="p">:</span> <span class="s1">&#39;Pennsylvania&#39;</span><span class="p">,</span> <span class="s1">&#39;DE&#39;</span><span class="p">:</span> <span class="s1">&#39;Delaware&#39;</span><span class="p">,</span> <span class="s1">&#39;NM&#39;</span><span class="p">:</span> <span class="s1">&#39;New Mexico&#39;</span><span class="p">,</span> <span class="s1">&#39;RI&#39;</span><span class="p">:</span> <span class="s1">&#39;Rhode Island&#39;</span><span class="p">,</span> <span class="s1">&#39;MN&#39;</span><span class="p">:</span> <span class="s1">&#39;Minnesota&#39;</span><span class="p">,</span> <span class="s1">&#39;VI&#39;</span><span class="p">:</span> <span class="s1">&#39;Virgin Islands&#39;</span><span class="p">,</span> <span class="s1">&#39;NH&#39;</span><span class="p">:</span> <span class="s1">&#39;New Hampshire&#39;</span><span class="p">,</span> <span class="s1">&#39;MA&#39;</span><span class="p">:</span> <span class="s1">&#39;Massachusetts&#39;</span><span class="p">,</span> <span class="s1">&#39;GA&#39;</span><span class="p">:</span> <span class="s1">&#39;Georgia&#39;</span><span class="p">,</span> <span class="s1">&#39;ND&#39;</span><span class="p">:</span> <span class="s1">&#39;North Dakota&#39;</span><span class="p">,</span> <span class="s1">&#39;VA&#39;</span><span class="p">:</span> <span class="s1">&#39;Virginia&#39;</span><span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_list_of_university_towns</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns a DataFrame of towns and the states they are in from the </span>
+<span class="sd">    university_towns.txt list. The format of the DataFrame should be:</span>
+<span class="sd">    DataFrame( [ [&quot;Michigan&quot;, &quot;Ann Arbor&quot;], [&quot;Michigan&quot;, &quot;Yipsilanti&quot;] ], </span>
+<span class="sd">    columns=[&quot;State&quot;, &quot;RegionName&quot;]  )</span>
+<span class="sd">    </span>
+<span class="sd">    The following cleaning needs to be done:</span>
+
+<span class="sd">    1. For &quot;State&quot;, removing characters from &quot;[&quot; to the end.</span>
+<span class="sd">    2. For &quot;RegionName&quot;, when applicable, removing every character from &quot; (&quot; to the end.</span>
+<span class="sd">    3. Depending on how you read the data, you may need to remove newline character &#39;\n&#39;. &quot;&quot;&quot;</span>
+    
+    <span class="n">towns_by_state</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">towns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;data/college_towns.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;[edit]&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">towns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">towns_by_state</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="n">towns</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">towns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">))</span> <span class="p">:</span>
+                <span class="n">town</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">towns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">town</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">town</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">towns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">town</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">town</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">towns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">town</span><span class="p">)</span>
+    <span class="n">state_town_tups</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">((</span><span class="n">state</span><span class="p">,</span> <span class="n">town</span><span class="p">))</span> <span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">towns</span> <span class="ow">in</span> <span class="n">towns_by_state</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">town</span> <span class="ow">in</span> <span class="n">towns</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">state_town_tups</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="s1">&#39;RegionName&#39;</span><span class="p">])</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_list_of_university_towns</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[4]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>State</th>
+      <th>RegionName</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Idaho</td>
+      <td>Moscow</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Idaho</td>
+      <td>Pocatello</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Idaho</td>
+      <td>Rexburg</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Minnesota</td>
+      <td>Bemidji</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Minnesota</td>
+      <td>Crookston</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">gdp_data</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return a dataframe containing the quarterly GDP data expressed in 2009 dollars.&quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">&#39;data/gdplev.xls&#39;</span><span class="p">,</span> 
+        <span class="n">skiprows</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> 
+        <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> 
+        <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;qtr&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_curr&#39;</span><span class="p">,</span> <span class="s1">&#39;gdp_2009&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="n">gdp_data</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[5]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>qtr</th>
+      <th>gdp_curr</th>
+      <th>gdp_2009</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1947q1</td>
+      <td>243.1</td>
+      <td>1934.5</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1947q2</td>
+      <td>246.3</td>
+      <td>1932.3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1947q3</td>
+      <td>250.1</td>
+      <td>1930.3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1947q4</td>
+      <td>260.3</td>
+      <td>1960.7</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1948q1</td>
+      <td>266.2</td>
+      <td>1989.5</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># better approach</span>
+<span class="k">def</span> <span class="nf">qtr_to_prd</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the provided dataframe converting the quarterly dates expressed as strings </span>
+<span class="sd">    to Pandas&#39; Period objects contained in the &#39;date&#39; column, year in the &#39;year&#39; column </span>
+<span class="sd">    and the number of the quarter in the &#39;qtr&#39; column. &quot;&quot;&quot;</span>
+    
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">qtr</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;qtr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">quarter</span>
+    <span class="k">return</span> <span class="n">df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">qtr_to_prd</span><span class="p">(</span><span class="n">gdp_data</span><span class="p">())</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[7]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>qtr</th>
+      <th>gdp_curr</th>
+      <th>gdp_2009</th>
+      <th>date</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>243.1</td>
+      <td>1934.5</td>
+      <td>1947Q1</td>
+      <td>1947</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>246.3</td>
+      <td>1932.3</td>
+      <td>1947Q2</td>
+      <td>1947</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>250.1</td>
+      <td>1930.3</td>
+      <td>1947Q3</td>
+      <td>1947</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>260.3</td>
+      <td>1960.7</td>
+      <td>1947Q4</td>
+      <td>1947</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>266.2</td>
+      <td>1989.5</td>
+      <td>1948Q1</td>
+      <td>1948</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># an alternate approach using pandas &quot;str&quot; accessor</span>
+<span class="k">def</span> <span class="nf">qrt_to_dt</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the provided dataframe converting the quarterly dates expressed as strings </span>
+<span class="sd">    to Pandas&#39; Period objects contained in the &#39;date&#39; column, year in the &#39;year&#39; column </span>
+<span class="sd">    and the number of the quarter in the &#39;qtr&#39; column. &quot;&quot;&quot;</span>
+    
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">qtr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;qtr&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;qtr&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">gdp_change</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a Series containing the differences between an element </span>
+<span class="sd">    and the value in the previous row of the gdp_2009 column.&quot;&quot;&quot;</span>
+    
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">gdp_2009</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">is_increasing</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a Series of floating point values containing 1.0 if the value</span>
+<span class="sd">    in the &#39;delta&#39; column is greater than 0, otherwise 0.0 is returned.&quot;&quot;&quot;</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">gdp_data</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">qtr_to_prd</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdp_change</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_increasing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[11]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>qtr</th>
+      <th>gdp_curr</th>
+      <th>gdp_2009</th>
+      <th>year</th>
+      <th>delta</th>
+      <th>increasing</th>
+    </tr>
+    <tr>
+      <th>date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1947Q1</th>
+      <td>1</td>
+      <td>243.1</td>
+      <td>1934.5</td>
+      <td>1947</td>
+      <td>NaN</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1947Q2</th>
+      <td>2</td>
+      <td>246.3</td>
+      <td>1932.3</td>
+      <td>1947</td>
+      <td>-2.2</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1947Q3</th>
+      <td>3</td>
+      <td>250.1</td>
+      <td>1930.3</td>
+      <td>1947</td>
+      <td>-2.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1947Q4</th>
+      <td>4</td>
+      <td>260.3</td>
+      <td>1960.7</td>
+      <td>1947</td>
+      <td>30.4</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1948Q1</th>
+      <td>1</td>
+      <td>266.2</td>
+      <td>1989.5</td>
+      <td>1948</td>
+      <td>28.8</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">recession_prep</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the dataframe with columns added that support analysis of recessions. </span>
+<span class="sd">    In particular, determine if GDP is increasing or decreasing by using the shift method</span>
+<span class="sd">    to create a Series of duplicated values that have been shifted by the number of</span>
+<span class="sd">    rows specified.  Together the shifted columns allow for the quarter in which a recession </span>
+<span class="sd">    starts and ends to be indentified.&quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">qtr_to_prd</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdp_change</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_increasing</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;prv1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># look back one</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;prv2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;curr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;nxt1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># look ahead one</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;nxt2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;prv1&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;curr&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;nxt1&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;prv2&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;prv1&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;curr&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="n">recession_prep</span><span class="p">(</span><span class="n">gdp_data</span><span class="p">())</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2007q3&#39;</span><span class="p">:</span><span class="s1">&#39;2010q4&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[12]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>qtr</th>
+      <th>gdp_curr</th>
+      <th>gdp_2009</th>
+      <th>year</th>
+      <th>delta</th>
+      <th>increasing</th>
+      <th>prv1</th>
+      <th>prv2</th>
+      <th>curr</th>
+      <th>nxt1</th>
+      <th>nxt2</th>
+      <th>start</th>
+      <th>end</th>
+    </tr>
+    <tr>
+      <th>date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2007Q3</th>
+      <td>3</td>
+      <td>14569.7</td>
+      <td>14938.5</td>
+      <td>2007</td>
+      <td>99.8</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2007Q4</th>
+      <td>4</td>
+      <td>14685.3</td>
+      <td>14991.8</td>
+      <td>2007</td>
+      <td>53.3</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2008Q1</th>
+      <td>1</td>
+      <td>14668.4</td>
+      <td>14889.5</td>
+      <td>2008</td>
+      <td>-102.3</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2008Q2</th>
+      <td>2</td>
+      <td>14813.0</td>
+      <td>14963.4</td>
+      <td>2008</td>
+      <td>73.9</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2008Q3</th>
+      <td>3</td>
+      <td>14843.0</td>
+      <td>14891.6</td>
+      <td>2008</td>
+      <td>-71.8</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2008Q4</th>
+      <td>4</td>
+      <td>14549.9</td>
+      <td>14577.0</td>
+      <td>2008</td>
+      <td>-314.6</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2009Q1</th>
+      <td>1</td>
+      <td>14383.9</td>
+      <td>14375.0</td>
+      <td>2009</td>
+      <td>-202.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2009Q2</th>
+      <td>2</td>
+      <td>14340.4</td>
+      <td>14355.6</td>
+      <td>2009</td>
+      <td>-19.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2009Q3</th>
+      <td>3</td>
+      <td>14384.1</td>
+      <td>14402.5</td>
+      <td>2009</td>
+      <td>46.9</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2009Q4</th>
+      <td>4</td>
+      <td>14566.5</td>
+      <td>14541.9</td>
+      <td>2009</td>
+      <td>139.4</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2010Q1</th>
+      <td>1</td>
+      <td>14681.1</td>
+      <td>14604.8</td>
+      <td>2010</td>
+      <td>62.9</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2010Q2</th>
+      <td>2</td>
+      <td>14888.6</td>
+      <td>14745.9</td>
+      <td>2010</td>
+      <td>141.1</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2010Q3</th>
+      <td>3</td>
+      <td>15057.7</td>
+      <td>14845.5</td>
+      <td>2010</td>
+      <td>99.6</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2010Q4</th>
+      <td>4</td>
+      <td>15230.2</td>
+      <td>14939.0</td>
+      <td>2010</td>
+      <td>93.5</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_recessions</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return list of tuples containing the starting and ending dates for recessions.&quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2000q1&#39;</span><span class="p">:]</span>
+    <span class="n">recessions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">is_recession</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">is_recession</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">is_recession</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">is_recession</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">recessions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Yq%q&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Yq%q&#39;</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">recessions</span>
+
+<span class="n">get_recessions</span><span class="p">(</span><span class="n">recession_prep</span><span class="p">(</span><span class="n">gdp_data</span><span class="p">()))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[13]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;2008q3&#39;, &#39;2009q4&#39;)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_recession_start</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns the year and quarter of the recession start time as a </span>
+<span class="sd">    string value in a format such as 2005q3.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># only one recession during this period, so no need to loop over start, end tuples</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">get_recessions</span><span class="p">(</span><span class="n">recession_prep</span><span class="p">(</span><span class="n">gdp_data</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">start</span>
+
+<span class="n">get_recession_start</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[14]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;2008q3&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_recession_end</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns the year and quarter of the recession end time as a </span>
+<span class="sd">    string value in a format such as 2005q3.&quot;&quot;&quot;</span>
+
+    <span class="c1"># only one recession during this period, so no need to loop over start, end tuples</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">get_recessions</span><span class="p">(</span><span class="n">recession_prep</span><span class="p">(</span><span class="n">gdp_data</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">end</span>
+
+<span class="n">get_recession_end</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[15]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;2009q4&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_recession_bottom</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns the year and quarter of the recession bottom time as a </span>
+<span class="sd">    string value in a format such as 2005q3.&quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">recession_prep</span><span class="p">(</span><span class="n">gdp_data</span><span class="p">())</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">get_recessions</span><span class="p">(</span><span class="n">df</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="s1">&#39;gdp_2009&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Yq%q&#39;</span><span class="p">)</span>
+
+<span class="n">get_recession_bottom</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[16]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;2009q2&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">convert_housing_data_to_quarters</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Converts the housing data to quarters and returns it as mean </span>
+<span class="sd">    values in a dataframe. This dataframe should be a dataframe with</span>
+<span class="sd">    columns for 2000q1 through 2016q3, and should have a multi-index</span>
+<span class="sd">    in the shape of [&quot;State&quot;,&quot;RegionName&quot;].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/zillow_homes_prices_by_city.csv&#39;</span><span class="p">,</span> 
+                 <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;RegionID&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> 
+                        <span class="s1">&#39;RegionName&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> 
+                        <span class="s1">&#39;State&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;Metro&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;CountyName&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;SizeRank&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">})</span>
+
+    <span class="n">region_id_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;RegionID&#39;</span><span class="p">,</span> <span class="s1">&#39;RegionName&#39;</span><span class="p">,</span> <span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="s1">&#39;Metro&#39;</span><span class="p">,</span> <span class="s1">&#39;CountyName&#39;</span><span class="p">,</span> <span class="s1">&#39;SizeRank&#39;</span><span class="p">]]</span>
+    <span class="n">region_id_df</span> <span class="o">=</span> <span class="n">region_id_df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">State</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">states</span><span class="p">))</span>
+    <span class="n">region_id_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;RegionName&#39;</span><span class="p">,</span> <span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="s1">&#39;Metro&#39;</span><span class="p">,</span> <span class="s1">&#39;CountyName&#39;</span><span class="p">,</span> <span class="s1">&#39;SizeRank&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>
+                 <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;RegionID&#39;</span><span class="p">],</span>
+                 <span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+                 <span class="n">value_name</span><span class="o">=</span><span class="s1">&#39;MedianSalesPrice&#39;</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Date</span><span class="p">))</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2000-01-01&#39;</span><span class="p">:]</span>
+
+    <span class="n">region_mean_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">),</span> <span class="s1">&#39;RegionID&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="n">joined_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">region_id_df</span><span class="p">,</span> <span class="n">region_mean_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;RegionID&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Note: Pivoting on State and RegionName without RegionID reduces the number of rows to 10592.</span>
+    <span class="c1">#       Only by pivoting on all three and later dropping RegionID can I get the correct number of rows (10730)</span>
+    <span class="c1">#       Finding this was truely painful.</span>
+    <span class="n">pivot_df</span> <span class="o">=</span> <span class="n">joined_df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="s1">&#39;RegionID&#39;</span><span class="p">,</span> <span class="s1">&#39;RegionName&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;MedianSalesPrice&#39;</span><span class="p">)</span>
+    <span class="n">pivot_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">pivot_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">()]</span>
+    <span class="n">pivot_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pivot_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="s1">&#39;RegionID&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">pivot_df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">run_ttest</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;First creates new data showing the decline or growth of housing prices</span>
+<span class="sd">    between the recession start and the recession bottom. Then runs a ttest</span>
+<span class="sd">    comparing the university town values to the non-university towns values, </span>
+<span class="sd">    return whether the alternative hypothesis (that the two groups are the same)</span>
+<span class="sd">    is true or not as well as the p-value of the confidence. </span>
+<span class="sd">    </span>
+<span class="sd">    Return the tuple (different, p, better) where different=True if the t-test is</span>
+<span class="sd">    True at a p&lt;0.01 (we reject the null hypothesis), or different=False if </span>
+<span class="sd">    otherwise (we cannot reject the null hypothesis). The variable p should</span>
+<span class="sd">    be equal to the exact p value returned from scipy.stats.ttest_ind(). The</span>
+<span class="sd">    value for better should be either &quot;university town&quot; or &quot;non-university town&quot;</span>
+<span class="sd">    depending on which has a lower mean price ratio (which is equivilent to a</span>
+<span class="sd">    reduced market loss).&#39;&#39;&#39;</span>
+    
+    <span class="c1"># group university and non-university towns</span>
+    <span class="n">univ_towns</span> <span class="o">=</span> <span class="n">get_list_of_university_towns</span><span class="p">()</span>
+    <span class="n">univ_towns</span><span class="p">[</span><span class="s1">&#39;Location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">univ_towns</span><span class="p">[[</span><span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="s1">&#39;RegionName&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># get home sales data</span>
+    <span class="n">sales_df</span> <span class="o">=</span> <span class="n">convert_housing_data_to_quarters</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">sales_df</span><span class="p">[</span><span class="s1">&#39;Location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sales_df</span><span class="p">[[</span><span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="s1">&#39;RegionName&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># calculate the ratio of prices from the start to the bottom of the recession</span>
+    <span class="c1"># smaller values indicates that homes retained their value during the recession</span>
+    <span class="n">sales_df</span><span class="p">[</span><span class="s1">&#39;Price_Ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">get_recession_start</span><span class="p">()]</span> <span class="o">/</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">get_recession_bottom</span><span class="p">()]</span>
+    <span class="n">sales_df</span> <span class="o">=</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="s1">&#39;Price_Ratio&#39;</span><span class="p">]]</span>
+    <span class="n">sales_df</span> <span class="o">=</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+    <span class="c1"># home sales data series for university and other towns</span>
+    <span class="n">is_univ</span> <span class="o">=</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">Location</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">univ_towns</span><span class="o">.</span><span class="n">Location</span><span class="p">)</span>
+    <span class="n">univ_sales_df</span> <span class="o">=</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_univ</span><span class="p">]</span>
+    <span class="n">other_sales_df</span> <span class="o">=</span> <span class="n">sales_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">is_univ</span><span class="p">]</span>
+
+    <span class="c1"># compare the means of median home prices</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="n">other_sales_df</span><span class="o">.</span><span class="n">Price_Ratio</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">univ_sales_df</span><span class="o">.</span><span class="n">Price_Ratio</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># interpret the results</span>
+    <span class="k">if</span> <span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">:</span>
+        <span class="c1"># reject null hypothesis --&gt; population means are different</span>
+        <span class="n">different</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">better</span> <span class="o">=</span> <span class="s1">&#39;university town&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># accept null hypothesis --&gt; population means are the same</span>
+        <span class="n">different</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">better</span> <span class="o">=</span> <span class="s1">&#39;non-university town&#39;</span>
+
+    <span class="c1"># return results</span>
+    <span class="k">return</span> <span class="n">different</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">better</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">run_ttest</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[19]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(True, 0.0050464756985043489, &#39;university town&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Results">Results<a class="anchor-link" href="#Results">&#182;</a></h2><p><strong>I find that median home prices in college towns declined less than other towns during the recession that started in late 2008.  There is 1 in 100 chance that this conclusion is wrong but that is a chance I am willing to take.</strong></p>
+
+</div>
+</div>
+</div>
+ 
+
+</body>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        " linebreaks: { automatic: true, width: '95% container' }, " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/using-jupyter-notebooks-to-blog-with-pelican.html" rel="bookmark"
+                           title="Permalink to Using Jupyter Notebooks to Blog with Pelican">Using Jupyter Notebooks to Blog with Pelican</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2019-05-15T00:00:00-06:00">
+                Published: Wed 15 May 2019
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/tutorial.html">Tutorial</a>.</p>
+<p>tags: <a href="/tag/pelican.html">pelican</a> <a href="/tag/jupyter-lab.html">jupyter lab</a> <a href="/tag/github-pages.html">github pages</a> </p>
+</footer><!-- /.post-info -->                <p>Using Pelican to generate a blog from Jupyter notebook files</p>
+                <a class="readmore" href="/using-jupyter-notebooks-to-blog-with-pelican.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/using-postgresql-for-data-science-basics.html" rel="bookmark"
+                           title="Permalink to Using PostgreSQL for Data Science">Using PostgreSQL for Data Science</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2019-02-28T00:00:00-07:00">
+                Published: Thu 28 February 2019
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/data-science.html">Data Science</a>.</p>
+<p>tags: <a href="/tag/postgres.html">postgres</a> <a href="/tag/database.html">database</a> <a href="/tag/relational.html">relational</a> <a href="/tag/notes.html">notes</a> <a href="/tag/sql.html">sql</a> </p>
+</footer><!-- /.post-info -->                <p>Notes and examples of how to use PostgreSQL for Data Science.</p>
+                <a class="readmore" href="/using-postgresql-for-data-science-basics.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/web-scraping-with-python_an-introductory-tutorial.html" rel="bookmark"
+                           title="Permalink to Web Scraping with Python: An Introductory Tutorial">Web Scraping with Python: An Introductory Tutorial</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2017-08-15T00:00:00-06:00">
+                Published: Tue 15 August 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/data-science.html">Data Science</a>.</p>
+<p>tags: <a href="/tag/web-scraping.html">web scraping</a> <a href="/tag/data-extraction.html">data extraction</a> </p>
+</footer><!-- /.post-info -->                
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Web-Scraping-with-Python:-An-Introductory-Tutorial">Web Scraping with Python: An Introductory Tutorial<a class="anchor-link" href="#Web-Scraping-with-Python:-An-Introductory-Tutorial">&#182;</a></h1><h4 id="Rob-Osterburg">Rob Osterburg<a class="anchor-link" href="#Rob-Osterburg">&#182;</a></h4><h5 id="Data-Scientist-/-Software-Engineer-/-Instructor">Data Scientist / Software Engineer / Instructor<a class="anchor-link" href="#Data-Scientist-/-Software-Engineer-/-Instructor">&#182;</a></h5>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Acknowledgements">Acknowledgements<a class="anchor-link" href="#Acknowledgements">&#182;</a></h2><ul>
+<li><p>The generous <a href="http://denverdatascienceday.com/index.php/sponsors/">sponsors</a> of <a href="http://denverdatascienceday.com/">Denver Data Science Day 2017</a></p>
+</li>
+<li><p><a href="https://www.galvanize.com/pick-a-location?page=%2F">Galvanize</a> for hosting <a href="http://denverdatascienceday.com/">Denver Data Science Day 2017</a></p>
+</li>
+<li><p>Bob Mickus, Tyler B. and all the volunteers from <a href="https://www.meetup.com/PyData-Denver/">PyData Denver</a> who organized <a href="http://denverdatascienceday.com/">Denver Data Science Day</a></p>
+</li>
+<li><p>Miguel Grinberg whose <a href="https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python">Easy Web Scraping with Python</a>
+                <a class="readmore" href="/web-scraping-with-python_an-introductory-tutorial.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+                </ol><!-- /#posts-list -->
+                </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Dealing with Data - Database</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Dealing with Data </a></h1>
+                <nav><ul>
+                    <li><a href="/category/data_science.html">data_science</a></li>
+                    <li class="active"><a href="/category/database.html">Database</a></li>
+                    <li><a href="/category/tutorial.html">Tutorial</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/using-postgresql-for-data-science-basics.html">Using PostgreSQL for Data Science</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2017-11-04T00:00:00-06:00">
+                Published: Sat 04 November 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/database.html">Database</a>.</p>
+<p>tags: <a href="/tag/postgres.html">postgres</a> <a href="/tag/database.html">database</a> <a href="/tag/relational.html">relational</a> <a href="/tag/notes.html">notes</a> <a href="/tag/sql.html">sql</a> </p>
+</footer><!-- /.post-info --><h1><strong>PostgreSQL for Data Science</strong></h1>
+<h2>MacOS Installation and Configuration</h2>
+<ul>
+<li>Login to MacOS as user with Administrative rights</li>
+<li>Install: <code>brew install postres</code></li>
+<li>Login to PostgreSQL as a admin user: <code>sudo -u user_name sql db_name</code><ul>
+<li>Note: PostgreSQL and MacOS admin users are different and independent.</li>
+</ul>
+</li>
+<li>Creating a db_user:  <code>CREATE ROLE user_name WITH LOGIN PASSWORD 'your secret here’;</code></li>
+<li>Changing permissions: <code>ALTER ROLE user_name CREATEDB;</code></li>
+<li>Connecting to a server running as a regular user<ul>
+<li>pgAdmin &gt; right-click server &gt; Create &gt; Sever<ul>
+<li>Main tab: Name it</li>
+<li>Connection tab:  Specify IP address (e.g. 127.0.0.1)  &gt; admin db-user role</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2>Invoke psql command shell</h2>
+<ul>
+<li><code>psql -d &lt;database&gt; -U &lt;user&gt; -W &lt;password&gt;</code></li>
+<li>Note: Add <code>-E</code> to echo queries for learning</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\l</code></td>
+<td>list databases</td>
+</tr>
+<tr>
+<td><code>\c &lt;database&gt;</code></td>
+<td>connect to a database</td>
+</tr>
+<tr>
+<td><code>\dt</code></td>
+<td>list tables</td>
+</tr>
+<tr>
+<td><code>\dt *.*</code></td>
+<td>list selected tables</td>
+</tr>
+<tr>
+<td><code>\d &lt;table&gt;</code></td>
+<td>show table definition</td>
+</tr>
+<tr>
+<td><code>\dv</code></td>
+<td>list views</td>
+</tr>
+<tr>
+<td><code>\dn</code></td>
+<td>list schemas</td>
+</tr>
+<tr>
+<td><code>\df</code></td>
+<td>list functions</td>
+</tr>
+<tr>
+<td><code>\df+ &lt;function&gt;</code></td>
+<td>show SQL of function</td>
+</tr>
+<tr>
+<td><code>\h</code></td>
+<td>psql help</td>
+</tr>
+<tr>
+<td><code>\? &lt;psql cmd&gt;</code></td>
+<td>psql command help</td>
+</tr>
+<tr>
+<td><code>\h &lt;sql&gt;</code></td>
+<td>sql command help</td>
+</tr>
+<tr>
+<td><code>\i &lt;script&gt;</code></td>
+<td>runs the sql script file</td>
+</tr>
+<tr>
+<td><code>\q</code></td>
+<td>quit psql</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td>quit current task</td>
+</tr>
+<tr>
+<td><code>\x</code></td>
+<td>better looking output</td>
+</tr>
+</tbody>
+</table>
+<h2>Troubleshooting</h2>
+<ul>
+<li>Finding all postgres processes:  <code>ps aux | grep postgres</code></li>
+<li>Finding process using a port: <code>lsof -i tcp:5432</code></li>
+<li>Finding process using a port: <code>netstat -vanp tÂcp | grep 5432</code></li>
+<li>Finding all running processes: <code>ps -A</code></li>
+</ul>
+<h2>Starting and Stopping the Server on MacOS</h2>
+<ul>
+<li>start and stop the server: <code>su - &lt;admin_user&gt;</code> #</li>
+<li>create aliases to manage the server storing them in ~/.bash_profile<ul>
+<li><code>alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'</code></li>
+<li><code>alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’</code></li>
+</ul>
+</li>
+<li>Use <code>psql</code> to work with PostgreSQL on the command line or the <code>pgAdmin4</code> GUI application (available as a homebrew cask)</li>
+</ul>
+<h2>Creating a tables</h2>
+<ul>
+<li>Using pgAdmin</li>
+<li>Database: Right-click on Databases &gt; Create &gt; Database</li>
+<li>Double-click on database &gt; Double click on Schemes &gt; Right-click on tables &gt; Create</li>
+<li>Columns:  Right-click on table &gt; Create &gt; Column &gt; Give it a name &gt; Give it a type</li>
+<li>Constraint:  Right-click on table &gt; Properties &gt; Constraints tab &gt; Add an constraint &gt; Edit icon &gt; Name it &gt; Select Definition tab &gt; Select column</li>
+<li>Using psql command line</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">animals</span>
+<span class="p">(</span>
+    <span class="n">species</span> <span class="nb">character</span> <span class="nb">varying</span> <span class="p">(</span><span class="mi">25</span><span class="p">),</span>
+    <span class="n">vertebrate_class</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span>
+    <span class="n">appearance</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span>
+    <span class="n">num_legs</span> <span class="n">int4</span><span class="p">,</span>
+    <span class="k">CONSTRAINT</span> <span class="n">animal_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">species</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+
+
+<h2>Import data</h2>
+<ul>
+<li>
+<p>pgadmin: right-click table &gt; Import / Export &gt; Define location, delimiter, header … &gt; OK</p>
+</li>
+<li>
+<p>Check by showing the data</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span>
+<span class="k">FROM</span> <span class="n">pets</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Statistics</h2>
+<p>Limit number of results:</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Counting and grouping results</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">gender</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">gender</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Finding the max and min</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">max</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="k">min</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Apply that across all departments</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="k">max</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="k">min</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">department</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Aggregate and round values</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">round</span><span class="p">(</span><span class="k">sum</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="n">round</span><span class="p">(</span><span class="n">var_pop</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="n">round</span><span class="p">(</span><span class="n">stddev_pop</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">department</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Truncating, ceil and rounding</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="k">avg</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="n">trunc</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span><span class="mi">2</span> <span class="p">),</span> <span class="n">ceil</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">salary</span><span class="p">)),</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">salary</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">department</span><span class="p">;</span>
+</pre></div>
+
+
+<p>For more information see: <a href="https://www.postgresql.org/docs/current/static/functions-aggregate.html">PostrgreSQL Aggregation Functions Documentation</a></p>
+<h2>Classification</h2>
+<p>Use CASE to show pet names and a column to indicate whether the pet's name is long or short (a long name is strictly more than 6 characters long). Filter to select only female pets.</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">name</span> <span class="p">,</span>
+    <span class="k">CASE</span> <span class="k">WHEN</span> <span class="k">length</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span>
+    <span class="k">THEN</span> <span class="s1">&#39;long&#39;</span>
+    <span class="k">ELSE</span> <span class="s1">&#39;short&#39;</span> <span class="k">END</span>
+<span class="k">FROM</span> <span class="n">pets</span>
+<span class="k">WHERE</span> <span class="n">gender</span> <span class="o">=</span> <span class="s1">&#39;female&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Filtering</h2>
+<p>Find data that meets a condition</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">department</span><span class="p">,</span> <span class="n">salary</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">WHERE</span> <span class="n">salary</span> <span class="o">&gt;</span> <span class="mi">100000</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Adding multiple conditions to the WHERE clause</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">department</span><span class="p">,</span> <span class="n">salary</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">WHERE</span> <span class="n">department</span> <span class="o">=</span> <span class="s1">&#39;Tools&#39;</span> <span class="k">AND</span> <span class="n">salary</span> <span class="o">&gt;</span> <span class="mi">100000</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Wild card in where clause</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">department</span><span class="p">,</span> <span class="n">salary</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">WHERE</span> <span class="n">department</span>
+<span class="k">LIKE</span> <span class="s1">&#39;B%&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Combining filters and aggregates</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span> <span class="k">WHERE</span> <span class="n">department</span>
+<span class="k">LIKE</span> <span class="s1">&#39;B%&#39;</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">department</span><span class="p">;</span>
+<span class="c1">-- NOTE:  Slow queries result from putting ‘&amp;’ first as scans every row ignoring the index</span>
+</pre></div>
+
+
+<p>Find distinct values</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="k">LOWER</span><span class="p">(</span><span class="n">department</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Munging</h2>
+<p>Concatenating values</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">job_title</span> <span class="o">||</span> <span class="s1">&#39;-&#39;</span> <span class="o">||</span> <span class="n">department</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>… and create a new column</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">job_title</span> <span class="o">||</span> <span class="s1">&#39;-&#39;</span> <span class="o">||</span> <span class="n">department</span> <span class="n">title_dept</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Trim and length functions</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">length</span><span class="p">(</span><span class="s1">&#39; software engineer &#39;</span><span class="p">),</span> <span class="k">length</span><span class="p">(</span><span class="k">trim</span><span class="p">(</span><span class="s1">&#39; software engineer &#39;</span><span class="p">));</span>
+</pre></div>
+
+
+<p>Create new boolean field</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">job_title</span><span class="p">,</span> <span class="p">(</span><span class="n">job_title</span> <span class="k">LIKE</span> <span class="s1">&#39;%Assistant%&#39;</span><span class="p">)</span> <span class="n">is_assist</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Extracting substring of length 3</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">SUBSTRING</span><span class="p">(</span><span class="s1">&#39;abcdefghijkl&#39;</span>
+<span class="k">FROM</span> <span class="mi">6</span> <span class="k">FOR</span> <span class="mi">3</span><span class="p">)</span> <span class="n">test_string</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Extracting remainder of a string</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">SUBSTRING</span><span class="p">(</span><span class="s1">&#39;abcdefghijkl&#39;</span> <span class="k">FOR</span> <span class="mi">4</span><span class="p">)</span> <span class="n">test_string</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Replacing text</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">OVERLAY</span><span class="p">(</span><span class="n">job_title</span> <span class="k">PLACING</span> <span class="s1">&#39;Asst.&#39;</span>
+<span class="k">FROM</span> <span class="mi">1</span> <span class="k">FOR</span> <span class="mi">9</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">WHERE</span> <span class="n">job_title</span>
+<span class="k">LIKE</span> <span class="s1">&#39;Assistant%&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Regex</h2>
+<p>Find assistants at specified levels</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">job_title</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">WHERE</span> <span class="n">job_title</span>
+<span class="k">SIMILAR</span> <span class="k">TO</span> <span class="s1">&#39;%Assistant%(III|IV)&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<p>… now match levels starting with I</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">job_title</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="n">HERE</span> <span class="n">job_title</span>
+<span class="k">SIMILAR</span> <span class="k">TO</span> <span class="s1">&#39;%Assistant% I_&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<p>… or job title that start with E, P or S</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">job_title</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">WHERE</span> <span class="n">job_title</span>
+<span class="k">SIMILAR</span> <span class="k">TO</span> <span class="s1">&#39;[EPS]%&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Sub-Queries</h2>
+<p><em>Consider using a view and or a windowing functions for
+simpler way to implement the same fucntionality.</em></p>
+<p>Adding a calculated field</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s1</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">s1</span><span class="p">.</span><span class="n">salary</span><span class="p">,</span> <span class="n">s1</span><span class="p">.</span><span class="n">department</span><span class="p">,</span>
+    <span class="p">(</span><span class="k">SELECT</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">salary</span><span class="p">))</span>
+    <span class="k">FROM</span> <span class="n">staff</span> <span class="n">s2</span>
+    <span class="k">WHERE</span> <span class="n">s2</span><span class="p">.</span><span class="n">department</span> <span class="o">=</span> <span class="n">s1</span><span class="p">.</span><span class="n">department</span> <span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span> <span class="n">s1</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Using a sub-query instead of a table name</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s1</span><span class="p">.</span><span class="n">department</span><span class="p">,</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">s1</span><span class="p">.</span><span class="n">salary</span><span class="p">))</span>
+<span class="k">FROM</span>
+    <span class="p">(</span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">salary</span>
+    <span class="k">FROM</span> <span class="n">staff</span>
+    <span class="k">WHERE</span> <span class="n">salary</span> <span class="o">&gt;</span> <span class="mi">100000</span><span class="p">)</span> <span class="n">s1</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">department</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Using a sub-query to find max salary</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s1</span><span class="p">.</span><span class="n">department</span><span class="p">,</span> <span class="n">s1</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">s1</span><span class="p">.</span><span class="n">salary</span>
+<span class="k">FROM</span> <span class="n">staff</span> <span class="n">s1</span>
+<span class="k">WHERE</span> <span class="n">s1</span><span class="p">.</span><span class="n">salary</span> <span class="o">=</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">max</span><span class="p">(</span><span class="n">s2</span><span class="p">.</span><span class="n">salary</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span> <span class="n">s2</span><span class="p">);</span>
+</pre></div>
+
+
+<p>For more information see: <a href="https://www.postgresql.org/docs/current/static/functions-subquery.html">PostgreSQL SubQuery Expressions Documentation</a></p>
+<h2>Joining Tables</h2>
+<p>Join two tables using department name</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span><span class="p">,</span> <span class="n">cd</span><span class="p">.</span><span class="n">company_division</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">JOIN</span> <span class="n">company_divisions</span> <span class="n">cd</span>
+<span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span> <span class="o">=</span> <span class="n">cd</span><span class="p">.</span><span class="n">department</span><span class="p">;</span>
+    <span class="c1">-- Note:  it is missing rows because not all departments</span>
+    <span class="c1">-- in the staff table are found in the company_divisions table,</span>
+    <span class="c1">-- so we need to prefer the division from the staff table.</span>
+    <span class="c1">-- This is called a left outer join.</span>
+</pre></div>
+
+
+<p>Left outer-join gets all rows</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span><span class="p">,</span> <span class="n">cd</span><span class="p">.</span><span class="n">company_division</span>
+<span class="k">FROM</span> <span class="n">staff</span> <span class="n">s</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">company_divisions</span> <span class="n">cd</span>
+<span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span> <span class="o">=</span> <span class="n">cd</span><span class="p">.</span><span class="n">department</span><span class="p">;</span>
+</pre></div>
+
+
+<p>… find departments without a division</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span><span class="p">,</span> <span class="n">cd</span><span class="p">.</span><span class="n">company_division</span>
+<span class="k">FROM</span> <span class="n">staff</span> <span class="n">s</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">company_divisions</span> <span class="n">cd</span>
+<span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span> <span class="o">=</span> <span class="n">cd</span><span class="p">.</span><span class="n">department</span>
+<span class="k">WHERE</span> <span class="n">cd</span><span class="p">.</span><span class="n">company_division</span> <span class="k">IS</span> <span class="k">NULL</span><span class="p">;</span>
+    <span class="c1">-- Note:  Turns out it is the Books department</span>
+</pre></div>
+
+
+<h2>Using Views</h2>
+<p>Save a long join by creating a view</p>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">staff_div_reg</span> <span class="k">AS</span>
+    <span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">cd</span><span class="p">.</span><span class="n">company_division</span><span class="p">,</span> <span class="n">cr</span><span class="p">.</span><span class="n">company_regions</span>
+    <span class="k">FROM</span> <span class="n">staff</span> <span class="n">s</span>
+    <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">company_divisions</span> <span class="n">cd</span>
+    <span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">department</span> <span class="o">=</span> <span class="n">cd</span><span class="p">.</span><span class="n">department</span>
+    <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">company_regions</span> <span class="n">cr</span>
+    <span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">region_id</span> <span class="o">=</span> <span class="n">cr</span><span class="p">.</span><span class="n">region_id</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Check that all rows are present in the view</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Query to be stored as a view</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_regions</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">company_regions</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">company_regions</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Use view to provide counts of staff in each region</p>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">VIEW</span> <span class="n">staff_div_reg_country</span>
+<span class="k">AS</span>
+    <span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">cd</span><span class="p">.</span><span class="n">company_division</span><span class="p">,</span> <span class="n">cr</span><span class="p">.</span><span class="n">company_regions</span><span class="p">,</span> <span class="n">cr</span><span class="p">.</span><span class="n">country</span>
+    <span class="k">FROM</span> <span class="n">staff</span> <span class="n">s</span><span class="p">,</span> <span class="n">company_divisions</span> <span class="n">cd</span><span class="p">,</span> <span class="n">company_regions</span> <span class="n">cr</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Create a view that joins user and sales tables</p>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">sales_by_person</span>
+<span class="k">AS</span>
+    <span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">o</span><span class="p">.</span><span class="n">amount</span>
+    <span class="k">FROM</span> <span class="n">salesperson</span> <span class="n">s</span>
+    <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">orders</span> <span class="n">o</span>
+    <span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">o</span><span class="p">.</span><span class="n">salesperson_id</span><span class="p">;</span>
+        <span class="c1">-- Note: Every time the view is used</span>
+        <span class="c1">--       its SQL is re-evaluated.</span>
+</pre></div>
+
+
+<p>Create a materialized view that is stored on the server</p>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="n">MATERIALIZED</span> <span class="k">VIEW</span> <span class="n">sales_by_person</span>
+<span class="k">AS</span>
+    <span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">o</span><span class="p">.</span><span class="n">amount</span>
+    <span class="k">FROM</span> <span class="n">salesperson</span> <span class="n">s</span>
+    <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">orders</span> <span class="n">o</span>
+    <span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">o</span><span class="p">.</span><span class="n">salesperson_id</span><span class="p">;</span>
+        <span class="c1">-- Note: Once created materialized views</span>
+        <span class="c1">--       can be queried many times but are</span>
+        <span class="c1">--       not automatically updated.</span>
+</pre></div>
+
+
+<p>Updating a materialized view</p>
+<div class="highlight"><pre><span></span><span class="n">REFRESH</span> <span class="n">MATERIALIZED</span> <span class="k">VIEW</span> <span class="n">sales_by_person</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Report number and amount of successful sales by name</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">amount</span><span class="p">),</span> <span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">sales_by_person</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">name</span>
+<span class="k">HAVING</span> <span class="k">count</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">name</span><span class="p">;</span>
+</pre></div>
+
+
+<p>For more information see:
+<em> <a href="https://www.postgresql.org/docs/current/static/rules-views.html">PostgreSQL Views and the Rule System Documentation</a>
+</em> <a href="https://www.postgresql.org/docs/current/static/rules-materializedviews.html">PostgreSQL Materialized Views Documentation</a></p>
+<h2>Temporary Tables</h2>
+<p>Temporary tables are alternative to Views and Subqueries.  Here are two ways to
+create a temporary table in SQL.</p>
+<p>Create and drop a temporary table</p>
+<div class="highlight"><pre><span></span><span class="c1">-- create a temporary table</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_table</span> <span class="k">AS</span>
+<span class="p">(</span>
+    <span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span>
+    <span class="k">FROM</span> <span class="n">another_table</span><span class="p">;</span>
+<span class="p">)</span>
+
+<span class="c1">-- select the data you need</span>
+<span class="k">SELECT</span> <span class="n">tt</span><span class="p">.</span><span class="n">col1</span><span class="p">,</span> <span class="n">tt</span><span class="p">.</span><span class="n">col2</span>
+<span class="k">FROM</span> <span class="n">temp_table</span> <span class="k">AS</span> <span class="n">tt</span><span class="p">;</span>
+
+<span class="c1">-- delete the temporary table from the database</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">temp_table</span><span class="p">;</span>
+</pre></div>
+
+
+<p>True temporary table created using WITH</p>
+<div class="highlight"><pre><span></span><span class="c1">-- create the temporary table</span>
+<span class="k">WITH</span> <span class="n">temp_table</span> <span class="k">AS</span>
+<span class="p">(</span>
+    <span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span>
+    <span class="k">FROM</span> <span class="n">another_table</span>
+<span class="p">);</span>
+
+<span class="c1">-- select the data you need</span>
+<span class="k">SELECT</span> <span class="n">tt</span><span class="p">.</span><span class="n">col1</span><span class="p">,</span> <span class="n">tt</span><span class="p">.</span><span class="n">col2</span>
+<span class="k">FROM</span> <span class="n">temp_table</span> <span class="k">AS</span> <span class="n">tt</span><span class="p">;</span>
+</pre></div>
+
+
+<h2>Grouping &amp; Totaling</h2>
+<p>Breakout sales number and amount of sales by name</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">amount</span><span class="p">),</span> <span class="k">sum</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">salesperson</span> <span class="n">s</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">orders</span> <span class="n">o</span>
+<span class="k">ON</span> <span class="n">s</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">o</span><span class="p">.</span><span class="n">salesperson_id</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span>
+<span class="k">HAVING</span> <span class="k">count</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Breakout the total number of employees by division and region using grouping set
+ <code>sql
+SELECT company_division, company_regions, count(*)
+FROM staff_div_reg
+GROUP BY GROUPING SETS (company_division, company_regions)
+ORDER BY company_regions, company_division;
+    -- Note: Cells are blank when sub-totaled by another quantity</code></p>
+<p>Create subtotals using rollup</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_regions</span><span class="p">,</span> <span class="n">country</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg_country</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="k">ROLLUP</span><span class="p">(</span><span class="n">country</span><span class="p">,</span> <span class="n">company_regions</span><span class="p">)</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">country</span><span class="p">,</span> <span class="n">company_regions</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Create all possible subtotals using cube</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_division</span><span class="p">,</span> <span class="n">company_regions</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg_country</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="k">CUBE</span><span class="p">(</span><span class="n">company_division</span><span class="p">,</span> <span class="n">company_regions</span><span class="p">);</span>
+</pre></div>
+
+
+<p>For more information see: <a href="https://www.postgresql.org/docs/10/static/queries-table-expressions.html#queries-grouping-sets">PostgreSQL Grouping, Cube and Rollup Documentation</a></p>
+<h2>Sorting / Ordering</h2>
+<p>Find the top N values</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">job_title</span><span class="p">,</span> <span class="n">salary</span>
+<span class="k">FROM</span> <span class="n">staff</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">salary</span> <span class="k">DESC</span>
+<span class="k">FETCH</span> <span class="k">FIRST</span> <span class="mi">10</span> <span class="k">ROWS</span> <span class="k">ONLY</span><span class="p">;</span>
+    <span class="c1">-- Note:  LIMIT get the first N elements, FETCH scans all</span>
+    <span class="c1">--        the rows and get the highest N values.</span>
+</pre></div>
+
+
+<p>Ascending ordering by count</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_division</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg_country</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">company_division</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Descending order by count</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_division</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg_country</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">company_division</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Limit to first 3 rows</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_division</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg_country</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">company_division</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">DESC</span>
+<span class="k">FETCH</span> <span class="k">FIRST</span> <span class="mi">3</span> <span class="k">ROWS</span> <span class="k">ONLY</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Sorting by date</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">facility_id</span><span class="p">,</span> <span class="n">bed_census_date</span>
+<span class="k">FROM</span> <span class="n">beds</span>
+<span class="k">WHERE</span> <span class="n">facility_id</span> <span class="o">=</span> <span class="s1">&#39;6057&#39;</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">bed_census_date</span><span class="p">::</span><span class="k">timestamp</span> <span class="k">ASC</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Finding the largest totals by sorting an aggregated field</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">facility_name</span><span class="p">,</span> <span class="n">facility_id</span><span class="p">,</span> <span class="n">bed_census_date</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">available_residential_beds</span><span class="p">::</span><span class="nb">integer</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">beds</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">facility_name</span><span class="p">,</span> <span class="n">facility_id</span><span class="p">,</span> <span class="n">bed_census_date</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="k">sum</span><span class="p">(</span><span class="n">available_residential_beds</span><span class="p">::</span><span class="nb">integer</span><span class="p">)</span> <span class="k">DESC</span>
+<span class="k">FETCH</span> <span class="k">FIRST</span> <span class="mi">10</span> <span class="k">ROWS</span> <span class="k">ONLY</span><span class="p">;</span>
+</pre></div>
+
+
+<p>For more information see: <a href="https://www.postgresql.org/docs/current/static/queries-order.html">PostgreSQL Sorting Documentation</a></p>
+<h2>Window Functions</h2>
+<p>Window functions are simpler than subqueries and produce similar results they
+operate rows adjacent to the current row.</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">company_regions</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="k">min</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="n">OVER</span>
+    <span class="p">(</span>
+        <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">company_regions</span>
+    <span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff_div_reg</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Employees by department sorted by salary</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="n">first_value</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="n">OVER</span>
+    <span class="p">(</span>
+        <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">department</span>
+        <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">salary</span> <span class="k">DESC</span>
+    <span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Employees by department sorted by last_name</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="n">first_value</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="n">OVER</span>
+    <span class="p">(</span>
+        <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">department</span>
+        <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">last_name</span>
+    <span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Ranking employees within a department by salary</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="n">rank</span><span class="p">()</span>
+<span class="n">OVER</span>
+<span class="p">(</span>
+    <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">department</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">salary</span> <span class="k">DESC</span>
+<span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Lag function references previous row</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="n">lag</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="n">OVER</span>
+    <span class="p">(</span>
+        <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">department</span>
+        <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">salary</span> <span class="k">DESC</span>
+    <span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Lead function references the next row</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="n">lead</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span>
+<span class="n">OVER</span>
+<span class="p">(</span>
+    <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">department</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">salary</span> <span class="k">DESC</span>
+<span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Calculating salary quartiles using ntile</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">department</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">salary</span><span class="p">,</span> <span class="n">ntile</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">OVER</span>
+<span class="p">(</span>
+    <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">department</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">salary</span> <span class="k">DESC</span>
+<span class="p">)</span>
+<span class="k">FROM</span> <span class="n">staff</span><span class="p">;</span>
+</pre></div>
+
+
+<p>For more information see: <a href="https://www.postgresql.org/docs/current/static/functions-window.html">PostgreSQL Windowing Function Expressions Documentation</a></p>
+<h2>Telling Stories with Data</h2>
+<ul>
+<li>Start with a problem<ul>
+<li>Losing customers</li>
+<li>Product sales decreasing</li>
+</ul>
+</li>
+<li>Gather data it will take time, figure in more time when using different data sources to make them all consistently encoded</li>
+<li>Understand your data using statistics</li>
+<li>Reformat and check it before attempting to do joins</li>
+<li>Use views to capture complex SQL statements</li>
+<li>Use joins<ul>
+<li>Inner joins only return row that both table share</li>
+<li>Use an outer join if you want all rows from one table even if they are missing from the other table</li>
+</ul>
+</li>
+<li>For cross tabulations use cubes, rollups, and grouping sets rather than subqueries</li>
+<li>Use window functions to work on sets of related rows</li>
+</ul>
+<h2>Resources</h2>
+<ul>
+<li>Tutorial: <a href="https://www.tutorialspoint.com/postgresql/index.htm">https://www.tutorialspoint.com/postgresql/index.htm</a></li>
+<li>Tutorial: [http://www.postgresqltutorial.com/(http://www.postgresqltutorial.com/)]</li>
+<li>PostrgreSQL Aggregation Functions: <a href="https://www.postgresql.org/docs/current/static/functions-aggregate.html">https://www.postgresql.org/docs/current/static/functions-aggregate.html</a></li>
+<li>Joins explained visually: <a href="https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins">https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins</a></li>
+<li>SQL for Data Science from Lynda.com: <a href="https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html">https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html</a>.  I highly recommend this course. Increasingly Lynda.com's excellent courses are available through your local library.  Library patrons in Denver can access this course through <a href="">Denver Public Library Teach Yourself Technology page</a></li>
+<li>SQL for Data Science from Lynda.com: <a href="https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html">https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html</a>. This is an excellent course and increasingly Lynda's courses are available through your local library.  Here in Denver library patrons can access all of Lynda's courses through the <a href="https://www.denverlibrary.org/teach-yourself-technology">Denver Public Library Teach Yourself Technology page</a>.</li>
+</ul>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

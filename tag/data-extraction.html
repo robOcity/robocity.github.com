@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Dealing with Data - data extraction</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Dealing with Data </a></h1>
+                <nav><ul>
+                    <li><a href="/category/data-science.html">Data Science</a></li>
+                    <li><a href="/category/tutorial.html">Tutorial</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/web-scraping-with-python_an-introductory-tutorial.html">Web Scraping with Python: An Introductory Tutorial</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2017-08-15T00:00:00-06:00">
+                Published: Tue 15 August 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
+        </address>
+<p>In <a href="/category/data-science.html">Data Science</a>.</p>
+<p>tags: <a href="/tag/web-scraping.html">web scraping</a> <a href="/tag/data-extraction.html">data extraction</a> </p>
+</footer><!-- /.post-info --><body>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Web-Scraping-with-Python:-An-Introductory-Tutorial">Web Scraping with Python: An Introductory Tutorial<a class="anchor-link" href="#Web-Scraping-with-Python:-An-Introductory-Tutorial">&#182;</a></h1><h4 id="Rob-Osterburg">Rob Osterburg<a class="anchor-link" href="#Rob-Osterburg">&#182;</a></h4><h5 id="Data-Scientist-/-Software-Engineer-/-Instructor">Data Scientist / Software Engineer / Instructor<a class="anchor-link" href="#Data-Scientist-/-Software-Engineer-/-Instructor">&#182;</a></h5>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Acknowledgements">Acknowledgements<a class="anchor-link" href="#Acknowledgements">&#182;</a></h2><ul>
+<li><p>The generous <a href="http://denverdatascienceday.com/index.php/sponsors/">sponsors</a> of <a href="http://denverdatascienceday.com/">Denver Data Science Day 2017</a></p>
+</li>
+<li><p><a href="https://www.galvanize.com/pick-a-location?page=%2F">Galvanize</a> for hosting <a href="http://denverdatascienceday.com/">Denver Data Science Day 2017</a></p>
+</li>
+<li><p>Bob Mickus, Tyler B. and all the volunteers from <a href="https://www.meetup.com/PyData-Denver/">PyData Denver</a> who organized <a href="http://denverdatascienceday.com/">Denver Data Science Day</a></p>
+</li>
+<li><p>Miguel Grinberg whose <a href="https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python">Easy Web Scraping with Python</a> blog post inspired this tutorial.  Miguel's posted his tutorial in 2014 and PyVideo.org has recently undergone a significant revision.</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Topics">Topics<a class="anchor-link" href="#Topics">&#182;</a></h2><ul>
+<li>Which Python packages to use</li>
+<li>Cover key concepts, tools and techniques</li>
+<li>Scrape some data <ul>
+<li>Organize it using a namedtuple</li>
+<li>Persist it as a JSON file</li>
+<li>Read it back into a namedtuple and demonstrate semantic equivilence </li>
+</ul>
+</li>
+<li>Share recommended resources</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Key-Packages">Key Packages<a class="anchor-link" href="#Key-Packages">&#182;</a></h2><ul>
+<li><p>requests -- Issues HTTP requests to web servers and handles the response</p>
+</li>
+<li><p>beautifulsoup4 -- Parse the returned web page and makes it searchable</p>
+</li>
+<li><p>These packages are <em>not</em> in Python's standard library, here is how to install them:</p>
+<ul>
+<li><p>Standard Python: <code>pip install requests beautifulsoup4</code></p>
+</li>
+<li><p>Anaconda Python: <code>conda install requests beautifulsoup4</code></p>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Requests is &#39;HTTP for Humans&#39;</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="c1"># BeautifulSoup parses and builds tree from HTML</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Warning!-Warning!">Warning! Warning!<a class="anchor-link" href="#Warning!-Warning!">&#182;</a></h2><ul>
+<li>Only scrape as a last resort, first see if the site has an API or other means of accessing their data</li>
+<li>Web scraping is commonly frowned upon by the site's owners</li>
+<li><strong>Always check the site's Terms of service, Conditions of use, and robots.txt file</strong>   </li>
+<li>Aggressive scrapers can take a site down, owner's can rightfully consider that a denial of service attack</li>
+<li>If in doubt, talk to a lawyer, especially for <em>anything</em> work related</li>
+<li>Watch <a href="http://pyvideo.org/pydata-dc-2016/sustainable-scrapers.html">Sustainable Scrapers, PyData DC, 2016</a> to understand how a data journalist deals with these issues. It's a good talk and quite entertaining -- in a geeky way</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="PyVideo.org----Is-it-OK-to-scrape?">PyVideo.org -- Is it OK to scrape?<a class="anchor-link" href="#PyVideo.org----Is-it-OK-to-scrape?">&#182;</a></h2><ul>
+<li><a href="http://pyvideo.org">PyVideo.org</a> provides valuable meta-data about Python presentations</li>
+<li>It makes finding talks easy and can be searched by event, presenter, or topic </li>
+<li>But what restrictions does it have against scraping?  </li>
+<li>Let's take a look</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="PyVideo.org---Terms-and-Conditions?">PyVideo.org - Terms and Conditions?<a class="anchor-link" href="#PyVideo.org---Terms-and-Conditions?">&#182;</a></h2><p>None that I can see, the site's <a href="http://pyvideo.org/pages/about.html">About page</a> says:</p>
+<blockquote><p>... PyVideo.org is a freely available index of freely available resources that seek to provide everyone with the opportunity to learn about Python.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="PyVideo.org---Robots.txt?">PyVideo.org - Robots.txt?<a class="anchor-link" href="#PyVideo.org---Robots.txt?">&#182;</a></h2><ul>
+<li><p>A robots.txt files contain <em>restrictions</em> on the content that web crawlers are permitted to access</p>
+</li>
+<li><p>The <a href="http://pyvideo.org/robots.txt">http://pyvideo.org/robots.txt</a> is empty, except for one comment</p>
+</li>
+<li><p>It appears that there are no restrictions on scraping PyVideo.org</p>
+</li>
+<li><p>Let's minimize our impact on the site</p>
+</li>
+<li><p>To see <em>The Robots Exclusion Protocol</em> visit <a href="http://www.robotstxt.org/">http://www.robotstxt.org/</a>.</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Getting the Page</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://pyvideo.org/tags.html&#39;</span><span class="p">)</span>
+
+<span class="c1"># A status code other than 200 indicates problem of some sort</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;status code:&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+<span class="c1"># A better approach is let requests throw an exception when a problem occurs</span>
+<span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>status code: 200
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="HTTP-Responses">HTTP Responses<a class="anchor-link" href="#HTTP-Responses">&#182;</a></h2><table>
+<thead><tr>
+<th>HTTP Verb</th>
+<th>Effect</th>
+<th>Success</th>
+<th>Failure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>Create</td>
+<td>200</td>
+<td>400, 40X, 500</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><strong>Read</strong></td>
+<td><strong>200</strong></td>
+<td><strong>400, 40X, 500</strong></td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>Update</td>
+<td>200</td>
+<td>400, 40X, 500 </td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>Delete</td>
+<td>200</td>
+<td>400, 40X, 500</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><a href="https://httpstatuses.com/">Comprehensive list of HTTP status codes</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parse the Page</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="BeautifulSoup---Parses-the-page">BeautifulSoup - Parses the page<a class="anchor-link" href="#BeautifulSoup---Parses-the-page">&#182;</a></h2><ul>
+<li>Models the page as a tree</li>
+<li><p>Similar to the Document Object Model
+<img src="./images/htmltree.png" alt="tags page structure"></p>
+</li>
+<li><p>Parsers build the tree, pick one</p>
+<ul>
+<li>html.parser -&gt; Default parser for Python 3</li>
+<li>HTMLParser  -&gt; Default parser for Python 2</li>
+<li>lxml        -&gt; Fast requires installing a C library and a PyPI package </li>
+<li>html5lib    -&gt; Pure Python and part of the standard library</li>
+</ul>
+<p>cite: <a href="https://interactivepython.org/runestone/static/pythonds/Trees/ExamplesofTrees.html">https://interactivepython.org/runestone/static/pythonds/Trees/ExamplesofTrees.html</a></p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="BeautifulSoup---Well-documented-and-easy-to-use-API">BeautifulSoup - Well documented and easy to use API<a class="anchor-link" href="#BeautifulSoup---Well-documented-and-easy-to-use-API">&#182;</a></h2><ul>
+<li><p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors">select</a>('css selector') --&gt; [List of Tags]</p>
+</li>
+<li><p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all">find_all</a>(tags, keyword_args, attrs={'attr', 'value'})  --&gt; [List of Tags]</p>
+</li>
+<li><p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find">find</a>(tags, keyword_args, attrs={'attr', 'value'}) --&gt; Tag</p>
+</li>
+<li><p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup 4 Documentation</a></p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Understanding-Page-Structure">Understanding Page Structure<a class="anchor-link" href="#Understanding-Page-Structure">&#182;</a></h2><ul>
+<li>To extract data from a page, you need to understand its structure</li>
+<li>BeautifulSoup holds the tree in memory</li>
+<li>Look into it using the our browser's built-in developer tools<ul>
+<li>Mac -- Cmd + Opt + i</li>
+<li>Linux -- Ctrl + Shift + i</li>
+<li>Windows -- Ctrl + Shift + i</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Visiting the <a href="http://pyvideo.org/tags">Tags page</a> you can see the structure of the page<br>
+<img src="./images/structure-of-tags-page.png" alt="tags page structure"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Developer-Tools---Getting-a-CSS-selector">Developer Tools - Getting a CSS selector<a class="anchor-link" href="#Developer-Tools---Getting-a-CSS-selector">&#182;</a></h2><ul>
+<li>Use the element inspector to locate items you want to scrape</li>
+<li>Right-click on the element &gt; Copy &gt; Copy CSS Selector</li>
+<li>Paste the selector into your code</li>
+<li>Make it more general by removing aspects that specific to <em>a</em> particular tag</li>
+<li>In this case, <code>nth-child()</code> and <code>.col-md-3</code></li>
+<li>The idea here is to tune the selector to the data you want to scrape</li>
+<li>Tutorial: <a href="https://dailypost.wordpress.com/2013/07/25/css-selectors/">An Intro to CSS: Finding CSS Selectors</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Build a list of anchor elements using a CSS selector</span>
+<span class="c1"># First we need to clean our CSS using a for-loop</span>
+<span class="n">topics</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">as_copied_css</span> <span class="o">=</span> <span class="s1">&#39;li.col-md-3:nth-child(1174) &gt; a:nth-child(1)&#39;</span>
+<span class="n">cleaned_css</span> <span class="o">=</span> <span class="s1">&#39;li &gt; a&#39;</span>
+<span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">cleaned_css</span><span class="p">):</span>
+    <span class="n">topics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
+<span class="n">topics</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[19]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;a href=&#34;http://pyvideo.org/index.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-home&#34;&gt;&lt;/i&gt; &lt;span&gt;Start&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/events.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-list-ul&#34;&gt;&lt;/i&gt; &lt;span&gt;Events&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/tags.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-tags&#34;&gt;&lt;/i&gt; &lt;span&gt;Tags&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/speakers.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-users&#34;&gt;&lt;/i&gt; &lt;span&gt;Speakers&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/pages/about.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-info&#34;&gt;&lt;/i&gt; &lt;span&gt;About&lt;/span&gt;&lt;/a&gt;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Why-List-Comprehensions?">Why List Comprehensions?<a class="anchor-link" href="#Why-List-Comprehensions?">&#182;</a></h2><ul>
+<li>List comprehensions are a powerful way to create lists</li>
+<li>For-loop code above == List comprehension below</li>
+<li>The CSS selector got us 90% of the way there</li>
+<li>List comprehension can do the rest</li>
+<li>I find them very handy, I think you will too</li>
+<li>Tutorial: <a href="https://www.digitalocean.com/community/tutorials/understanding-list-comprehensions-in-python-3">Understanding List Comprehensions in Python 3</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Now let&#39;s using a list comprehension </span>
+<span class="c1"># to build the list of links</span>
+<span class="n">topics</span> <span class="o">=</span> <span class="p">[</span><span class="n">topic</span>                                        <span class="c1"># adds the topic to the list</span>
+          <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;li &gt; a&#39;</span><span class="p">)]</span>          <span class="c1"># loop over Tags from select</span>
+<span class="n">topics</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[5]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;a href=&#34;http://pyvideo.org/index.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-home&#34;&gt;&lt;/i&gt; &lt;span&gt;Start&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/events.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-list-ul&#34;&gt;&lt;/i&gt; &lt;span&gt;Events&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/tags.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-tags&#34;&gt;&lt;/i&gt; &lt;span&gt;Tags&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/speakers.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-users&#34;&gt;&lt;/i&gt; &lt;span&gt;Speakers&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/pages/about.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-info&#34;&gt;&lt;/i&gt; &lt;span&gt;About&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/pages/thank-you-contributors.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-info&#34;&gt;&lt;/i&gt; &lt;span&gt;Thank You&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/pages/thanks-will-and-sheila.html&#34;&gt;&lt;i class=&#34;fa fa-fw fa-info&#34;&gt;&lt;/i&gt; &lt;span&gt;&lt;/span&gt;&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/tag/2to3/&#34;&gt;2to3&lt;/a&gt;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Now lets look at one of the elements in our list</li>
+<li>Each element is a BeautifulSoup Tag object</li>
+<li><em>Tag</em> allows access to all the element's data including<ul>
+<li><em>attributes</em> that are accessed using dictionary like syntax</li>
+<li><em>contents</em> that are displayed on the page</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Let&#39;s look a Tag instance</span>
+<span class="n">topic</span> <span class="o">=</span> <span class="n">topics</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+<span class="c1"># Access the data it holds</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">topic</span><span class="p">,</span> <span class="n">topic</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span> <span class="n">topic</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[6]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(bs4.element.Tag,
+ &lt;a href=&#34;http://pyvideo.org/tag/2to3/&#34;&gt;2to3&lt;/a&gt;,
+ [&#39;2to3&#39;],
+ &#39;http://pyvideo.org/tag/2to3/&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>List comprehensions are concise and powerful to process data</li>
+<li>From the list of anchor elements</li>
+<li>Let's create a list of links to topics pages</li>
+<li>Filtering out all unrelated links</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extracting and filtering the links</span>
+<span class="n">topics</span> <span class="o">=</span> <span class="p">[</span><span class="n">topic</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span>                       <span class="c1"># extract attribute value</span>
+          <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;li &gt; a&#39;</span><span class="p">)</span>  <span class="c1"># loop over anchors</span>
+          <span class="k">if</span> <span class="s1">&#39;/tag/&#39;</span> <span class="ow">in</span> <span class="n">topic</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]]</span>        <span class="c1"># filter</span>
+         
+<span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">topics</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">topics</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[7]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(1461,
+ str,
+ [&#39;http://pyvideo.org/tag/2to3/&#39;,
+  &#39;http://pyvideo.org/tag/3d/&#39;,
+  &#39;http://pyvideo.org/tag/3d-printing/&#39;,
+  &#39;http://pyvideo.org/tag/abc/&#39;,
+  &#39;http://pyvideo.org/tag/accelerate/&#39;])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Get the page</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://pyvideo.org/tag/scraping&#39;</span><span class="p">)</span>
+<span class="n">resp</span><span class="o">.</span><span class="n">status_code</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[8]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>200</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parse the page</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Using-Tag.find_all()">Using Tag.find_all()<a class="anchor-link" href="#Using-Tag.find_all()">&#182;</a></h2><ul>
+<li>We have used <code>select()</code>, not let's try out <code>find_all()</code> </li>
+<li>Our goal is create a list of the links to all the talks on a particular topic</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Find all the video page links using find_all()</span>
+<span class="n">h4_tags</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;h4&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s1">&#39;entry-title&#39;</span><span class="p">)</span>
+<span class="n">h4_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[10]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;h4 class=&#34;entry-title&#34;&gt;
+&lt;a href=&#34;/pydata-dc-2016/open-data-dashboards-python-web-scraping.html&#34; rel=&#34;bookmark&#34; title=&#34;Permalink to Open Data Dashboards &amp;amp; Python Web Scraping&#34;&gt;
+           Open Data Dashboards &amp;amp; Python Web Scraping
+        &lt;/a&gt;
+&lt;/h4&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="BeautifulSoup-in-action">BeautifulSoup in action<a class="anchor-link" href="#BeautifulSoup-in-action">&#182;</a></h2><ul>
+<li>Methods: <code>find_all()</code> and <code>select()</code> both return list of Tag objects</li>
+<li>Accessing descendents:  Tag.Descendent_Tag['attribute']</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extracting the link from &lt;a&gt; tag inside the &lt;h4&gt;</span>
+<span class="n">findall_talks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">h4_tags</span><span class="p">]</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">findall_talks</span><span class="p">),</span> <span class="n">findall_talks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[11]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(13, &#39;/pydata-dc-2016/open-data-dashboards-python-web-scraping.html&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Same thing using select() -- In this case select seems cleaner</span>
+<span class="n">site_url</span> <span class="o">=</span> <span class="s1">&#39;http://pyvideo.org&#39;</span>
+<span class="n">select_talks</span> <span class="o">=</span> <span class="p">[</span><span class="n">site_url</span> <span class="o">+</span> <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> 
+                <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;article &gt; section &gt; h4 &gt; a&#39;</span><span class="p">)]</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">select_talks</span><span class="p">),</span> <span class="n">select_talks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[12]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(13,
+ &#39;http://pyvideo.org/pydata-dc-2016/open-data-dashboards-python-web-scraping.html&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Moving-on-to-extract-presentation-meta-data">Moving on to extract presentation meta data<a class="anchor-link" href="#Moving-on-to-extract-presentation-meta-data">&#182;</a></h2><ul>
+<li>Our ultimate destination is now in sight -- The video's presentation page</li>
+<li>It's the talk page -- that's where the best data are found</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Get a page and parse it </span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">select_talks</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extract the talk&#39;s title</span>
+<span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="n">title</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> 
+          <span class="k">for</span> <span class="n">title</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.entry-title &gt; a&#39;</span><span class="p">)]</span>
+<span class="n">title</span> <span class="o">=</span> <span class="n">titles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">title</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[14]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;Open Data Dashboards &amp; Python Web Scraping&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extract the speaker&#39;s name </span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.url&#39;</span><span class="p">)]</span>
+<span class="n">names</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[15]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;Marie Whittaker&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extract the talk details</span>
+<span class="n">details</span> <span class="o">=</span> <span class="p">[</span><span class="n">detail</span> 
+           <span class="k">for</span> <span class="n">detail</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.details-content &gt; ul &gt; li &gt; a&#39;</span><span class="p">)]</span>
+<span class="n">details</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[16]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;a href=&#34;http://pyvideo.org/events/pydata-dc-2016.html&#34;&gt;PyData DC 2016&lt;/a&gt;,
+ &lt;a href=&#34;https://www.youtube.com/watch?v=kc676iLvib8&#34; rel=&#34;external&#34;&gt;YouTube&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/tag/data/&#34;&gt;Data&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/tag/scraping/&#34;&gt;scraping&lt;/a&gt;,
+ &lt;a href=&#34;http://pyvideo.org/tag/web/&#34;&gt;web&lt;/a&gt;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extract the YouTube link</span>
+<span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">detail</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> 
+         <span class="k">for</span> <span class="n">detail</span> <span class="ow">in</span> <span class="n">details</span> 
+         <span class="k">if</span> <span class="s1">&#39;youtube.com&#39;</span> <span class="ow">in</span> <span class="n">detail</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]]</span>
+<span class="n">link</span> <span class="o">=</span> <span class="n">links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extract the subject tags</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">link</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> 
+        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">details</span> 
+        <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]]</span>
+<span class="n">tags</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[18]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;data&#39;, &#39;scraping&#39;, &#39;web&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Extract the description</span>
+<span class="n">paragraphs</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.entry-content &gt; p&#39;</span><span class="p">)</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paragraphs</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>PyData DC 2016
+
+Distilling a world of data down to a few key indicators can be an effective way of keeping an audience informed, and this concept is at the heart of a good dashboard. This talk will cover a few methods of scraping and reshaping open data for dashboard visualization, to automate the boring stuff so you have more time and energy to focus on the analysis and content.
+
+This talk will cover a basic scenario of curating open data into visualizations for an audience. The main goal is to automate data scraping/downloading and reshaping. I use python to automate data gathering, and Tableau and D3 as visualization tools -- but the process can be applied to numerous analytical/visualization suites.
+
+I&#39;ll discuss situations where a dashboard makes sense (and when one doesn&#39;t). I will make a case also that automation makes for a more seamless data gathering and updating process, but not always for smarter data analysis.
+
+Some python packages I&#39;ll cover for web scraping and downloading/reshaping open data include: openpyxl, pandas, xlsxwriter, and BeautifulSoup. I&#39;ll also touch on APIs.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Saving-the-Data">Saving the Data<a class="anchor-link" href="#Saving-the-Data">&#182;</a></h2><ul>
+<li><p>Use namedtuple to capture information about PyVideo talk</p>
+</li>
+<li><p>What do we need to capture</p>
+<ul>
+<li>Talk title (string)</li>
+<li>Name of presenter(s) (list)</li>
+<li>Description (string)</li>
+<li>Tags (list)</li>
+<li>Link to video (string)</li>
+</ul>
+</li>
+<li><p>Let's use JSON</p>
+<ul>
+<li>Awesome for persisting structured data </li>
+<li>Excellent data exchange format</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Why-namedtuples?">Why namedtuples?<a class="anchor-link" href="#Why-namedtuples?">&#182;</a></h2><ul>
+<li>namedtuples are a lightweight container for data</li>
+<li>Using a name to access data elements is their advantage</li>
+<li>Numeric indexing is all that regular tuple provides</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Storing related data in a namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+
+<span class="c1"># create the structure</span>
+<span class="n">pyvideo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;pyvideo&#39;</span><span class="p">,</span> <span class="s1">&#39;title names description tags link&#39;</span><span class="p">)</span>
+
+<span class="c1"># create an instance</span>
+<span class="n">talk_data</span> <span class="o">=</span> <span class="n">pyvideo</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+
+<span class="c1"># access the data and display it as a formatted string</span>
+<span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;title=</span><span class="si">{}</span><span class="se">\n</span><span class="s1">names=</span><span class="si">{}</span><span class="se">\n</span><span class="s1">tags=</span><span class="si">{}</span><span class="se">\n</span><span class="s1">link=</span><span class="si">{}</span><span class="s1">&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">talk_data</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">talk_data</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">talk_data</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">talk_data</span><span class="o">.</span><span class="n">link</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>title=Open Data Dashboards &amp; Python Web Scraping
+names=[&#39;Marie Whittaker&#39;]
+tags=[&#39;data&#39;, &#39;scraping&#39;, &#39;web&#39;]
+link=https://www.youtube.com/watch?v=kc676iLvib8
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Why-JSON?">Why JSON?<a class="anchor-link" href="#Why-JSON?">&#182;</a></h2><ul>
+<li>Handles structured data well</li>
+<li>Excellent data exchange format</li>
+<li>Python supports round-tripping between namedtuples and JSON<ul>
+<li>namedtuple objects can be saved a JSON formatted text</li>
+<li>JSON formatted text can be convert back to namedtuple objects</li>
+<li>Of course, text can be written to file </li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Writing the namedtuple to disk as JSON</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="c1"># Write to file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;a_video.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+    <span class="c1"># Note: preserve keys by saving a dictionary, not a list</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">talk_data</span><span class="o">.</span><span class="n">_asdict</span><span class="p">(),</span> <span class="n">fout</span><span class="p">)</span>
+    
+<span class="c1"># Read from file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;a_video.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="n">restored_talk_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+
+<span class="c1"># Deserialize -- Note: pass as keyword arguments using **</span>
+<span class="n">restored_talk_data</span> <span class="o">=</span> <span class="n">pyvideo</span><span class="p">(</span><span class="o">**</span><span class="n">restored_talk_data</span><span class="p">)</span>
+
+<span class="c1"># Compare semantically</span>
+<span class="n">talk_data</span> <span class="o">==</span> <span class="n">restored_talk_data</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">talk_data</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">restored_talk_data</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[21]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(__main__.pyvideo, __main__.pyvideo)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Writing-web-scraping-code-has-advantages">Writing web scraping code has advantages<a class="anchor-link" href="#Writing-web-scraping-code-has-advantages">&#182;</a></h2><ul>
+<li><p>Excellent source of valuable data</p>
+</li>
+<li><p>The code is approachable</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="...-and-presents-some-problems-too">... and presents some problems too<a class="anchor-link" href="#...-and-presents-some-problems-too">&#182;</a></h2><ul>
+<li><p>Your code breaks when the site is updated</p>
+</li>
+<li><p>Read the terms and conditions, otherwise ...</p>
+</li>
+<li><p>Getting blocked, banned, sued ...</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Resources">Resources<a class="anchor-link" href="#Resources">&#182;</a></h2><ol>
+<li><p><a href="https://automatetheboringstuff.com/">Automate the Boring Stuff</a>, <a href="https://automatetheboringstuff.com/chapter11/">Chapter 11 — Web Scraping</a> by Al Sweigart (Free PDF version online).  Takes you through topics step-by-step, includes using Selenium to fill out forms and simulate mouse clicks.</p>
+</li>
+<li><p><a href="https://realpython.com/blog/python/web-scraping-with-scrapy-and-mongodb/">RealPython Blog -- Web Scraping With Scrapy and MongoDB</a> by Micheal Herman. Scrapy is a Python package that makes scraping code easier to maintain.</p>
+</li>
+<li><p><a href="https://talkpython.fm/episodes/show/50/web-scraping-at-scale-with-scrapy-and-scrapinghub">Talk Python to Me Podcast -- Web scraping at scale with Scrapy and ScrapingHub</a>. Web scraping as a Service from the author of Scrapy.</p>
+</li>
+<li><p><a href="http://pyvideo.org/">PyVideo.org</a>— Comprehensive catalog of videos of over 8000 of Python related presentations. Talks on scraping web pages can be found on the <a href="http://pyvideo.org/tag/scraping/">Scraping page</a>.</p>
+</li>
+<li><p><a href="https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491910291">Web Scraping with Python: Collecting Data from the Modern Web</a> by Ryan Mitchell.  This 4.5 star book on Amazon covers scraping topics in depth.</p>
+</li>
+<li><p><a href="https://awesome-python.com/">Awesome Python</a> -- PyPI has over 100,000 packages.  Awesome Python is a curated list of the best, see their recommended web scraping packages <a href="https://awesome-python.com/#web-crawling">here</a>.</p>
+</li>
+<li><p>Other Practice Sites</p>
+<ul>
+<li><a href="http://books.toscrape.com/">Books to Scrape</a></li>
+<li><a href="http://quotes.toscrape.com/">Quotes to Scrape</a> </li>
+</ul>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+ 
+
+</body>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        " linebreaks: { automatic: true, width: '95% container' }, " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
