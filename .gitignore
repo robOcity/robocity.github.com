@@ -1,0 +1,54 @@
+# Project Specific
+*.pid
+output/
+
+# General
+*.pyc
+*.swp
+__pycache__/
+.cache/
+.idea/
+.vscode
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Icon?
+
+# Custom
+output
+pelicanconf_local.py
+
+# Python
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# jupyter lab
+.ipynb_checkpoints/
