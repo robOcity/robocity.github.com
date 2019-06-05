@@ -27,6 +27,12 @@ IPYNB_USE_METACELL = True
 Pelican uses plugins to add capabilities for generating blog content.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  This requires a plugin to generate the HTML and CSS from the ipynb file.  Generating the content requires a plugin and posting it on GitHub requires that the plugin be installed as a git submodule.  Having a repository within another repository -- especially one you are maintaining --  is rather intimidating.  Surprisingly, it is not as bad as it sounds.  Below are the steps to install install the [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin for posting to Github pages.
 
 1. Run `git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb`
+2. Run `git submodule init`
+3. Run `git submodule update` which downloads the latest version of pelican-ipynb into your `./plugins/ipynb` directory.
+
+## Preparing your Post
+
+1. Pelican uses metadata from your post to generate the post including the title, category, date, etc.  The [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin offers several choices on how to do this.  I am choosing to add a cell to my notebook file and add the metadata there.  To do so you need to add a line with `IPYNB_USE_METACELL = True` to your `pelicanconf.py` file in the root directory of your blog.
 2. Add the meta data from your blog post in a markdown cell containing the following tags:
 
     ```text
@@ -44,8 +50,8 @@ Now you are ready to generate blog posts from your Jupyter notebooks.
 ## Generating and Reviewing Content
 
 1. Run `pelican content` from your blogs root directory and automatically detects changes in content
-2. Fix warnings and errors in your development environment.  
-3. `cd output` and open `http://localhost:8000` in your browser
+2. Fix any warnings or errors that Pelican reports  
+3. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
 4. Start Python's build-in web server by running: `python -m http.server 8000`
 5. Keep editing and refreshing to see your latest changes
 6. Control-c to halt `pelican content`
