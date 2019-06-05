@@ -24,7 +24,7 @@ IPYNB_USE_METACELL = True
 
 ## Update Pelican Plugins
 
-Pelican uses plugins to add capabilities for generating blog content.  I publish my blog on github pages and that requires plugins be installed as a git submodule.  Now, this can be intimidating the first time you see it, but simply put, a submodule is a repository within a repository -- that surprisingly -- it is not as bad as it sounds.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  Below are the steps to install install the [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin (see link for more configuration and usage details).
+Pelican uses plugins to add capabilities for generating blog content.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  This requires a plugin to generate the HTML and CSS from the ipynb file.  Generating the content requires a plugin and posting it on GitHub requires that the plugin be installed as a git submodule.  Having a repository within another repository -- especially one you are maintaining --  is rather intimidating.  Surprisingly, it is not as bad as it sounds.  Below are the steps to install install the [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin for posting to Github pages.
 
 1. Run `git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb`
 2. Add the meta data from your blog post in a markdown cell containing the following tags:
