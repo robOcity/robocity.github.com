@@ -23,17 +23,25 @@ IGNORE_FILES = [".ipynb_checkpoints"]
 IPYNB_USE_METACELL = True
 ```
 
-Now you are ready to generate blog posts from your Jupyter notebooks. 
+Now you are ready to generate blog posts from your Jupyter notebooks.
 
 ## Generating Content
 
-1. 
+1. Run `pelican content` from your blogs root directory and automatically detects changes in content
+2. Fix warnings and errors in your development environment.  
+3. `cd output` and open `http://localhost:8000` in your browser
+4. Keep editing and refreshing to see your latest changes
+5. Control-c to halt `pelican content`
 
 ## Github Pages
 
-
+1. Check in your changes to your `source` branch
+2. Run `pelican content -o output pelicanconf.py`
+3. Run `ghp-import output -b gh-pages`
+4. Run `git push git@github.com:robocity.github.io.git gh-pages:master`
 
 ## Resources
 
 1. [Matt Makai's Excellent Pelican Posts](https://www.fullstackpython.com/pelican.html)
 2. [pelican-ipynb plugin]([pelican-ipynb](https://github.com/danielfrg/pelican-ipynb))
+3. [Pelican Docs](https://docs.getpelican.com/en/stable/index.html)
