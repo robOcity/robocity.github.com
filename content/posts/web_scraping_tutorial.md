@@ -1,10 +1,9 @@
-
-- title: Web Scraping with Python: An Introductory Tutorial
-- slug: web-scraping-with-python_an-introductory-tutorial
-- date: 2017-08-15
-- author: Rob Osterburg
-- category: Data Science
-- tags: web scraping, data extraction
+Title: Web Scraping with Python: An Introductory Tutorial
+Slug: web-scraping-with-python_an-introductory-tutorial
+Date: 2017-08-15
+Author: Rob Osterburg
+Category: Data Science
+Tags: web scraping, data extraction
 
 ## Acknowledgements
 
@@ -95,12 +94,12 @@ resp.raise_for_status()
 
 ## HTTP Responses
 
-HTTP Verb | Effect | Success | Failure
---------- | ------ | ------- | --------
-POST      | Create | 200     | 400, 40X, 500
-**GET**       | **Read**   | **200**     | **400, 40X, 500**
-PUT       | Update | 200     | 400, 40X, 500 
-DELETE    | Delete | 200     | 400, 40X, 500
+| HTTP Verb | Effect   | Success | Failure           |
+| --------- | -------- | ------- | ----------------- |
+| POST      | Create   | 200     | 400, 40X, 500     |
+| **GET**   | **Read** | **200** | **400, 40X, 500** |
+| PUT       | Update   | 200     | 400, 40X, 500     |
+| DELETE    | Delete   | 200     | 400, 40X, 500     |
 
 * [Comprehensive list of HTTP status codes](https://httpstatuses.com/)
 
@@ -536,16 +535,16 @@ type(talk_data), type(restored_talk_data)
 ## Resources
 1. [Automate the Boring Stuff](https://automatetheboringstuff.com/), [Chapter 11 — Web Scraping](https://automatetheboringstuff.com/chapter11/) by Al Sweigart (Free PDF version online).  Takes you through topics step-by-step, includes using Selenium to fill out forms and simulate mouse clicks. 
 
-1. [RealPython Blog -- Web Scraping With Scrapy and MongoDB](https://realpython.com/blog/python/web-scraping-with-scrapy-and-mongodb/) by Micheal Herman. Scrapy is a Python package that makes scraping code easier to maintain. 
+2. [RealPython Blog -- Web Scraping With Scrapy and MongoDB](https://realpython.com/blog/python/web-scraping-with-scrapy-and-mongodb/) by Micheal Herman. Scrapy is a Python package that makes scraping code easier to maintain. 
 
-1. [Talk Python to Me Podcast -- Web scraping at scale with Scrapy and ScrapingHub](https://talkpython.fm/episodes/show/50/web-scraping-at-scale-with-scrapy-and-scrapinghub). Web scraping as a Service from the author of Scrapy.
+3. [Talk Python to Me Podcast -- Web scraping at scale with Scrapy and ScrapingHub](https://talkpython.fm/episodes/show/50/web-scraping-at-scale-with-scrapy-and-scrapinghub). Web scraping as a Service from the author of Scrapy.
 
-1. [PyVideo.org](http://pyvideo.org/)— Comprehensive catalog of videos of over 8000 of Python related presentations. Talks on scraping web pages can be found on the [Scraping page](http://pyvideo.org/tag/scraping/). 
+4. [PyVideo.org](http://pyvideo.org/)— Comprehensive catalog of videos of over 8000 of Python related presentations. Talks on scraping web pages can be found on the [Scraping page](http://pyvideo.org/tag/scraping/). 
 
-1. [Web Scraping with Python: Collecting Data from the Modern Web](https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491910291) by Ryan Mitchell.  This 4.5 star book on Amazon covers scraping topics in depth.
+5. [Web Scraping with Python: Collecting Data from the Modern Web](https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491910291) by Ryan Mitchell.  This 4.5 star book on Amazon covers scraping topics in depth.
 
-1. [Awesome Python](https://awesome-python.com/) -- PyPI has over 100,000 packages.  Awesome Python is a curated list of the best, see their recommended web scraping packages [here](https://awesome-python.com/#web-crawling).
+6. [Awesome Python](https://awesome-python.com/) -- PyPI has over 100,000 packages.  Awesome Python is a curated list of the best, see their recommended web scraping packages [here](https://awesome-python.com/#web-crawling).
 
-1. Other Practice Sites
+7. Other Practice Sites
     * [Books to Scrape](http://books.toscrape.com/)
     * [Quotes to Scrape](http://quotes.toscrape.com/) 
