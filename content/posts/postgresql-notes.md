@@ -1,9 +1,9 @@
-title: PostgreSQL for Data Science
-slug: Commands and Examples
+title: Using PostgreSQL for Data Science 
+slug: using-postgresql-for-data-science-basics
 name: Rob Osterburg
 category: Database
 date: 2017-11-04
-modified: 2017-11-05
+tags: postgres, database, relational, notes, sql
 
 # **PostgreSQL for Data Science**
 
@@ -26,24 +26,24 @@ modified: 2017-11-05
 * `psql -d <database> -U <user> -W <password>`
 * Note: Add `-E` to echo queries for learning
 
-Command          | What it does
------------------|--------------
-`\l`             | list databases
-`\c <database>`  | connect to a database
-`\dt`            | list tables
-`\dt *.*`        | list selected tables
-`\d <table>`     | show table definition
-`\dv`            | list views
-`\dn`            | list schemas
-`\df`            | list functions
-`\df+ <function>`| show SQL of function
-`\h`             | psql help
-`\? <psql cmd>`  | psql command help
-`\h <sql>`       | sql command help
-`\i <script>`    | runs the sql script file
-`\q`             | quit psql
-`q`              | quit current task
-`\x`             | better looking output
+| Command           | What it does             |
+| ----------------- | ------------------------ |
+| `\l`              | list databases           |
+| `\c <database>`   | connect to a database    |
+| `\dt`             | list tables              |
+| `\dt *.*`         | list selected tables     |
+| `\d <table>`      | show table definition    |
+| `\dv`             | list views               |
+| `\dn`             | list schemas             |
+| `\df`             | list functions           |
+| `\df+ <function>` | show SQL of function     |
+| `\h`              | psql help                |
+| `\? <psql cmd>`   | psql command help        |
+| `\h <sql>`        | sql command help         |
+| `\i <script>`     | runs the sql script file |
+| `\q`              | quit psql                |
+| `q`               | quit current task        |
+| `\x`              | better looking output    |
 
 
 ## Troubleshooting
