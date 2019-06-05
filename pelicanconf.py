@@ -13,13 +13,8 @@ TIMEZONE = "America/Denver"
 DEFAULT_LANG = "en"
 
 # adding support for jupyter notebooks
-# see: https://www.scribd.com/document/359497520/Building-a-Data-Science-Portfolio-Making-a-Data-Science-Blog
-MARKUP = ("md", "ipynb")
+MARKUP = "md"
 PLUGIN_PATHS = ["./plugins"]
-PLUGINS = ["ipynb.markup"]
-IGNORE_FILES = [".ipynb_checkpoints"]
-IPYNB_USE_METACELL = True
-# IPYNB_SKIP_CSS = True
 
 
 # Feed generation is usually not desired when developing
