@@ -59,7 +59,7 @@ Now you are ready to generate blog posts from your Jupyter notebooks.
 ## Publishing to Github Pages
 
 1. Check in your changes to your `source` branch
-2. Run `pelican content -o output pelicanconf.py`
+2. Run `pelican content -o output -s pelicanconf.py`
 3. Run `ghp-import output -b gh-pages`
 4. Run `git push git@github.com:robocity.github.io.git gh-pages:master`
 
