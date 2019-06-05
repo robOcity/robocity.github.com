@@ -15,7 +15,7 @@ DEFAULT_LANG = "en"
 # adding support for jupyter notebooks
 # see: https://www.scribd.com/document/359497520/Building-a-Data-Science-Portfolio-Making-a-Data-Science-Blog
 MARKUP = ("md", "ipynb")
-PLUGIN_PATHS = "./plugins"
+PLUGIN_PATHS = ["./plugins"]
 PLUGINS = ["ipynb.markup"]
 IGNORE_FILES = [".ipynb_checkpoints"]
 IPYNB_USE_METACELL = True
