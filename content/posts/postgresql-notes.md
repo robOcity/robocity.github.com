@@ -1,25 +1,23 @@
-title: Using PostgreSQL for Data Science 
-slug: using-postgresql-for-data-science-basics
-name: Rob Osterburg
-category: Database
-date: 2017-11-04
-tags: postgres, database, relational, notes, sql
-
-# **PostgreSQL for Data Science**
+Title: Using PostgreSQL for Data Science 
+Author: Rob Osterburg
+Slug: using-postgresql-for-data-science-basics
+Date: 2019-02-28
+Category: Data Science
+Tags: postgres, database, relational, notes, sql
+Summary: Notes and examples of how to use PostgreSQL for Data Science.
 
 ## MacOS Installation and Configuration
 
 * Login to MacOS as user with Administrative rights
 * Install: `brew install postres`
 * Login to PostgreSQL as a admin user: `sudo -u user_name sql db_name`
-    - Note: PostgreSQL and MacOS admin users are different and independent.
+  * Note: PostgreSQL and MacOS admin users are different and independent.
 * Creating a db_user:  `CREATE ROLE user_name WITH LOGIN PASSWORD 'your secret here’;`
 * Changing permissions: `ALTER ROLE user_name CREATEDB;`
 * Connecting to a server running as a regular user
-    * pgAdmin > right-click server > Create > Sever
-        * Main tab: Name it
-        * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin db-user role
-
+  * pgAdmin > right-click server > Create > Sever
+    * Main tab: Name it
+    * Connection tab:  Specify IP address (e.g. 127.0.0.1)  > admin db-user role
 
 ## Invoke psql command shell
 
