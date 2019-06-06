@@ -3,37 +3,20 @@ Author: Rob Osterburg
 Slug: using-jupyter-notebooks-to-blog-with-pelican
 Date: 2019-05-15
 Category: Tutorial
-Tags: pelican, jupyter lab, github pages
+Tags: pelican, jupyter, nbconvert, markdown, github pages
 Summary: Using Pelican to generate a blog from jupyter notebook files
 
-## Jupyter Notebook Support
+My blog relates to data science, software development and topics like bicycle safety that are close to my heart.  Minimizing any friction in my content creation workflow is important, so simplicity is a goal.  Here I share my experiences with you.  
 
-If you are just getting starting blogging with Pelican and Jupyter Notebooks, then you need to install a plugin to generate HTML from your `.ipynb` files.  To do this add the [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin for Pelican by entering `git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb`.  Now you have added a submodule to your repository.
+## Generating Blog Posts from Jupyter Notebooks
 
-If you have an existing Pelican blog that uses Jupyter notebooks as content,and have cloned a fresh version of your blog.  Then you will need to re-initialize your `pelican-ipynb` submodule.  First, re-initialize it by entering `git submodule init` followed by `git submodule update --rebase --remote`.  
+Jupyter notebooks as a prime content source of data science content.  Why not use those for my blog posts?  Much of my exploratory work is captured in notebooks anyway, so I gave it go.  You can do this using `jupyter nbconvert` or installing a plugin in Pelican.  
 
-Make sure you have the following lines to `pelicanconf.py`:
-
-```# adding support for jupyter notebooks
-MARKUP = ("md", "ipynb")
-PLUGIN_PATHS = ["./plugins"]
-PLUGINS = ["ipynb.markup"]
-IGNORE_FILES = [".ipynb_checkpoints"]
-IPYNB_USE_METACELL = True
-```
-
-## Update Pelican Plugins
-
-Pelican uses plugins to add capabilities for generating blog content.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  This requires a plugin to generate the HTML and CSS from the ipynb file.  Generating the content requires a plugin and posting it on GitHub requires that the plugin be installed as a git submodule.  Having a repository within another repository -- especially one you are maintaining --  is rather intimidating.  Surprisingly, it is not as bad as it sounds.  Below are the steps to install install the [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin for posting to Github pages.
-
-1. Run `git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb`
-2. Run `git submodule init`
-3. Run `git submodule update` which downloads the latest version of pelican-ipynb into your `./plugins/ipynb` directory.
+Pelican uses plugins to generate HTML and CSS from Jupyter Notebooks.  [Pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) has more than 300 stars on Github and seemed to fit the bill perfectly.  The link to the Github repo has good documentation and all the configuration details you need to get started.  It worked well on my local system but I had problems with having my blog posts published once uploaded to github.   The plugins are git submodules -- a repo in repo -- and I suspect how I handled them when pushing my output to the master branch may be part of the problem.  After several attempts and no success I moved on to nbconvert.
 
 ## Preparing your Post
 
-1. Pelican uses metadata from your post to generate the post including the title, category, date, etc.  The [pelican-ipynb](https://github.com/danielfrg/pelican-ipynb) plugin offers several choices on how to do this.  I am choosing to add a cell to my notebook file and add the metadata there.  To do so you need to add a line with `IPYNB_USE_METACELL = True` to your `pelicanconf.py` file in the root directory of your blog.
-2. Add the meta data from your blog post in a markdown cell containing the following tags:
+1. Pelican uses metadata to tag and title your posts.  For markdown documents, you need to include these tags ascribing content to each.  If you are going with notebook based approach put these tags into a markdown cell.  
 
     ```text
     Title:
@@ -45,7 +28,7 @@ Pelican uses plugins to add capabilities for generating blog content.  I work wi
     Summary:
     ```
 
-Now you are ready to generate blog posts from your Jupyter notebooks.
+Now you are ready to generate your blog.
 
 ## Generating and Reviewing Content
 
@@ -58,11 +41,19 @@ Now you are ready to generate blog posts from your Jupyter notebooks.
 
 ## Publishing to Github Pages
 
+Github pages support individuals and organizations.  *For individuals like me, you have to publish your blog on the master branch of your pages repository.*  Instead being the ultimate source of blog, master is where your build artifacts reside.  Think generated HTML and CSS files.  I find this counter intuitive and I wrote this post to remind myself of this counter intuitive reality.  
+
 1. Check in your changes to your `source` branch
 2. Run `pelican content -o output -s pelicanconf.py`
 3. Run `ghp-import output -b gh-pages`
 4. Run `git push git@github.com:robocity.github.io.git gh-pages:master`
-
+git branch source
+ 1296  pelican content -o output -s pelicanconf.py
+ 1297  ghp-import output -b gh-pages
+ 1298  git push https://github.com/robOcity/robocity.github.com.git gh-pages:master
+ 1299  ghp-import output -b master
+ 1300  git checkout master
+ 1301  git push
 ## Resources
 
 1. [Documentation: Pelican Stable](https://docs.getpelican.com/en/stable/index.html)
