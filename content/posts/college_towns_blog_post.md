@@ -22,7 +22,7 @@ During recession home prices suffer.  How do college towns compare to other comm
 
 ## Data
 
-* From the [Zillow research data site](http://www.zillow.com/research/data/) there is housing data for the United States. In particular the datafile for [all homes at a city level](http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv), ```zillow_homes_prices_by_city.csv```, has median home sale prices at a fine grained level.
+* From the [Zillow research data site](http://www.zillow.com/research/data/) there is housing data for the United States. In particular the data file for [all homes at a city level](http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv), ```zillow_homes_prices_by_city.csv```, has median home sale prices at a fine grained level.
 
 * From the Wikipedia page on college towns is a list of [college towns in the United States](https://en.wikipedia.org/wiki/List_of_college_towns#College_towns_in_the_United_States) which has been pasted into the file ```college_towns.txt```.
 
@@ -49,13 +49,13 @@ def get_list_of_university_towns():
     university_towns.txt list. The format of the DataFrame should be:
     DataFrame( [ ["Michigan", "Ann Arbor"], ["Michigan", "Yipsilanti"] ], 
     columns=["State", "RegionName"]  )
-    
+
     The following cleaning needs to be done:
 
     1. For "State", removing characters from "[" to the end.
     2. For "RegionName", when applicable, removing every character from " (" to the end.
     3. Depending on how you read the data, you may need to remove newline character '\n'. """
-    
+
     towns_by_state = {}
     towns = []
     with open('data/college_towns.txt') as fin:
@@ -78,16 +78,12 @@ def get_list_of_university_towns():
     df = pd.DataFrame(data=state_town_tups, columns=['State', 'RegionName'])
     df.State.map(states)
     return df
-    
 ```
 
 
 ```python
 get_list_of_university_towns().head()
 ```
-
-
-
 
 <div>
 <table border="1" class="dataframe">
@@ -129,8 +125,6 @@ get_list_of_university_towns().head()
 </div>
 
 
-
-
 ```python
 def gdp_data():
     """Return a dataframe containing the quarterly GDP data expressed in 2009 dollars."""
@@ -143,8 +137,6 @@ def gdp_data():
 
 gdp_data().head()
 ```
-
-
 
 
 <div>
@@ -198,10 +190,10 @@ gdp_data().head()
 ```python
 # better approach
 def qtr_to_prd(df):
-    """Return the provided dataframe converting the quarterly dates expressed as strings 
-    to Pandas' Period objects contained in the 'date' column, year in the 'year' column 
+    """Return the provided dataframe converting the quarterly dates expressed as strings
+    to Pandas' Period objects contained in the 'date' column, year in the 'year' column
     and the number of the quarter in the 'qtr' column. """
-    
+
     df['date'] = pd.to_datetime(df.qtr).dt.to_period('q')
     df['year'] = df['date'].dt.year
     df['qtr'] = df['date'].dt.quarter
@@ -212,9 +204,6 @@ def qtr_to_prd(df):
 ```python
 qtr_to_prd(gdp_data()).head()
 ```
-
-
-
 
 <div>
 <table border="1" class="dataframe">
@@ -274,15 +263,13 @@ qtr_to_prd(gdp_data()).head()
 </div>
 
 
-
-
 ```python
 # an alternate approach using pandas "str" accessor
 def qrt_to_dt(df):
-    """Return the provided dataframe converting the quarterly dates expressed as strings 
-    to Pandas' Period objects contained in the 'date' column, year in the 'year' column 
+    """Return the provided dataframe converting the quarterly dates expressed as strings
+    to Pandas' Period objects contained in the 'date' column, year in the 'year' column
     and the number of the quarter in the 'qtr' column. """
-    
+
     df['date'] = df.qtr.copy()
     df[['year', 'qtr']] = df['qtr'].str.split('q', expand=True)
     df.year = df.year.astype(int)
@@ -294,7 +281,7 @@ def qrt_to_dt(df):
 def gdp_change(df):
     """Return a Series containing the differences between an element 
     and the value in the previous row of the gdp_2009 column."""
-    
+
     return df.gdp_2009.diff()
 ```
 
@@ -303,7 +290,7 @@ def gdp_change(df):
 def is_increasing(df):
     """Return a Series of floating point values containing 1.0 if the value
     in the 'delta' column is greater than 0, otherwise 0.0 is returned."""
-    
+
     return (df['delta'] > 0).astype(float)
 ```
 
@@ -315,9 +302,6 @@ df['delta'] = gdp_change(df)
 df['increasing'] = is_increasing(df)
 df.head()
 ```
-
-
-
 
 <div>
 <table border="1" class="dataframe">
@@ -392,16 +376,14 @@ df.head()
 </div>
 
 
-
-
 ```python
 def recession_prep(df):
-    """Return the dataframe with columns added that support analysis of recessions. 
+    """Return the dataframe with columns added that support analysis of recessions.
     In particular, determine if GDP is increasing or decreasing by using the shift method
     to create a Series of duplicated values that have been shifted by the number of
-    rows specified.  Together the shifted columns allow for the quarter in which a recession 
-    starts and ends to be indentified."""
-    
+    rows specified.  Together the shifted columns allow for the quarter in which a recession
+    starts and ends to be identified."""
+
     df = qtr_to_prd(df).set_index('date')
     df['delta'] = gdp_change(df)
     df['increasing'] = is_increasing(df)
@@ -416,9 +398,6 @@ def recession_prep(df):
 
 recession_prep(gdp_data()).loc['2007q3':'2010q4']
 ```
-
-
-
 
 <div>
 <table border="1" class="dataframe">
@@ -686,12 +665,10 @@ recession_prep(gdp_data()).loc['2007q3':'2010q4']
 </div>
 
 
-
-
 ```python
 def get_recessions(df):
     """Return list of tuples containing the starting and ending dates for recessions."""
-    
+
     df = df.loc['2000q1':]
     recessions = []
     is_recession = False
@@ -710,18 +687,14 @@ get_recessions(recession_prep(gdp_data()))
 ```
 
 
-
-
     [('2008q3', '2009q4')]
-
-
 
 
 ```python
 def get_recession_start():
-    """Returns the year and quarter of the recession start time as a 
+    """Returns the year and quarter of the recession start time as a
     string value in a format such as 2005q3."""
-    
+
     # only one recession during this period, so no need to loop over start, end tuples
     start, end = get_recessions(recession_prep(gdp_data()))[0]
     return start
@@ -735,11 +708,9 @@ get_recession_start()
     '2008q3'
 
 
-
-
 ```python
 def get_recession_end():
-    """Returns the year and quarter of the recession end time as a 
+    """Returns the year and quarter of the recession end time as a
     string value in a format such as 2005q3."""
 
     # only one recession during this period, so no need to loop over start, end tuples
@@ -750,8 +721,6 @@ get_recession_end()
 ```
 
 
-
-
     '2009q4'
 
 
@@ -759,17 +728,15 @@ get_recession_end()
 
 ```python
 def get_recession_bottom():
-    """Returns the year and quarter of the recession bottom time as a 
+    """Returns the year and quarter of the recession bottom time as a
     string value in a format such as 2005q3."""
-    
+
     df = recession_prep(gdp_data())
     start, end = get_recessions(df)[0]
     return df.loc[start:end, 'gdp_2009'].idxmin().strftime('%Yq%q')
 
 get_recession_bottom()
 ```
-
-
 
 
     '2009q2'
@@ -779,15 +746,15 @@ get_recession_bottom()
 
 ```python
 def convert_housing_data_to_quarters():
-    """Converts the housing data to quarters and returns it as mean 
+    """Converts the housing data to quarters and returns it as mean
     values in a dataframe. This dataframe should be a dataframe with
     columns for 2000q1 through 2016q3, and should have a multi-index
     in the shape of ["State","RegionName"].
     """
-    
-    df = pd.read_csv('data/zillow_homes_prices_by_city.csv', 
-                 dtype={'RegionID': 'str', 
-                        'RegionName': 'str', 
+
+    df = pd.read_csv('data/zillow_homes_prices_by_city.csv',
+                 dtype={'RegionID': 'str',
+                        'RegionName': 'str',
                         'State': 'str',
                         'Metro': 'str',
                         'CountyName': 'str',
@@ -810,14 +777,14 @@ def convert_housing_data_to_quarters():
     region_mean_df = df.reset_index().groupby([pd.Grouper(freq='Q', key='Date'), 'RegionID']).mean()
 
     joined_df = pd.merge(region_id_df, region_mean_df.reset_index(), how='inner', on='RegionID')
-    
+
     # Note: Pivoting on State and RegionName without RegionID reduces the number of rows to 10592.
     #       Only by pivoting on all three and later dropping RegionID can I get the correct number of rows (10730)
-    #       Finding this was truely painful.
+    #       Finding this was truly painful.
     pivot_df = joined_df.pivot_table(index=['State', 'RegionID', 'RegionName'], columns='Date', values='MedianSalesPrice')
     pivot_df.columns = [c.lower() for c in pivot_df.columns.to_period('Q').format()]
     pivot_df.index = pivot_df.index.droplevel('RegionID')
-    
+
     return pivot_df
 ```
 
@@ -833,18 +800,18 @@ convert_housing_data_to_quarters().to_csv(filepath)
 def run_ttest():
     '''First creates new data showing the decline or growth of housing prices
     between the recession start and the recession bottom. Then runs a ttest
-    comparing the university town values to the non-university towns values, 
+    comparing the university town values to the non-university towns values,
     return whether the alternative hypothesis (that the two groups are the same)
     is true or not as well as the p-value of the confidence. 
-    
+
     Return the tuple (different, p, better) where different=True if the t-test is
     True at a p<0.01 (we reject the null hypothesis), or different=False if 
     otherwise (we cannot reject the null hypothesis). The variable p should
     be equal to the exact p value returned from scipy.stats.ttest_ind(). The
     value for better should be either "university town" or "non-university town"
-    depending on which has a lower mean price ratio (which is equivilent to a
+    depending on which has a lower mean price ratio (which is equivalent to a
     reduced market loss).'''
-    
+
     # group university and non-university towns
     univ_towns = get_list_of_university_towns()
     univ_towns['Location'] = univ_towns[['State', 'RegionName']].apply(tuple, axis=1)
@@ -888,18 +855,14 @@ run_ttest()
 ```
 
 
-
-
     (True, 0.0050464756985043489, 'university town')
-
 
 
 ---
 
 ## Results
 
-Median home prices in college towns declined less than other towns during the recession that started in late 2008.  In this data set, college towns bet though there is a 1 in 100 chance that this conclusion is wrong. Let's dive in a little deeper into the data and see what it shows.
-
+Median home prices in college towns declined less than other towns during the recession that started in late 2008.  In this data set, betting on college towns appears to be a winner though there is a 1 in 100 chance that this conclusion is wrong. Let's dive in a little deeper into the data and see what it shows.
 
 ```python
 def create_plotting_frame():
@@ -933,7 +896,7 @@ plot_df = create_plotting_frame()
 
 ### Comparing College and Regular Towns
 
-Values less than one indicate that median home prices declined during the recession.  Values above indicate higher prices at the bottom of the recession in comparison to its start.  College towns do have a subtly higher median value (indicated by the line in the middle of the box) than other towns.  The median value is uneffected by outliers (show as dots) that comprise less than 1% of all towns.  
+A price ratio of greater than one indicates that median home prices increased during the recession and values less than one home price decreases.  The ratio is formed by dividing the value from the bottom by that of its start.  Looking closely at the plot reveals that college towns have a _subtly_ higher median value (indicated by the line in the middle of the box) than other towns.  The median value is unaffected by outliers (show as dots) that comprise less than 1% of all towns.  Home prices in college towns were more stable showing less variance in home prices.
 
 
 ```python
@@ -948,7 +911,7 @@ sns.despine(offset=10, trim=True)
 
 ### State Level Median Home Prices
 
-Let's see how values compare by state with New Mexico standing out as one of the housing markets during the recession.  The violin plot shows the distribuion of home price values by town type for each state. 
+Let's see how values compare by state with New Mexico standing out as one of the housing markets during the recession.  The violin plot shows the distribution of home price values by town type for each state.
 
 
 ```python
@@ -969,7 +932,10 @@ sns.violinplot(x='State', y='Intuitive_Price_Ratio', hue='Town', data=plot_df, s
 
 ### Best and Worst States
 
-Let's find how home prices change on the state-level by finding how much median home price changed.  To find the best and worst states, let's sort the dataframe using the ratio of price_at_bottom / price_at_start.  Indeed, New Mexico wasthe best and Nevada the worst.  
+How did home prices change on the state-level? Let's the best and worst states by sorting price ratio and extract the states with best and worst performing home markets.  
+
+* Best: New Mexico
+* Worst: Nevada
 
 
 ```python
@@ -1110,7 +1076,7 @@ sorted_states_df.tail(10)
 
 ### Best and Worst College Towns
 
-Silver City, New Mexico the home of New Mexico Tech had a medain home price increase of 33% the best in the country.  The 27% decline in Riverside, California is the worst of any college town analyzed.  Hopefully they have fully recovered.  
+Silver City, New Mexico the home of New Mexico Tech had a median home price increase of 33% the best in the country.  The 27% decline in Riverside, California is the worst of any college town analyzed.  Hopefully they have fully recovered.  
 
 
 ```python
@@ -1327,5 +1293,3 @@ bottom_10
   </tbody>
 </table>
 </div>
-
-
