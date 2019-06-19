@@ -60,7 +60,8 @@ Github pages supports both individuals and organizations.  *For individuals, you
 1. Check in any last changes to your `source` branch
 1. Run `pelican content -o output -s pelicanconf.py`
 1. Run `ghp-import output -b gh-pages`
-1. Run `git push  https://github.com/robOcity/robocity.github.com.git gh-pages:master`
+1. Run `git push https://github.com/robOcity/robocity.github.com.git gh-pages:master`
+1. If you get a `! [rejected]        gh-pages -> master (non-fast-forward)` message, then run `git push -f https://github.com/robOcity/robocity.github.com.git gh-pages:master`.
 
 ## Resources
 
@@ -69,3 +70,4 @@ Github pages supports both individuals and organizations.  *For individuals, you
 1. [Blog: Matt Makai's Excellent Pelican Posts](https://www.fullstackpython.com/pelican.html)
 1. [Blog: Some Tips for Using Jupyter Notebooks with Pelican](https://pmbaumgartner.github.io/blog/jupyter-notebooks-for-pelican/)
 1. [Blog: Hacking my way to a Jupyter notebook powered blog](https://nipunbatra.github.io/blog/2017/Jupyter-powered-blog.html)
+1. [Stackoverflow: rejected master -> master (non-fast-forward)](https://stackoverflow.com/questions/11696295/rejected-master-master-non-fast-forward)
