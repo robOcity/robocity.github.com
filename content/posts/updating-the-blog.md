@@ -51,7 +51,7 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
 1. Change to the output directory by running `cd output`
 1. Open `http://localhost:8000` in your browser and review your blogs appearance
 1. Keep editing and refreshing to see your latest changes
-1. Control-c to halt `python -m http.server 8000`
+1. Control-c to halt `python -m http.server 8000` process
 
 ## Publishing to Github Pages
 
