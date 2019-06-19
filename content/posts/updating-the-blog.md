@@ -4,7 +4,7 @@ Slug: using-jupyter-notebooks-to-blog-with-pelican
 Date: 2019-05-15
 Category: Tutorial
 Tags: pelican, jupyter, nbconvert, markdown, github pages
-Summary: Using Pelican to generate a blog from jupyter notebook files
+Summary: Using Pelican to generate a blog from Jupyter notebook files
 
 ## Generating Blog Posts from Jupyter Notebooks
 
@@ -30,12 +30,14 @@ Now you are ready to generate your blog.
 
 ## Generating and Reviewing Content
 
-1. Run `pelican content` from your blogs root directory and automatically detects changes in content
-2. Fix any warnings or errors that Pelican reports  
-3. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
-4. Start Python's build-in web server by running: `python -m http.server 8000`
-5. Keep editing and refreshing to see your latest changes
-6. Control-c to halt `pelican content`
+1. Checkout content branch on your blog (I use _source_), add, edit and check-in your new post
+2. Run `jupyter nbconvert --to=markdown your-notebook.ipynb`.  Note: `jupyter nbconvert --help` has good explanations of how else to use `nbconvert`.  
+3. Run `pelican content` from your blogs root directory and automatically detects changes in content
+4. Fix any warnings or errors that Pelican reports  
+5. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
+6. Start Python's build-in web server by running: `python -m http.server 8000`
+7. Keep editing and refreshing to see your latest changes
+8. Control-c to halt `pelican content`
 
 ## Publishing to Github Pages
 
