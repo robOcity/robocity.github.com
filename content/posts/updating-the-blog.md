@@ -60,7 +60,7 @@ Github pages supports both individuals and organizations.  *For individuals, you
 1. Check in any last changes to your `source` branch
 1. Run `pelican content -o output -s pelicanconf.py`
 1. Run `ghp-import output -b gh-pages`
-1. Run `git push git@github.com:robocity.github.io.git gh-pages:master`
+1. Run `git push  https://github.com/robOcity/robocity.github.com.git gh-pages:master`
 
 ## Resources
 
