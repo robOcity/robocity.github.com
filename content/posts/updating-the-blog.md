@@ -26,16 +26,15 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
     Summary:
     ```
 
-Now you are ready to generate your blog.
+1. Checkout content branch on your blog (I use _source_), add, edit and check-in your new post
 
 ## Generating and Reviewing Content
 
-1. Checkout content branch on your blog (I use _source_), add, edit and check-in your new post
-2. Run `jupyter nbconvert --to=markdown your-notebook.ipynb`.  Note: `jupyter nbconvert --help` has good explanations of how else to use `nbconvert`.  
-3. Run `pelican content` from your blogs root directory and automatically detects changes in content
-4. Fix any warnings or errors that Pelican reports  
-5. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
-6. Start Python's build-in web server by running: `python -m http.server 8000`
+1. Run `jupyter nbconvert --to=markdown your-notebook.ipynb`.  Note: `jupyter nbconvert --help` has good explanations of how else to use `nbconvert`.  
+1. Run `pelican content` from your blogs root directory and automatically detects changes in content
+1. Fix any warnings or errors that Pelican reports  
+1. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
+1. Start Python's build-in web server by running: `python -m http.server 8000`
 7. Keep editing and refreshing to see your latest changes
 8. Control-c to halt `pelican content`
 
@@ -47,15 +46,6 @@ Github pages supports both individuals and organizations.  *For individuals, you
 2. Run `pelican content -o output -s pelicanconf.py`
 3. Run `ghp-import output -b gh-pages`
 4. Run `git push git@github.com:robocity.github.io.git gh-pages:master`
-
-
-git branch source
- 1296  pelican content -o output -s pelicanconf.py
- 1297  ghp-import output -b gh-pages
- 1298  git push https://github.com/robOcity/robocity.github.com.git gh-pages:master
- 1299  ghp-import output -b master
- 1300  git checkout master
- 1301  git push
 
 ## Resources
 
