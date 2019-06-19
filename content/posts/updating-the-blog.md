@@ -35,8 +35,8 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
 1. Fix any warnings or errors that Pelican reports  
 1. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
 1. Start Python's build-in web server by running: `python -m http.server 8000`
-7. Keep editing and refreshing to see your latest changes
-8. Control-c to halt `pelican content`
+1. Keep editing and refreshing to see your latest changes
+1. Control-c to halt `pelican content`
 
 ## Publishing to Github Pages
 
@@ -50,7 +50,7 @@ Github pages supports both individuals and organizations.  *For individuals, you
 ## Resources
 
 1. [Documentation: Pelican Stable](https://docs.getpelican.com/en/stable/index.html)
-2. [Repository: pelican-ipynb plugin]([pelican-ipynb](https://github.com/danielfrg/pelican-ipynb))
-3. [Blog: Matt Makai's Excellent Pelican Posts](https://www.fullstackpython.com/pelican.html)
-4. [Blog: Some Tips for Using Jupyter Notebooks with Pelican](https://pmbaumgartner.github.io/blog/jupyter-notebooks-for-pelican/)
-5. [Blog: Hacking my way to a Jupyter notebook powered blog](https://nipunbatra.github.io/blog/2017/Jupyter-powered-blog.html)
+1. [Repository: pelican-ipynb plugin]([pelican-ipynb](https://github.com/danielfrg/pelican-ipynb))
+1. [Blog: Matt Makai's Excellent Pelican Posts](https://www.fullstackpython.com/pelican.html)
+1. [Blog: Some Tips for Using Jupyter Notebooks with Pelican](https://pmbaumgartner.github.io/blog/jupyter-notebooks-for-pelican/)
+1. [Blog: Hacking my way to a Jupyter notebook powered blog](https://nipunbatra.github.io/blog/2017/Jupyter-powered-blog.html)
