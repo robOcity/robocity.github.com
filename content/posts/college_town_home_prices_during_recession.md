@@ -904,8 +904,7 @@ sns.boxplot(x='Town', y='Intuitive_Price_Ratio', hue='Town', data=plot_df)
 sns.despine(offset=10, trim=True)
 ```
 
-
-![png](images/college_towns_blog_post_28_0.png)
+![Box plot of home prices by town type]({static}/images/college_towns_blog_post_28_0.png)
 
 
 ### State Level Median Home Prices
@@ -925,8 +924,7 @@ sns.violinplot(x='State', y='Intuitive_Price_Ratio', hue='Town', data=plot_df, s
 
 
 
-
-![png](images/college_towns_blog_post_30_1.png)
+![Violin plot of home prices by town type and state]({static}/images/college_towns_blog_post_30_1.png)
 
 
 ### Best and Worst State Housing Markets
