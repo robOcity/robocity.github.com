@@ -1,6 +1,7 @@
 title: How do college town home prices fare during recession?
 slug: how-do-college-town-home-prices-fare-during-recession
 date: 2019-05-30
+Modified: 2019-06-19
 author: Rob Osterburg
 category: Data Science
 tags: pandas, statistics, analysis wrangling

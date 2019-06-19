@@ -2,6 +2,7 @@ Title: Using Jupyter Notebooks to Blog with Pelican
 Author: Rob Osterburg
 Slug: using-jupyter-notebooks-to-blog-with-pelican
 Date: 2019-05-15
+Modified: 2019-06-19
 Category: Tutorial
 Tags: pelican, jupyter, nbconvert, markdown, github pages
 Summary: Using Pelican to generate a blog from Jupyter notebook files
