@@ -15,18 +15,32 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
 ## Preparing your Post
 
 1. Pelican uses metadata to tag and title your posts.  For markdown documents, you need to include these tags ascribes content to each of your posts.  If you are going with notebook-based approach put these tags into a markdown cell at the top of your document.
+   1. Tags for Markdown or `.md` files
 
-    ```text
-    Title:
-    Slug:
-    Date:
-    Category:
-    Tags:
-    Author:
-    Summary:
-    ```
+        ```text
+        Title:
+        Slug:
+        Date:
+        Category:
+        Tags:
+        Author:
+        Summary:
+        ```
 
-1. Checkout content branch on your blog (I use _source_), add, edit and check-in your new post
+   1. Tags for notebook or `.ipynb` files
+   
+        ```text
+        - Title:
+        - Slug:
+        - Date:
+        - Category:
+        - Tags:
+        - Author:
+        - Summary:
+        ```
+
+
+2. Checkout content branch on your blog (I use _source_), add, edit and check-in your new post
 
 ## Generating and Reviewing Content
 
