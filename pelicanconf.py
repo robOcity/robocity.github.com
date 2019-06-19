@@ -7,12 +7,12 @@ SITENAME = "Dealing with Data"
 SITEURL = ""
 
 PATH = "content"
+STATIC_PATHS = ["images"]
 
 TIMEZONE = "America/Denver"
 
 DEFAULT_LANG = "en"
 
-# adding support for jupyter notebooks
 MARKUP = "md"
 PLUGIN_PATHS = ["./plugins"]
 
