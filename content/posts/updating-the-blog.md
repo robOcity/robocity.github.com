@@ -48,7 +48,8 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
 1. Run `pelican content` from your blogs root directory and automatically detects changes in content
 1. Fix any warnings or errors that Pelican reports  
 1. Start Python's build-in web server by running: `python -m http.server 8000`
-1. `cd output` and open `http://localhost:8000` in your browser and review your blogs appearance
+1. Change to the output directory by running `cd output`
+1. Open `http://localhost:8000` in your browser and review your blogs appearance
 1. Keep editing and refreshing to see your latest changes
 1. Control-c to halt `pelican content`
 
