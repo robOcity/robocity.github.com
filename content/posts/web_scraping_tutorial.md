@@ -2,7 +2,7 @@ Title: Web Scraping with Python: An Introductory Tutorial
 Slug: web-scraping-with-python_an-introductory-tutorial
 Date: 2017-08-15
 Author: Rob Osterburg
-Category: Data Science
+Category: Tutorial
 Tags: web scraping, data extraction
 
 ## Acknowledgements
