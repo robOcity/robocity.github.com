@@ -3,7 +3,7 @@ Author: Rob Osterburg
 Slug: using-postgresql-for-data-science-basics
 Date: 2019-02-28
 Category: Data Science
-Tags: postgres, database, relational, notes, sql
+Tags: postgres, postgresql, database, relational, notes, sql, command line, psql, pgadmin, aggregation, filtering, group, join, joining, joining tables, macOS, OS X, mac, apple, installation, import data, importing, sort, sorting, order, ordering, sub-queries, sub-query, query, querying, sub-select, view, views, materialized, munging, windowing functions, ntile, lead, lag, troubleshooting, troubleshoot, temporary table, temp table, regex, regular expressions
 Summary: Notes and examples of how to use PostgreSQL for Data Science.
 
 ## MacOS Installation and Configuration
@@ -268,7 +268,7 @@ SIMILAR TO '[EPS]%';
 ## Sub-Queries
 
 _Consider using a view and or a windowing functions for
-simpler way to implement the same fucntionality._
+simpler way to implement the same functionality._
 
 Adding a calculated field
 ```sql
