@@ -30,10 +30,18 @@ AUTHOR_FEED_RSS = None
 
 # Blogroll
 LINKS = (
-    ("Pelican", "http://getpelican.com/"),
+    ("Chris Albon - Data Science & Artificial Intelligence", "https://chrisalbon.com/"),
+    ("Practical Business Python", "https://www.pbpython.com/"),
+    ("Animated Math", "https://www.3blue1brown.com/"),
+    ("Flowing Data", "https://flowingdata.com/"),
+    ("Data PlayGround", "https://harangdev.github.io/"),
+    ("Alberto Cairo", "http://albertocairo.com/"),
+    ("Matthew Devaney's Blog", "https://matthewdevaney.com/"),
+    ("Talk Python To Me", "https://talkpython.fm/"),
+    ("scikit-learn", "https://scikit-learn.org/stable/index.html"),
+    ("pandas", "https://pandas.pydata.org/"),
     ("Python.org", "http://python.org/"),
-    ("Jinja2", "http://jinja.pocoo.org/"),
-    ("You can modify those links in your config file", "#"),
+    ("Pelican", "http://getpelican.com/"),
 )
 
 # Social widget
