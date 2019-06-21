@@ -1,4 +1,4 @@
-Title: Using Jupyter Notebooks to Blog with Pelican
+Title: Blogging with Pelican, Jupyter Notebooks and nbconvert
 Author: Rob Osterburg
 Slug: using-jupyter-notebooks-to-blog-with-pelican
 Date: 2019-05-15
@@ -7,7 +7,7 @@ Category: Tutorial
 Tags: pelican, jupyter, nbconvert, markdown, github pages
 Summary: Using Pelican to generate a blog from Jupyter notebook files
 
-## Blogging with Jupyter Notebooks and nbconvert
+## Blogging with Pelican, Jupyter Notebooks and nbconvert
 
 In data science Jupyter notebooks are a prime source of content.  So, why not use notebooks for blog posts?  Much of my exploratory work is captured in notebooks anyway, so I gave it try.  You can do this using `jupyter nbconvert` or by installing a plugin in Pelican.  
 
