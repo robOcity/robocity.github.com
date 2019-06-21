@@ -3,26 +3,7 @@ Slug: web-scraping-with-python_an-introductory-tutorial
 Date: 2017-08-15
 Author: Rob Osterburg
 Category: Tutorial
-Tags: web scraping, data extraction
-
-## Acknowledgements
-
-* The generous [sponsors](http://denverdatascienceday.com/index.php/sponsors/) of [Denver Data Science Day 2017](http://denverdatascienceday.com/)
-
-* [Galvanize](https://www.galvanize.com/pick-a-location?page=%2F) for hosting [Denver Data Science Day 2017](http://denverdatascienceday.com/)
-
-* Bob Mickus, Tyler B. and all the volunteers from [PyData Denver](https://www.meetup.com/PyData-Denver/) who organized [Denver Data Science Day](http://denverdatascienceday.com/)
-
-* Miguel Grinberg whose [Easy Web Scraping with Python](https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python) blog post inspired this tutorial.  Miguel's posted his tutorial in 2014 and PyVideo.org has recently undergone a significant revision.
-
-## Topics
-* Which Python packages to use
-* Cover key concepts, tools and techniques
-* Scrape some data 
-    - Organize it using a namedtuple
-    - Persist it as a JSON file
-    - Read it back into a namedtuple and demonstrate semantic equivilence 
-* Share recommended resources
+Tags: web scraping, data extraction, beautifulsoup, beautifulsoup4, json, namedtuples, list comprehensions, python, python 3, page structure, requests, presentation
 
 ## Key Packages
 
@@ -35,7 +16,6 @@ Tags: web scraping, data extraction
     - Standard Python: `pip install requests beautifulsoup4`
 
     - Anaconda Python: `conda install requests beautifulsoup4`
-
 
 
 ```python
@@ -531,6 +511,25 @@ type(talk_data), type(restored_talk_data)
 * Read the terms and conditions, otherwise ...
 
 * Getting blocked, banned, sued ...
+
+## Acknowledgements
+
+* The generous [sponsors](http://denverdatascienceday.com/index.php/sponsors/) of [Denver Data Science Day 2017](http://denverdatascienceday.com/)
+
+* [Galvanize](https://www.galvanize.com/pick-a-location?page=%2F) for hosting [Denver Data Science Day 2017](http://denverdatascienceday.com/)
+
+* Bob Mickus, Tyler B. and all the volunteers from [PyData Denver](https://www.meetup.com/PyData-Denver/) who organized [Denver Data Science Day](http://denverdatascienceday.com/)
+
+* Miguel Grinberg whose [Easy Web Scraping with Python](https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python) blog post inspired this tutorial.  Miguel's posted his tutorial in 2014 and PyVideo.org has recently undergone a significant revision.
+
+## Topics
+* Which Python packages to use
+* Cover key concepts, tools and techniques
+* Scrape some data 
+    - Organize it using a namedtuple
+    - Persist it as a JSON file
+    - Read it back into a namedtuple and demonstrate semantic equivilence 
+* Share recommended resources
 
 ## Resources
 1. [Automate the Boring Stuff](https://automatetheboringstuff.com/), [Chapter 11 — Web Scraping](https://automatetheboringstuff.com/chapter11/) by Al Sweigart (Free PDF version online).  Takes you through topics step-by-step, includes using Selenium to fill out forms and simulate mouse clicks. 
