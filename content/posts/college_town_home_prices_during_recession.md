@@ -4,7 +4,7 @@ date: 2019-05-30
 Modified: 2019-06-19
 author: Rob Osterburg
 category: Data Science
-tags: pandas, statistics, analysis wrangling
+tags: pandas, statistics, analysis wrangling, seaborn, scipy.stats, ttest_ind, boxplot, violinplot, timeseries, quarterly data, quarter, datetime, datetimeindex, read_csv, read_excel
 
 During recession home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first a few definitions.  
 
