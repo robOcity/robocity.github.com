@@ -1,86 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-        <meta charset="utf-8" />
-        <title>Using Jupyter Notebooks to Blog with Pelican</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+    <title>Using Jupyter Notebooks to Blog with Pelican - Data and Code</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/using-jupyter-notebooks-to-blog-with-pelican.html">
+
+        <meta name="author" content="Rob Osterburg" />
+        <meta name="keywords" content="pelican,jupyter,nbconvert,markdown,github pages" />
+        <meta name="description" content="Using Pelican to generate a blog from Jupyter notebook files" />
+
+        <meta property="og:site_name" content="Data and Code" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Using Jupyter Notebooks to Blog with Pelican"/>
+        <meta property="og:url" content="/using-jupyter-notebooks-to-blog-with-pelican.html"/>
+        <meta property="og:description" content="Using Pelican to generate a blog from Jupyter notebook files"/>
+        <meta property="article:published_time" content="2019-05-15" />
+            <meta property="article:section" content="Tutorial" />
+            <meta property="article:tag" content="pelican" />
+            <meta property="article:tag" content="jupyter" />
+            <meta property="article:tag" content="nbconvert" />
+            <meta property="article:tag" content="markdown" />
+            <meta property="article:tag" content="github pages" />
+            <meta property="article:author" content="Rob Osterburg" />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
 </head>
+<body>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="/">Dealing with Data </a></h1>
-                <nav><ul>
-                    <li><a href="/category/data-science.html">Data Science</a></li>
-                    <li class="active"><a href="/category/tutorial.html">Tutorial</a></li>
-                </ul></nav>
-        </header><!-- /#banner -->
-<section id="content" class="body">
-  <article>
-    <header>
-      <h1 class="entry-title">
-        <a href="/using-jupyter-notebooks-to-blog-with-pelican.html" rel="bookmark"
-           title="Permalink to Using Jupyter Notebooks to Blog with Pelican">Using Jupyter Notebooks to Blog with Pelican</a></h1>
-    </header>
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Data and Code            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/data-science.html">Data science</a>
+                        </li>
+                        <li class="active">
+                            <a href="/category/tutorial.html">Tutorial</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
 
-    <div class="entry-content">
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/using-jupyter-notebooks-to-blog-with-pelican.html"
+                       rel="bookmark"
+                       title="Permalink to Using Jupyter Notebooks to Blog with Pelican">
+                        Using Jupyter Notebooks to Blog with Pelican
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
 <footer class="post-info">
-        <abbr class="published" title="2019-05-15T00:00:00-06:00">
-                Published: Wed 15 May 2019
-        </abbr>
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2019-05-15T00:00:00-06:00"> Wed 15 May 2019</time>
+    </span>
 
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
-        </address>
-<p>In <a href="/category/tutorial.html">Tutorial</a>.</p>
-<p>tags: <a href="/tag/pelican.html">pelican</a> <a href="/tag/jupyter-lab.html">jupyter lab</a> <a href="/tag/github-pages.html">github pages</a> </p>
-</footer><!-- /.post-info -->      <h2>Jupyter Notebook Support</h2>
-<p>If you are just getting starting blogging with Pelican and Jupyter Notebooks, then you need to install a plugin to generate HTML from your <code>.ipynb</code> files.  To do this add the <a href="https://github.com/danielfrg/pelican-ipynb">pelican-ipynb</a> plugin for Pelican by entering <code>git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb</code>.  Now you have added a submodule to your repository.</p>
-<p>If you have an existing Pelican blog that uses Jupyter notebooks as content,and have cloned a fresh version of your blog.  Then you will need to re-initialize your <code>pelican-ipynb</code> submodule.  First, re-initialize it by entering <code>git submodule init</code> followed by <code>git submodule update --rebase --remote</code>.  </p>
-<p>Make sure you have the following lines to <code>pelicanconf.py</code>:</p>
-<p><code># adding support for jupyter notebooks
-MARKUP = ("md", "ipynb")
-PLUGIN_PATHS = ["./plugins"]
-PLUGINS = ["ipynb.markup"]
-IGNORE_FILES = [".ipynb_checkpoints"]
-IPYNB_USE_METACELL = True</code></p>
-<h2>Update Pelican Plugins</h2>
-<p>Pelican uses plugins to add capabilities for generating blog content.  I work with Jupyter notebook (ipynb) files and use them as the basis for some of my blog posts.  This requires a plugin to generate the HTML and CSS from the ipynb file.  Generating the content requires a plugin and posting it on GitHub requires that the plugin be installed as a git submodule.  Having a repository within another repository -- especially one you are maintaining --  is rather intimidating.  Surprisingly, it is not as bad as it sounds.  Below are the steps to install install the <a href="https://github.com/danielfrg/pelican-ipynb">pelican-ipynb</a> plugin for posting to Github pages.</p>
-<ol>
-<li>Run <code>git submodule add git://github.com/danielfrg/pelican-ipynb.git plugins/ipynb</code></li>
-<li>Run <code>git submodule init</code></li>
-<li>Run <code>git submodule update</code> which downloads the latest version of pelican-ipynb into your <code>./plugins/ipynb</code> directory.</li>
-</ol>
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/pelican.html">pelican</a>
+        /
+	<a href="/tag/jupyter.html">jupyter</a>
+        /
+	<a href="/tag/nbconvert.html">nbconvert</a>
+        /
+	<a href="/tag/markdown.html">markdown</a>
+        /
+	<a href="/tag/github-pages.html">github pages</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <h2>Generating Blog Posts from Jupyter Notebooks</h2>
+<p>In data science Jupyter notebooks are a prime source of content.  So, why not use notebooks for blog posts?  Much of my exploratory work is captured in notebooks anyway, so I gave it try.  You can do this using <code>jupyter nbconvert</code> or by installing a plugin in Pelican.  </p>
+<p>Pelican uses plugins to generate HTML and CSS to create posts.  I chose <a href="https://github.com/danielfrg/pelican-ipynb">Pelican-ipynb</a> to process my notebook files.  It has more than 300 stars on Github and seemed to fit the needs perfectly.  Their Github repo has good documentation and provides all the configuration details you need to get started.  Pelican-ipynb worked well on my local system but I started experience problems once my blog posts were published.  Let me take a step back and tell you that plugins for Pelican are installed as git submodules (a repo in repo).  Getting the submodules to be installed and used by Github is where I ran into problems.  After several attempts to fix the issue but having no success I moved on to Jupyter's <code>nbconvert</code> tool.  I plan on giving Pelican-ipynb another try once I have become more familiar with Pelican.  Until then <code>nbconvert</code> allows me to convert my notebooks to Markdown by running <code>jupyter nbconvert --to=markdown your-notebook.ipynb</code>.  you can just as easily generate HTML or PDF files by justing changing the <code>to</code> flag.  </p>
 <h2>Preparing your Post</h2>
 <ol>
-<li>Pelican uses metadata from your post to generate the post including the title, category, date, etc.  The <a href="https://github.com/danielfrg/pelican-ipynb">pelican-ipynb</a> plugin offers several choices on how to do this.  I am choosing to add a cell to my notebook file and add the metadata there.  To do so you need to add a line with <code>IPYNB_USE_METACELL = True</code> to your <code>pelicanconf.py</code> file in the root directory of your blog.</li>
+<li>Pelican uses metadata to tag and title your posts.  For markdown documents, you need to include these tags ascribes content to each of your posts.  If you are going with notebook-based approach put these tags into a markdown cell at the top of your document.</li>
 <li>
-<p>Add the meta data from your blog post in a markdown cell containing the following tags:</p>
-<p><code>text
-Title:
-Slug:
-Date:
-Category:
-Tags:
-Author:
-Summary:</code></p>
+<p>Tags for Markdown or <code>.md</code> files</p>
+<div class="highlight"><pre><span></span><span class="o">```</span><span class="nb">text</span>
+<span class="n">Title</span><span class="p">:</span>
+<span class="n">Slug</span><span class="p">:</span>
+<span class="nb">Date</span><span class="p">:</span>
+<span class="n">Category</span><span class="p">:</span>
+<span class="n">Tags</span><span class="p">:</span>
+<span class="n">Author</span><span class="p">:</span>
+<span class="n">Summary</span><span class="p">:</span>
+<span class="o">```</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>Tags for notebook or <code>.ipynb</code> files</p>
+<div class="highlight"><pre><span></span><span class="o">```</span><span class="nb">text</span>
+<span class="o">-</span> <span class="n">Title</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Slug</span><span class="p">:</span>
+<span class="o">-</span> <span class="nb">Date</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Category</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Tags</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Author</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Summary</span><span class="p">:</span>
+<span class="o">```</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>Checkout content branch on your blog (I use <em>source</em>), add, edit and check-in your new post</p>
 </li>
 </ol>
-<p>Now you are ready to generate blog posts from your Jupyter notebooks.</p>
 <h2>Generating and Reviewing Content</h2>
 <ol>
-<li>Run <code>pelican content</code> from your blogs root directory and automatically detects changes in content</li>
+<li>Run <code>jupyter nbconvert --to=markdown your-notebook.ipynb</code>.  Note: <code>jupyter nbconvert --help</code> has good explanations of how else to use <code>nbconvert</code> </li>
+<li>Run <code>pelican content</code> from your blogs root directory and to build the the static files from your content</li>
 <li>Fix any warnings or errors that Pelican reports  </li>
-<li><code>cd output</code> and open <code>http://localhost:8000</code> in your browser and review your blogs appearance</li>
 <li>Start Python's build-in web server by running: <code>python -m http.server 8000</code></li>
+<li>Change to the output directory by running <code>cd output</code></li>
+<li>Open <code>http://localhost:8000</code> in your browser and review your blogs appearance</li>
 <li>Keep editing and refreshing to see your latest changes</li>
-<li>Control-c to halt <code>pelican content</code></li>
+<li>Control-c to halt <code>python -m http.server 8000</code> process</li>
 </ol>
 <h2>Publishing to Github Pages</h2>
+<p>Github pages supports both individuals and organizations.  <em>For individuals, your blog must be published on the master branch of your pages repository.</em>  So instead being the ultimate source of blog, the master branch is composed of all the build artifacts generated by Pelican.  Think generated HTML, CSS and other files.  To me this counter intuitive, and so, I wrote this post to provide clarity to my future self and others.</p>
 <ol>
-<li>Check in your changes to your <code>source</code> branch</li>
+<li>Check in any last changes to your <code>source</code> branch</li>
 <li>Run <code>pelican content -o output -s pelicanconf.py</code></li>
 <li>Run <code>ghp-import output -b gh-pages</code></li>
-<li>Run <code>git push git@github.com:robocity.github.io.git gh-pages:master</code></li>
+<li>Run <code>git push https://github.com/robOcity/robocity.github.com.git gh-pages:master</code></li>
+<li>If you get a <code>! [rejected]        gh-pages -&gt; master (non-fast-forward)</code> message, then run <code>git push -f https://github.com/robOcity/robocity.github.com.git gh-pages:master</code>.</li>
 </ol>
 <h2>Resources</h2>
 <ol>
@@ -89,38 +182,81 @@ Summary:</code></p>
 <li><a href="https://www.fullstackpython.com/pelican.html">Blog: Matt Makai's Excellent Pelican Posts</a></li>
 <li><a href="https://pmbaumgartner.github.io/blog/jupyter-notebooks-for-pelican/">Blog: Some Tips for Using Jupyter Notebooks with Pelican</a></li>
 <li><a href="https://nipunbatra.github.io/blog/2017/Jupyter-powered-blog.html">Blog: Hacking my way to a Jupyter notebook powered blog</a></li>
+<li><a href="https://stackoverflow.com/questions/11696295/rejected-master-master-non-fast-forward">Stackoverflow: rejected master -&gt; master (non-fast-forward)</a></li>
 </ol>
-    </div><!-- /.entry-content -->
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
 
-  </article>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Links -->
+<li class="list-group-item">
+  <h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+  <ul class="list-group" id="links">
+    <li class="list-group-item">
+      <a href="https://chrisalbon.com/" target="_blank">Chris Albon - Data Science & Artificial Intelligence</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.pbpython.com/" target="_blank">Practical Business Python</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.3blue1brown.com/" target="_blank">Animated Math</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://flowingdata.com/" target="_blank">Flowing Data</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://talkpython.fm/" target="_blank">Talk Python To Me</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://albertocairo.com/" target="_blank">Alberto Cairo</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://harangdev.github.io/" target="_blank">Data PlayGround</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://matthewdevaney.com/" target="_blank">Matthew Devaney's Blog</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Links -->
+  </ul>
 </section>
-        <section id="extras" class="body">
-                <div class="blogroll">
-                        <h2>links</h2>
-                        <ul>
-                            <li><a href="http://getpelican.com/">Pelican</a></li>
-                            <li><a href="http://python.org/">Python.org</a></li>
-                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="#">You can modify those links in your config file</a></li>
-                        </ul>
-                </div><!-- /.blogroll -->
-                <div class="social">
-                        <h2>social</h2>
-                        <ul>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
 
-                            <li><a href="#">You can add links in your config file</a></li>
-                            <li><a href="#">Another social link</a></li>
-                        </ul>
-                </div><!-- /.social -->
-        </section><!-- /#extras -->
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2019 Rob Osterburg
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
 
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
 
-                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
-        </footer><!-- /#contentinfo -->
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+
 
 </body>
 </html>

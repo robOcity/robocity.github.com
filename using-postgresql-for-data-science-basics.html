@@ -1,39 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-        <meta charset="utf-8" />
-        <title>Using PostgreSQL for Data Science</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+    <title>Using PostgreSQL for Data Science - Data and Code</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/using-postgresql-for-data-science-basics.html">
+
+        <meta name="author" content="Rob Osterburg" />
+        <meta name="keywords" content="postgres,database,relational,notes,sql" />
+        <meta name="description" content="Notes and examples of how to use PostgreSQL for Data Science." />
+
+        <meta property="og:site_name" content="Data and Code" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Using PostgreSQL for Data Science"/>
+        <meta property="og:url" content="/using-postgresql-for-data-science-basics.html"/>
+        <meta property="og:description" content="Notes and examples of how to use PostgreSQL for Data Science."/>
+        <meta property="article:published_time" content="2019-02-28" />
+            <meta property="article:section" content="Data Science" />
+            <meta property="article:tag" content="postgres" />
+            <meta property="article:tag" content="database" />
+            <meta property="article:tag" content="relational" />
+            <meta property="article:tag" content="notes" />
+            <meta property="article:tag" content="sql" />
+            <meta property="article:author" content="Rob Osterburg" />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
 </head>
+<body>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="/">Dealing with Data </a></h1>
-                <nav><ul>
-                    <li class="active"><a href="/category/data-science.html">Data Science</a></li>
-                    <li><a href="/category/tutorial.html">Tutorial</a></li>
-                </ul></nav>
-        </header><!-- /#banner -->
-<section id="content" class="body">
-  <article>
-    <header>
-      <h1 class="entry-title">
-        <a href="/using-postgresql-for-data-science-basics.html" rel="bookmark"
-           title="Permalink to Using PostgreSQL for Data Science">Using PostgreSQL for Data Science</a></h1>
-    </header>
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Data and Code            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="/category/data-science.html">Data science</a>
+                        </li>
+                        <li >
+                            <a href="/category/tutorial.html">Tutorial</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
 
-    <div class="entry-content">
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/using-postgresql-for-data-science-basics.html"
+                       rel="bookmark"
+                       title="Permalink to Using PostgreSQL for Data Science">
+                        Using PostgreSQL for Data Science
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
 <footer class="post-info">
-        <abbr class="published" title="2019-02-28T00:00:00-07:00">
-                Published: Thu 28 February 2019
-        </abbr>
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2019-02-28T00:00:00-07:00"> Thu 28 February 2019</time>
+    </span>
 
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
-        </address>
-<p>In <a href="/category/data-science.html">Data Science</a>.</p>
-<p>tags: <a href="/tag/postgres.html">postgres</a> <a href="/tag/database.html">database</a> <a href="/tag/relational.html">relational</a> <a href="/tag/notes.html">notes</a> <a href="/tag/sql.html">sql</a> </p>
-</footer><!-- /.post-info -->      <h2>MacOS Installation and Configuration</h2>
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/postgres.html">postgres</a>
+        /
+	<a href="/tag/database.html">database</a>
+        /
+	<a href="/tag/relational.html">relational</a>
+        /
+	<a href="/tag/notes.html">notes</a>
+        /
+	<a href="/tag/sql.html">sql</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <h2>MacOS Installation and Configuration</h2>
 <ul>
 <li>Login to MacOS as user with Administrative rights</li>
 <li>Install: <code>brew install postres</code></li>
@@ -475,8 +557,8 @@ simpler way to implement the same fucntionality.</em></p>
 
 
 <p>For more information see:
-* <a href="https://www.postgresql.org/docs/current/static/rules-views.html">PostgreSQL Views and the Rule System Documentation</a>
-* <a href="https://www.postgresql.org/docs/current/static/rules-materializedviews.html">PostgreSQL Materialized Views Documentation</a></p>
+<em> <a href="https://www.postgresql.org/docs/current/static/rules-views.html">PostgreSQL Views and the Rule System Documentation</a>
+</em> <a href="https://www.postgresql.org/docs/current/static/rules-materializedviews.html">PostgreSQL Materialized Views Documentation</a></p>
 <h2>Temporary Tables</h2>
 <p>Temporary tables are alternative to Views and Subqueries.  Here are two ways to
 create a temporary table in SQL.</p>
@@ -706,37 +788,79 @@ operate rows adjacent to the current row.</p>
 <li>SQL for Data Science from Lynda.com: <a href="https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html">https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html</a>.  I highly recommend this course. Increasingly Lynda.com's excellent courses are available through your local library.  Library patrons in Denver can access this course through <a href="">Denver Public Library Teach Yourself Technology page</a></li>
 <li>SQL for Data Science from Lynda.com: <a href="https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html">https://www.lynda.com/SQL-tutorials/SQL-Tips-Tricks-Data-Science/558576-2.html</a>. This is an excellent course and increasingly Lynda's courses are available through your local library.  Here in Denver library patrons can access all of Lynda's courses through the <a href="https://www.denverlibrary.org/teach-yourself-technology">Denver Public Library Teach Yourself Technology page</a>.</li>
 </ul>
-    </div><!-- /.entry-content -->
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
 
-  </article>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Links -->
+<li class="list-group-item">
+  <h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+  <ul class="list-group" id="links">
+    <li class="list-group-item">
+      <a href="https://chrisalbon.com/" target="_blank">Chris Albon - Data Science & Artificial Intelligence</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.pbpython.com/" target="_blank">Practical Business Python</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.3blue1brown.com/" target="_blank">Animated Math</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://flowingdata.com/" target="_blank">Flowing Data</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://talkpython.fm/" target="_blank">Talk Python To Me</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://albertocairo.com/" target="_blank">Alberto Cairo</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://harangdev.github.io/" target="_blank">Data PlayGround</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://matthewdevaney.com/" target="_blank">Matthew Devaney's Blog</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Links -->
+  </ul>
 </section>
-        <section id="extras" class="body">
-                <div class="blogroll">
-                        <h2>links</h2>
-                        <ul>
-                            <li><a href="http://getpelican.com/">Pelican</a></li>
-                            <li><a href="http://python.org/">Python.org</a></li>
-                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="#">You can modify those links in your config file</a></li>
-                        </ul>
-                </div><!-- /.blogroll -->
-                <div class="social">
-                        <h2>social</h2>
-                        <ul>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
 
-                            <li><a href="#">You can add links in your config file</a></li>
-                            <li><a href="#">Another social link</a></li>
-                        </ul>
-                </div><!-- /.social -->
-        </section><!-- /#extras -->
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2019 Rob Osterburg
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
 
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
 
-                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
-        </footer><!-- /#contentinfo -->
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+
 
 </body>
 </html>

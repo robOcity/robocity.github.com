@@ -1,34 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-        <meta charset="utf-8" />
-        <title>Dealing with Data - data extraction</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+    <title>data extraction - Data and Code</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+
+    <meta name="author" content="Rob Osterburg" />
+    <meta name="keywords" content="data extraction" />
+
+    <!-- Open Graph tags -->
+        <meta property="og:site_name" content="Data and Code" />
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="Data and Code"/>
+        <meta property="og:url" content=""/>
+        <meta property="og:description" content="Data and Code"/>
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
 </head>
+<body>
 
-<body id="index" class="home">
-        <header id="banner" class="body">
-                <h1><a href="/">Dealing with Data </a></h1>
-                <nav><ul>
-                    <li><a href="/category/data-science.html">Data Science</a></li>
-                    <li><a href="/category/tutorial.html">Tutorial</a></li>
-                </ul></nav>
-        </header><!-- /#banner -->
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Data and Code            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/data-science.html">Data science</a>
+                        </li>
+                        <li >
+                            <a href="/category/tutorial.html">Tutorial</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="/web-scraping-with-python_an-introductory-tutorial.html">Web Scraping with Python: An Introductory Tutorial</a></h1>
-<footer class="post-info">
-        <abbr class="published" title="2017-08-15T00:00:00-06:00">
-                Published: Tue 15 August 2017
-        </abbr>
+<!-- Banner -->
+<!-- End Banner -->
 
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/rob-osterburg.html">Rob Osterburg</a>
-        </address>
-<p>In <a href="/category/data-science.html">Data Science</a>.</p>
-<p>tags: <a href="/tag/web-scraping.html">web scraping</a> <a href="/tag/data-extraction.html">data extraction</a> </p>
-</footer><!-- /.post-info --><h2>Acknowledgements</h2>
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+            <article>
+                <h2><a href="/web-scraping-with-python_an-introductory-tutorial.html">Web Scraping with Python: An Introductory Tutorial</a></h2>
+                <div class="summary"><h2>Acknowledgements</h2>
 <ul>
 <li>
 <p>The generous <a href="http://denverdatascienceday.com/index.php/sponsors/">sponsors</a> of <a href="http://denverdatascienceday.com/">Denver Data Science Day 2017</a></p>
@@ -40,609 +83,80 @@
 <p>Bob Mickus, Tyler B. and all the volunteers from <a href="https://www.meetup.com/PyData-Denver/">PyData Denver</a> who organized <a href="http://denverdatascienceday.com/">Denver Data Science Day</a></p>
 </li>
 <li>
-<p>Miguel Grinberg whose <a href="https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python">Easy Web Scraping with Python</a> blog post inspired this tutorial.  Miguel's posted his tutorial in 2014 and PyVideo.org has recently undergone a significant revision.</p>
+<p>Miguel Grinberg whose <a href="https://blog.miguelgrinberg.com/post/easy-web-scraping-with-python">Easy Web Scraping with Python</a> blog post inspired this tutorial.  Miguel's posted …</p></li></ul>
+                    <a class="btn btn-default btn-xs" href="/web-scraping-with-python_an-introductory-tutorial.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Links -->
+<li class="list-group-item">
+  <h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+  <ul class="list-group" id="links">
+    <li class="list-group-item">
+      <a href="https://chrisalbon.com/" target="_blank">Chris Albon - Data Science & Artificial Intelligence</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.pbpython.com/" target="_blank">Practical Business Python</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.3blue1brown.com/" target="_blank">Animated Math</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://flowingdata.com/" target="_blank">Flowing Data</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://talkpython.fm/" target="_blank">Talk Python To Me</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://albertocairo.com/" target="_blank">Alberto Cairo</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://harangdev.github.io/" target="_blank">Data PlayGround</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://matthewdevaney.com/" target="_blank">Matthew Devaney's Blog</a>
+    </li>
+  </ul>
 </li>
-</ul>
-<h2>Topics</h2>
-<ul>
-<li>Which Python packages to use</li>
-<li>Cover key concepts, tools and techniques</li>
-<li>Scrape some data <ul>
-<li>Organize it using a namedtuple</li>
-<li>Persist it as a JSON file</li>
-<li>Read it back into a namedtuple and demonstrate semantic equivilence </li>
-</ul>
-</li>
-<li>Share recommended resources</li>
-</ul>
-<h2>Key Packages</h2>
-<ul>
-<li>
-<p>requests -- Issues HTTP requests to web servers and handles the response </p>
-</li>
-<li>
-<p>beautifulsoup4 -- Parse the returned web page and makes it searchable</p>
-</li>
-<li>
-<p>These packages are <em>not</em> in Python's standard library, here is how to install them:</p>
-<ul>
-<li>
-<p>Standard Python: <code>pip install requests beautifulsoup4</code></p>
-</li>
-<li>
-<p>Anaconda Python: <code>conda install requests beautifulsoup4</code></p>
-</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Requests is &#39;HTTP for Humans&#39;</span>
-<span class="kn">import</span> <span class="nn">requests</span>
+<!-- End Sidebar/Links -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
+
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Rob Osterburg
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
 
-<span class="c1"># BeautifulSoup parses and builds tree from HTML</span>
-<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-</pre></div>
 
 
-<h2>Warning! Warning!</h2>
-<ul>
-<li>Only scrape as a last resort, first see if the site has an API or other means of accessing their data</li>
-<li>Web scraping is commonly frowned upon by the site's owners</li>
-<li><strong>Always check the site's Terms of service, Conditions of use, and robots.txt file</strong>   </li>
-<li>Aggressive scrapers can take a site down, owner's can rightfully consider that a denial of service attack</li>
-<li>If in doubt, talk to a lawyer, especially for <em>anything</em> work related</li>
-<li>Watch <a href="http://pyvideo.org/pydata-dc-2016/sustainable-scrapers.html">Sustainable Scrapers, PyData DC, 2016</a> to understand how a data journalist deals with these issues. It's a good talk and quite entertaining -- in a geeky way</li>
-</ul>
-<h2>PyVideo.org -- Is it OK to scrape?</h2>
-<ul>
-<li><a href="http://pyvideo.org">PyVideo.org</a> provides valuable meta-data about Python presentations</li>
-<li>It makes finding talks easy and can be searched by event, presenter, or topic </li>
-<li>But what restrictions does it have against scraping?  </li>
-<li>Let's take a look</li>
-</ul>
-<h2>PyVideo.org - Terms and Conditions?</h2>
-<p>None that I can see, the site's <a href="http://pyvideo.org/pages/about.html">About page</a> says:</p>
-<blockquote>
-<p>... PyVideo.org is a freely available index of freely available resources that seek to provide everyone with the opportunity to learn about Python.</p>
-</blockquote>
-<h2>PyVideo.org - Robots.txt?</h2>
-<ul>
-<li>
-<p>A robots.txt files contain <em>restrictions</em> on the content that web crawlers are permitted to access </p>
-</li>
-<li>
-<p>The <a href="http://pyvideo.org/robots.txt">http://pyvideo.org/robots.txt</a> is empty, except for one comment </p>
-</li>
-<li>
-<p>It appears that there are no restrictions on scraping PyVideo.org  </p>
-</li>
-<li>
-<p>Let's minimize our impact on the site </p>
-</li>
-<li>
-<p>To see <em>The Robots Exclusion Protocol</em> visit <a href="http://www.robotstxt.org/">http://www.robotstxt.org/</a>.</p>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Getting the Page</span>
-<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://pyvideo.org/tags.html&#39;</span><span class="p">)</span>
-
-<span class="c1"># A status code other than 200 indicates problem of some sort</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;status code:&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-
-<span class="c1"># A better approach is let requests throw an exception when a problem occurs</span>
-<span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="n">status</span> <span class="n">code</span><span class="p">:</span> <span class="mi">200</span>
-</pre></div>
-
-
-<h2>HTTP Responses</h2>
-<table>
-<thead>
-<tr>
-<th>HTTP Verb</th>
-<th>Effect</th>
-<th>Success</th>
-<th>Failure</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>POST</td>
-<td>Create</td>
-<td>200</td>
-<td>400, 40X, 500</td>
-</tr>
-<tr>
-<td><strong>GET</strong></td>
-<td><strong>Read</strong></td>
-<td><strong>200</strong></td>
-<td><strong>400, 40X, 500</strong></td>
-</tr>
-<tr>
-<td>PUT</td>
-<td>Update</td>
-<td>200</td>
-<td>400, 40X, 500</td>
-</tr>
-<tr>
-<td>DELETE</td>
-<td>Delete</td>
-<td>200</td>
-<td>400, 40X, 500</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><a href="https://httpstatuses.com/">Comprehensive list of HTTP status codes</a></li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Parse the Page</span>
-<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<p>## BeautifulSoup - Parses the page</p>
-<ul>
-<li>Models the page as a tree</li>
-<li>
-<p>Similar to the Document Object Model</p>
-</li>
-<li>
-<p>Parsers build the tree, pick one</p>
-</li>
-<li>html.parser -&gt; Default parser for Python 3</li>
-<li>HTMLParser  -&gt; Default parser for Python 2</li>
-<li>lxml        -&gt; Fast requires installing a C library and a PyPI package </li>
-<li>html5lib    -&gt; Pure Python and part of the standard library</li>
-</ul>
-<p>cite: https://interactivepython.org/runestone/static/pythonds/Trees/ExamplesofTrees.html</p>
-<h2>BeautifulSoup - Well documented and easy to use API</h2>
-<ul>
-<li>
-<p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors">select</a>('css selector') --&gt; [List of Tags]</p>
-</li>
-<li>
-<p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all">find_all</a>(tags, keyword_args, attrs={'attr', 'value'})  --&gt; [List of Tags]</p>
-</li>
-<li>
-<p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find">find</a>(tags, keyword_args, attrs={'attr', 'value'}) --&gt; Tag</p>
-</li>
-<li>
-<p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup 4 Documentation</a></p>
-</li>
-</ul>
-<h2>Understanding Page Structure</h2>
-<ul>
-<li>To extract data from a page, you need to understand its structure</li>
-<li>BeautifulSoup holds the tree in memory</li>
-<li>Look into it using the our browser's built-in developer tools<ul>
-<li>Mac -- Cmd + Opt + i</li>
-<li>Linux -- Ctrl + Shift + i</li>
-<li>Windows -- Ctrl + Shift + i</li>
-</ul>
-</li>
-</ul>
-<h2>Developer Tools - Getting a CSS selector</h2>
-<ul>
-<li>Use the element inspector to locate items you want to scrape</li>
-<li>Right-click on the element &gt; Copy &gt; Copy CSS Selector</li>
-<li>Paste the selector into your code</li>
-<li>Make it more general by removing aspects that specific to <em>a</em> particular tag</li>
-<li>In this case, <code>nth-child()</code> and <code>.col-md-3</code></li>
-<li>The idea here is to tune the selector to the data you want to scrape</li>
-<li>Tutorial: <a href="https://dailypost.wordpress.com/2013/07/25/css-selectors/">An Intro to CSS: Finding CSS Selectors</a></li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Build a list of anchor elements using a CSS selector</span>
-<span class="c1"># First we need to clean our CSS using a for-loop</span>
-<span class="n">topics</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">as_copied_css</span> <span class="o">=</span> <span class="s1">&#39;li.col-md-3:nth-child(1174) &gt; a:nth-child(1)&#39;</span>
-<span class="n">cleaned_css</span> <span class="o">=</span> <span class="s1">&#39;li &gt; a&#39;</span>
-<span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">cleaned_css</span><span class="p">):</span>
-    <span class="n">topics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
-<span class="n">topics</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/index.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-home&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Start<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/events.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-list-ul&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Events<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tags.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-tags&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Tags<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/speakers.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-users&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Speakers<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/pages/about.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-info&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>About<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>]
-</pre></div>
-
-
-<h2>Why List Comprehensions?</h2>
-<ul>
-<li>List comprehensions are a powerful way to create lists</li>
-<li>For-loop code above == List comprehension below</li>
-<li>The CSS selector got us 90% of the way there</li>
-<li>List comprehension can do the rest</li>
-<li>I find them very handy, I think you will too</li>
-<li>Tutorial: <a href="https://www.digitalocean.com/community/tutorials/understanding-list-comprehensions-in-python-3">Understanding List Comprehensions in Python 3</a></li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Now let&#39;s using a list comprehension </span>
-<span class="c1"># to build the list of links</span>
-<span class="n">topics</span> <span class="o">=</span> <span class="p">[</span><span class="n">topic</span>                                        <span class="c1"># adds the topic to the list</span>
-          <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;li &gt; a&#39;</span><span class="p">)]</span>          <span class="c1"># loop over Tags from select</span>
-<span class="n">topics</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/index.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-home&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Start<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/events.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-list-ul&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Events<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tags.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-tags&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Tags<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/speakers.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-users&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Speakers<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/pages/about.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-info&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>About<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/pages/thank-you-contributors.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-info&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;</span>Thank You<span class="nt">&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/pages/thanks-will-and-sheila.html&quot;</span><span class="nt">&gt;&lt;i</span> <span class="na">class=</span><span class="s">&quot;fa fa-fw fa-info&quot;</span><span class="nt">&gt;&lt;/i&gt;</span> <span class="nt">&lt;span&gt;&lt;/span&gt;&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tag/2to3/&quot;</span><span class="nt">&gt;</span>2to3<span class="nt">&lt;/a&gt;</span>]
-</pre></div>
-
-
-<ul>
-<li>Now lets look at one of the elements in our list</li>
-<li>Each element is a BeautifulSoup Tag object</li>
-<li><em>Tag</em> allows access to all the element's data including<ul>
-<li><em>attributes</em> that are accessed using dictionary like syntax</li>
-<li><em>contents</em> that are displayed on the page</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Let&#39;s look a Tag instance</span>
-<span class="n">topic</span> <span class="o">=</span> <span class="n">topics</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
-<span class="c1"># Access the data it holds</span>
-<span class="nb">type</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">topic</span><span class="p">,</span> <span class="n">topic</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span> <span class="n">topic</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>(bs4.element.Tag,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tag/2to3/&quot;</span><span class="nt">&gt;</span>2to3<span class="nt">&lt;/a&gt;</span>,
- [&#39;2to3&#39;],
- &#39;http://pyvideo.org/tag/2to3/&#39;)
-</pre></div>
-
-
-<ul>
-<li>List comprehensions are concise and powerful to process data</li>
-<li>From the list of anchor elements</li>
-<li>Let's create a list of links to topics pages</li>
-<li>Filtering out all unrelated links</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Extracting and filtering the links</span>
-<span class="n">topics</span> <span class="o">=</span> <span class="p">[</span><span class="n">topic</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span>                       <span class="c1"># extract attribute value</span>
-          <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;li &gt; a&#39;</span><span class="p">)</span>  <span class="c1"># loop over anchors</span>
-          <span class="k">if</span> <span class="s1">&#39;/tag/&#39;</span> <span class="ow">in</span> <span class="n">topic</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]]</span>        <span class="c1"># filter</span>
-
-<span class="nb">len</span><span class="p">(</span><span class="n">topics</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">topics</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">topics</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">1461</span><span class="p">,</span>
- <span class="n">str</span><span class="p">,</span>
- <span class="p">[</span><span class="s1">&#39;http://pyvideo.org/tag/2to3/&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;http://pyvideo.org/tag/3d/&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;http://pyvideo.org/tag/3d-printing/&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;http://pyvideo.org/tag/abc/&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;http://pyvideo.org/tag/accelerate/&#39;</span><span class="p">])</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Get the page</span>
-<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://pyvideo.org/tag/scraping&#39;</span><span class="p">)</span>
-<span class="n">resp</span><span class="o">.</span><span class="n">status_code</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="mi">200</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Parse the page</span>
-<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<h2>Using Tag.find_all()</h2>
-<ul>
-<li>We have used <code>select()</code>, not let's try out <code>find_all()</code> </li>
-<li>Our goal is create a list of the links to all the talks on a particular topic</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Find all the video page links using find_all()</span>
-<span class="n">h4_tags</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;h4&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s1">&#39;entry-title&#39;</span><span class="p">)</span>
-<span class="n">h4_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="nt">&lt;h4</span> <span class="na">class=</span><span class="s">&quot;entry-title&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;/pydata-dc-2016/open-data-dashboards-python-web-scraping.html&quot;</span> <span class="na">rel=</span><span class="s">&quot;bookmark&quot;</span> <span class="na">title=</span><span class="s">&quot;Permalink to Open Data Dashboards &amp;amp; Python Web Scraping&quot;</span><span class="nt">&gt;</span>
-           Open Data Dashboards <span class="ni">&amp;amp;</span> Python Web Scraping
-        <span class="nt">&lt;/a&gt;</span>
-<span class="nt">&lt;/h4&gt;</span>
-</pre></div>
-
-
-<h2>BeautifulSoup in action</h2>
-<ul>
-<li>Methods: <code>find_all()</code> and <code>select()</code> both return list of Tag objects</li>
-<li>Accessing descendents:  Tag.Descendent_Tag['attribute']</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Extracting the link from &lt;a&gt; tag inside the &lt;h4&gt;</span>
-<span class="n">findall_talks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">h4_tags</span><span class="p">]</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">findall_talks</span><span class="p">),</span> <span class="n">findall_talks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="s1">&#39;/pydata-dc-2016/open-data-dashboards-python-web-scraping.html&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Same thing using select() -- In this case select seems cleaner</span>
-<span class="n">site_url</span> <span class="o">=</span> <span class="s1">&#39;http://pyvideo.org&#39;</span>
-<span class="n">select_talks</span> <span class="o">=</span> <span class="p">[</span><span class="n">site_url</span> <span class="o">+</span> <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> 
-                <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;article &gt; section &gt; h4 &gt; a&#39;</span><span class="p">)]</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">select_talks</span><span class="p">),</span> <span class="n">select_talks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">13</span><span class="p">,</span>
- <span class="s1">&#39;http://pyvideo.org/pydata-dc-2016/open-data-dashboards-python-web-scraping.html&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<h2>Moving on to extract presentation meta data</h2>
-<ul>
-<li>Our ultimate destination is now in sight -- The video's presentation page</li>
-<li>It's the talk page -- that's where the best data are found</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Get a page and parse it </span>
-<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">select_talks</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Extract the talk&#39;s title</span>
-<span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="n">title</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> 
-          <span class="k">for</span> <span class="n">title</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.entry-title &gt; a&#39;</span><span class="p">)]</span>
-<span class="n">title</span> <span class="o">=</span> <span class="n">titles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">title</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="s1">&#39;Open Data Dashboards &amp; Python Web Scraping&#39;</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Extract the speaker&#39;s name </span>
-<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
-         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.url&#39;</span><span class="p">)]</span>
-<span class="n">names</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;Marie Whittaker&#39;</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Extract the talk details</span>
-<span class="n">details</span> <span class="o">=</span> <span class="p">[</span><span class="n">detail</span> 
-           <span class="k">for</span> <span class="n">detail</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.details-content &gt; ul &gt; li &gt; a&#39;</span><span class="p">)]</span>
-<span class="n">details</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span>[<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/events/pydata-dc-2016.html&quot;</span><span class="nt">&gt;</span>PyData DC 2016<span class="nt">&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;https://www.youtube.com/watch?v=kc676iLvib8&quot;</span> <span class="na">rel=</span><span class="s">&quot;external&quot;</span><span class="nt">&gt;</span>YouTube<span class="nt">&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tag/data/&quot;</span><span class="nt">&gt;</span>Data<span class="nt">&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tag/scraping/&quot;</span><span class="nt">&gt;</span>scraping<span class="nt">&lt;/a&gt;</span>,
- <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://pyvideo.org/tag/web/&quot;</span><span class="nt">&gt;</span>web<span class="nt">&lt;/a&gt;</span>]
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Extract the YouTube link</span>
-<span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">detail</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> 
-         <span class="k">for</span> <span class="n">detail</span> <span class="ow">in</span> <span class="n">details</span> 
-         <span class="k">if</span> <span class="s1">&#39;youtube.com&#39;</span> <span class="ow">in</span> <span class="n">detail</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]]</span>
-<span class="n">link</span> <span class="o">=</span> <span class="n">links</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Extract the subject tags</span>
-<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">link</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> 
-        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">details</span> 
-        <span class="k">if</span> <span class="s1">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">link</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]]</span>
-<span class="n">tags</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;scraping&#39;</span><span class="p">,</span> <span class="s1">&#39;web&#39;</span><span class="p">]</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="c1"># Extract the description</span>
-<span class="n">paragraphs</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.entry-content &gt; p&#39;</span><span class="p">)</span>
-<span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paragraphs</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="nv">PyData</span> <span class="nv">DC</span> <span class="mi">2016</span>
-
-<span class="nv">Distilling</span> <span class="nv">a</span> <span class="nv">world</span> <span class="nv">of</span> <span class="nv">data</span> <span class="nv">down</span> <span class="nv">to</span> <span class="nv">a</span> <span class="nv">few</span> <span class="nv">key</span> <span class="nv">indicators</span> <span class="nv">can</span> <span class="nv">be</span> <span class="nv">an</span> <span class="nv">effective</span> <span class="nv">way</span> <span class="nv">of</span> <span class="nv">keeping</span> <span class="nv">an</span> <span class="nv">audience</span> <span class="nv">informed</span>, <span class="nv">and</span> <span class="nv">this</span> <span class="nv">concept</span> <span class="nv">is</span> <span class="nv">at</span> <span class="nv">the</span> <span class="nv">heart</span> <span class="nv">of</span> <span class="nv">a</span> <span class="nv">good</span> <span class="nv">dashboard</span>. <span class="nv">This</span> <span class="nv">talk</span> <span class="nv">will</span> <span class="nv">cover</span> <span class="nv">a</span> <span class="nv">few</span> <span class="nv">methods</span> <span class="nv">of</span> <span class="nv">scraping</span> <span class="nv">and</span> <span class="nv">reshaping</span> <span class="nv">open</span> <span class="nv">data</span> <span class="k">for</span> <span class="nv">dashboard</span> <span class="nv">visualization</span>, <span class="nv">to</span> <span class="nv">automate</span> <span class="nv">the</span> <span class="nv">boring</span> <span class="nv">stuff</span> <span class="nv">so</span> <span class="nv">you</span> <span class="nv">have</span> <span class="nv">more</span> <span class="nv">time</span> <span class="nv">and</span> <span class="nv">energy</span> <span class="nv">to</span> <span class="nv">focus</span> <span class="nv">on</span> <span class="nv">the</span> <span class="nv">analysis</span> <span class="nv">and</span> <span class="nv">content</span>.
-
-<span class="nv">This</span> <span class="nv">talk</span> <span class="nv">will</span> <span class="nv">cover</span> <span class="nv">a</span> <span class="nv">basic</span> <span class="nv">scenario</span> <span class="nv">of</span> <span class="nv">curating</span> <span class="nv">open</span> <span class="nv">data</span> <span class="nv">into</span> <span class="nv">visualizations</span> <span class="k">for</span> <span class="nv">an</span> <span class="nv">audience</span>. <span class="nv">The</span> <span class="nv">main</span> <span class="nv">goal</span> <span class="nv">is</span> <span class="nv">to</span> <span class="nv">automate</span> <span class="nv">data</span> <span class="nv">scraping</span><span class="o">/</span><span class="nv">downloading</span> <span class="nv">and</span> <span class="nv">reshaping</span>. <span class="nv">I</span> <span class="nv">use</span> <span class="nv">python</span> <span class="nv">to</span> <span class="nv">automate</span> <span class="nv">data</span> <span class="nv">gathering</span>, <span class="nv">and</span> <span class="nv">Tableau</span> <span class="nv">and</span> <span class="nv">D3</span> <span class="nv">as</span> <span class="nv">visualization</span> <span class="nv">tools</span> <span class="o">--</span> <span class="nv">but</span> <span class="nv">the</span> <span class="nv">process</span> <span class="nv">can</span> <span class="nv">be</span> <span class="nv">applied</span> <span class="nv">to</span> <span class="nv">numerous</span> <span class="nv">analytical</span><span class="o">/</span><span class="nv">visualization</span> <span class="nv">suites</span>.
-
-<span class="nv">I</span><span class="s1">&#39;</span><span class="s">ll discuss situations where a dashboard makes sense (and when one doesn</span><span class="s1">&#39;</span><span class="nv">t</span><span class="ss">)</span>. <span class="nv">I</span> <span class="nv">will</span> <span class="nv">make</span> <span class="nv">a</span> <span class="nv">case</span> <span class="nv">also</span> <span class="nv">that</span> <span class="nv">automation</span> <span class="nv">makes</span> <span class="k">for</span> <span class="nv">a</span> <span class="nv">more</span> <span class="nv">seamless</span> <span class="nv">data</span> <span class="nv">gathering</span> <span class="nv">and</span> <span class="nv">updating</span> <span class="nv">process</span>, <span class="nv">but</span> <span class="nv">not</span> <span class="nv">always</span> <span class="k">for</span> <span class="nv">smarter</span> <span class="nv">data</span> <span class="nv">analysis</span>.
-
-<span class="nv">Some</span> <span class="nv">python</span> <span class="nv">packages</span> <span class="nv">I</span><span class="s1">&#39;</span><span class="s">ll cover for web scraping and downloading/reshaping open data include: openpyxl, pandas, xlsxwriter, and BeautifulSoup. I</span><span class="s1">&#39;</span><span class="nv">ll</span> <span class="nv">also</span> <span class="nv">touch</span> <span class="nv">on</span> <span class="nv">APIs</span>.
-</pre></div>
-
-
-<h2>Saving the Data</h2>
-<ul>
-<li>
-<p>Use namedtuple to capture information about PyVideo talk</p>
-</li>
-<li>
-<p>What do we need to capture</p>
-<ul>
-<li>Talk title (string)</li>
-<li>Name of presenter(s) (list)</li>
-<li>Description (string)</li>
-<li>Tags (list)</li>
-<li>Link to video (string)</li>
-</ul>
-</li>
-<li>
-<p>Let's use JSON </p>
-<ul>
-<li>Awesome for persisting structured data </li>
-<li>Excellent data exchange format</li>
-</ul>
-</li>
-</ul>
-<h2>Why namedtuples?</h2>
-<ul>
-<li>namedtuples are a lightweight container for data</li>
-<li>Using a name to access data elements is their advantage</li>
-<li>Numeric indexing is all that regular tuple provides</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Storing related data in a namedtuple</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-
-<span class="c1"># create the structure</span>
-<span class="n">pyvideo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;pyvideo&#39;</span><span class="p">,</span> <span class="s1">&#39;title names description tags link&#39;</span><span class="p">)</span>
-
-<span class="c1"># create an instance</span>
-<span class="n">talk_data</span> <span class="o">=</span> <span class="n">pyvideo</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">link</span><span class="o">=</span><span class="n">link</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
-
-<span class="c1"># access the data and display it as a formatted string</span>
-<span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;title={}</span><span class="se">\n</span><span class="s1">names={}</span><span class="se">\n</span><span class="s1">tags={}</span><span class="se">\n</span><span class="s1">link={}&#39;</span>
-<span class="k">print</span><span class="p">(</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">talk_data</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">talk_data</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">talk_data</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">talk_data</span><span class="o">.</span><span class="n">link</span><span class="p">))</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="n">title</span><span class="o">=</span><span class="k">Open</span> <span class="k">Data</span> <span class="n">Dashboards</span> <span class="o">&amp;</span> <span class="n">Python</span> <span class="n">Web</span> <span class="n">Scraping</span>
-<span class="k">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Marie Whittaker&#39;</span><span class="p">]</span>
-<span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;scraping&#39;</span><span class="p">,</span> <span class="s1">&#39;web&#39;</span><span class="p">]</span>
-<span class="n">link</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="p">.</span><span class="n">youtube</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">watch</span><span class="o">?</span><span class="n">v</span><span class="o">=</span><span class="n">kc676iLvib8</span>
-</pre></div>
-
-
-<h2>Why JSON?</h2>
-<ul>
-<li>Handles structured data well</li>
-<li>Excellent data exchange format</li>
-<li>Python supports round-tripping between namedtuples and JSON<ul>
-<li>namedtuple objects can be saved a JSON formatted text</li>
-<li>JSON formatted text can be convert back to namedtuple objects</li>
-<li>Of course, text can be written to file </li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Writing the namedtuple to disk as JSON</span>
-<span class="kn">import</span> <span class="nn">json</span>
-
-<span class="c1"># Write to file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;a_video.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
-    <span class="c1"># Note: preserve keys by saving a dictionary, not a list</span>
-    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">talk_data</span><span class="o">.</span><span class="n">_asdict</span><span class="p">(),</span> <span class="n">fout</span><span class="p">)</span>
-
-<span class="c1"># Read from file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;a_video.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-    <span class="n">restored_talk_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
-
-<span class="c1"># Deserialize -- Note: pass as keyword arguments using **</span>
-<span class="n">restored_talk_data</span> <span class="o">=</span> <span class="n">pyvideo</span><span class="p">(</span><span class="o">**</span><span class="n">restored_talk_data</span><span class="p">)</span>
-
-<span class="c1"># Compare semantically</span>
-<span class="n">talk_data</span> <span class="o">==</span> <span class="n">restored_talk_data</span>
-<span class="nb">type</span><span class="p">(</span><span class="n">talk_data</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">restored_talk_data</span><span class="p">)</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">__main__</span><span class="p">.</span><span class="n">pyvideo</span><span class="p">,</span> <span class="n">__main__</span><span class="p">.</span><span class="n">pyvideo</span><span class="p">)</span>
-</pre></div>
-
-
-<h2>Writing web scraping code has advantages</h2>
-<ul>
-<li>
-<p>Excellent source of valuable data </p>
-</li>
-<li>
-<p>The code is approachable</p>
-</li>
-</ul>
-<h2>... and presents some problems too</h2>
-<ul>
-<li>
-<p>Your code breaks when the site is updated</p>
-</li>
-<li>
-<p>Read the terms and conditions, otherwise ...</p>
-</li>
-<li>
-<p>Getting blocked, banned, sued ...</p>
-</li>
-</ul>
-<h2>Resources</h2>
-<ol>
-<li>
-<p><a href="https://automatetheboringstuff.com/">Automate the Boring Stuff</a>, <a href="https://automatetheboringstuff.com/chapter11/">Chapter 11 — Web Scraping</a> by Al Sweigart (Free PDF version online).  Takes you through topics step-by-step, includes using Selenium to fill out forms and simulate mouse clicks. </p>
-</li>
-<li>
-<p><a href="https://realpython.com/blog/python/web-scraping-with-scrapy-and-mongodb/">RealPython Blog -- Web Scraping With Scrapy and MongoDB</a> by Micheal Herman. Scrapy is a Python package that makes scraping code easier to maintain. </p>
-</li>
-<li>
-<p><a href="https://talkpython.fm/episodes/show/50/web-scraping-at-scale-with-scrapy-and-scrapinghub">Talk Python to Me Podcast -- Web scraping at scale with Scrapy and ScrapingHub</a>. Web scraping as a Service from the author of Scrapy.</p>
-</li>
-<li>
-<p><a href="http://pyvideo.org/">PyVideo.org</a>— Comprehensive catalog of videos of over 8000 of Python related presentations. Talks on scraping web pages can be found on the <a href="http://pyvideo.org/tag/scraping/">Scraping page</a>. </p>
-</li>
-<li>
-<p><a href="https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491910291">Web Scraping with Python: Collecting Data from the Modern Web</a> by Ryan Mitchell.  This 4.5 star book on Amazon covers scraping topics in depth.</p>
-</li>
-<li>
-<p><a href="https://awesome-python.com/">Awesome Python</a> -- PyPI has over 100,000 packages.  Awesome Python is a curated list of the best, see their recommended web scraping packages <a href="https://awesome-python.com/#web-crawling">here</a>.</p>
-</li>
-<li>
-<p>Other Practice Sites</p>
-<ul>
-<li><a href="http://books.toscrape.com/">Books to Scrape</a></li>
-<li><a href="http://quotes.toscrape.com/">Quotes to Scrape</a> </li>
-</ul>
-</li>
-</ol>                </article>
-            </aside><!-- /#featured -->
-        <section id="extras" class="body">
-                <div class="blogroll">
-                        <h2>links</h2>
-                        <ul>
-                            <li><a href="http://getpelican.com/">Pelican</a></li>
-                            <li><a href="http://python.org/">Python.org</a></li>
-                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="#">You can modify those links in your config file</a></li>
-                        </ul>
-                </div><!-- /.blogroll -->
-                <div class="social">
-                        <h2>social</h2>
-                        <ul>
-
-                            <li><a href="#">You can add links in your config file</a></li>
-                            <li><a href="#">Another social link</a></li>
-                        </ul>
-                </div><!-- /.social -->
-        </section><!-- /#extras -->
-
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-
-                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
-        </footer><!-- /#contentinfo -->
 
 </body>
 </html>
