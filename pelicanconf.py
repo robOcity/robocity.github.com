@@ -38,10 +38,6 @@ LINKS = (
     ("Alberto Cairo", "http://albertocairo.com/"),
     ("Matthew Devaney's Blog", "https://matthewdevaney.com/"),
     ("Talk Python To Me", "https://talkpython.fm/"),
-    ("scikit-learn", "https://scikit-learn.org/stable/index.html"),
-    ("pandas", "https://pandas.pydata.org/"),
-    ("Python.org", "http://python.org/"),
-    ("Pelican", "http://getpelican.com/"),
 )
 
 # Social widget
