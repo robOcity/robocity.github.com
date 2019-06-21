@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 AUTHOR = "Rob Osterburg"
-SITENAME = "Dealing with Data"
+SITENAME = "Data and Code"
 SITEURL = ""
 
 PATH = "content"
@@ -14,8 +14,12 @@ TIMEZONE = "America/Denver"
 DEFAULT_LANG = "en"
 
 MARKUP = "md"
-PLUGIN_PATHS = ["./plugins"]
+PLUGIN_PATHS = ["../etc/pelican-plugins/"]
+PLUGINS = ["i18n_subsites"]
 
+# Theme
+THEME = "../etc/pelican-themes/pelican-bootstrap3"
+JINJA_ENVIRONMENT = {"extensions": ["jinja2.ext.i18n"]}
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
@@ -33,7 +37,7 @@ LINKS = (
 )
 
 # Social widget
-SOCIAL = (("You can add links in your config file", "#"), ("Another social link", "#"))
+# SOCIAL = (("You can add links in your config file", "#"), ("Another social link", "#"))
 
 DEFAULT_PAGINATION = 5
 
