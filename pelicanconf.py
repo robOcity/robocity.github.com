@@ -34,10 +34,10 @@ LINKS = (
     ("Practical Business Python", "https://www.pbpython.com/"),
     ("Animated Math", "https://www.3blue1brown.com/"),
     ("Flowing Data", "https://flowingdata.com/"),
-    ("Data PlayGround", "https://harangdev.github.io/"),
-    ("Alberto Cairo", "http://albertocairo.com/"),
-    ("Matthew Devaney's Blog", "https://matthewdevaney.com/"),
     ("Talk Python To Me", "https://talkpython.fm/"),
+    ("Alberto Cairo", "http://albertocairo.com/"),
+    ("Data PlayGround", "https://harangdev.github.io/"),
+    ("Matthew Devaney's Blog", "https://matthewdevaney.com/"),
 )
 
 # Social widget
