@@ -50,3 +50,6 @@ DEFAULT_PAGINATION = 5
 
 # measure traffic
 GOOGLE_ANALYTICS = "UA-142581046-2"
+
+# discussions
+DISQUS_SITENAME = "robocity.github.io"
