@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-    <title>Using Jupyter Notebooks to Blog with Pelican - Data and Code</title>
+    <title>Blogging with Pelican, Jupyter Notebooks and nbconvert - Data and Code</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -17,7 +17,7 @@
 
         <meta property="og:site_name" content="Data and Code" />
         <meta property="og:type" content="article"/>
-        <meta property="og:title" content="Using Jupyter Notebooks to Blog with Pelican"/>
+        <meta property="og:title" content="Blogging with Pelican, Jupyter Notebooks and nbconvert"/>
         <meta property="og:url" content="/using-jupyter-notebooks-to-blog-with-pelican.html"/>
         <meta property="og:description" content="Using Pelican to generate a blog from Jupyter notebook files"/>
         <meta property="article:published_time" content="2019-05-15" />
@@ -84,8 +84,8 @@ Data and Code            </a>
                 <h1>
                     <a href="/using-jupyter-notebooks-to-blog-with-pelican.html"
                        rel="bookmark"
-                       title="Permalink to Using Jupyter Notebooks to Blog with Pelican">
-                        Using Jupyter Notebooks to Blog with Pelican
+                       title="Permalink to Blogging with Pelican, Jupyter Notebooks and nbconvert">
+                        Blogging with Pelican, Jupyter Notebooks and nbconvert
                     </a>
                 </h1>
             </header>
@@ -115,12 +115,14 @@ Data and Code            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <h2>Generating Blog Posts from Jupyter Notebooks</h2>
+                <h2>Blogging with Pelican, Jupyter Notebooks and nbconvert</h2>
 <p>In data science Jupyter notebooks are a prime source of content.  So, why not use notebooks for blog posts?  Much of my exploratory work is captured in notebooks anyway, so I gave it try.  You can do this using <code>jupyter nbconvert</code> or by installing a plugin in Pelican.  </p>
-<p>Pelican uses plugins to generate HTML and CSS to create posts.  I chose <a href="https://github.com/danielfrg/pelican-ipynb">Pelican-ipynb</a> to process my notebook files.  It has more than 300 stars on Github and seemed to fit the needs perfectly.  Their Github repo has good documentation and provides all the configuration details you need to get started.  Pelican-ipynb worked well on my local system but I started experience problems once my blog posts were published.  Let me take a step back and tell you that plugins for Pelican are installed as git submodules (a repo in repo).  Getting the submodules to be installed and used by Github is where I ran into problems.  After several attempts to fix the issue but having no success I moved on to Jupyter's <code>nbconvert</code> tool.  I plan on giving Pelican-ipynb another try once I have become more familiar with Pelican.  Until then <code>nbconvert</code> allows me to convert my notebooks to Markdown by running <code>jupyter nbconvert --to=markdown your-notebook.ipynb</code>.  you can just as easily generate HTML or PDF files by justing changing the <code>to</code> flag.  </p>
+<p>Pelican uses plugins to generate HTML and CSS to create posts.  I chose <a href="https://github.com/danielfrg/pelican-ipynb">Pelican-ipynb</a> to process my notebook files.  It has more than 300 stars on Github and seemed to fit the needs perfectly.  Their Github repo has good documentation and provides all the configuration details you need to get started.  Pelican-ipynb worked well on my local system but I started experience problems once my blog posts were published.  Let me take a step back and tell you that plugins for Pelican are installed as git submodules (a repo in repo).  Getting the submodules to be installed and used by Github is where I ran into problems.  After several attempts to fix the issue, but having no success, I opted for Jupyter's <code>nbconvert</code>.  I am new to pelican and plan on giving Pelican-ipynb another try once I am more familiar.  For now, <code>nbconvert</code> converts my notebooks to Markdown simply by running <code>jupyter nbconvert --to=markdown your-notebook.ipynb</code>.  And you can just as easily generate HTML, PDF or a variety of other formats using the <code>to</code> flag.  Run <code>jupyter nbconvert --help</code> for options and examples.</p>
 <h2>Preparing your Post</h2>
 <ol>
-<li>Pelican uses metadata to tag and title your posts.  For markdown documents, you need to include these tags ascribes content to each of your posts.  If you are going with notebook-based approach put these tags into a markdown cell at the top of your document.</li>
+<li>
+<p>Pelican uses metadata to tag and title your posts.  For markdown documents, you need to include tags to ascribe each of your posts.   </p>
+</li>
 <li>
 <p>Tags for Markdown or <code>.md</code> files</p>
 <div class="highlight"><pre><span></span><span class="o">```</span><span class="nb">text</span>
@@ -137,7 +139,7 @@ Data and Code            </a>
 
 </li>
 <li>
-<p>Tags for notebook or <code>.ipynb</code> files</p>
+<p>Tags for notebook or <code>.ipynb</code> files.  Put these tags into a markdown cell at the top of your notebook.</p>
 <div class="highlight"><pre><span></span><span class="o">```</span><span class="nb">text</span>
 <span class="o">-</span> <span class="n">Title</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">Slug</span><span class="p">:</span>
@@ -162,12 +164,12 @@ Data and Code            </a>
 <li>Fix any warnings or errors that Pelican reports  </li>
 <li>Start Python's build-in web server by running: <code>python -m http.server 8000</code></li>
 <li>Change to the output directory by running <code>cd output</code></li>
-<li>Open <code>http://localhost:8000</code> in your browser and review your blogs appearance</li>
-<li>Keep editing and refreshing to see your latest changes</li>
+<li>Open <code>http://localhost:8000</code> in your browser and review your blogs content and appearance</li>
+<li>Keep editing and refreshing your browser until satisfied</li>
 <li>Control-c to halt <code>python -m http.server 8000</code> process</li>
 </ol>
 <h2>Publishing to Github Pages</h2>
-<p>Github pages supports both individuals and organizations.  <em>For individuals, your blog must be published on the master branch of your pages repository.</em>  So instead being the ultimate source of blog, the master branch is composed of all the build artifacts generated by Pelican.  Think generated HTML, CSS and other files.  To me this counter intuitive, and so, I wrote this post to provide clarity to my future self and others.</p>
+<p>Github pages supports both individuals and organizations.  <em>For individuals, your blog must be published on the master branch of your pages repository.</em>  So instead being the ultimate source of blog, the master branch is composed of build artifacts generated by Pelican.  To me this counter intuitive, so this post is intended to provide clarity to all who are interested (my future self included).</p>
 <ol>
 <li>Check in any last changes to your <code>source</code> branch</li>
 <li>Run <code>pelican content -o output -s pelicanconf.py</code></li>
