@@ -57,7 +57,7 @@ Summary: Notes and examples of how to use PostgreSQL for Data Science.
 * start and stop the server: `su - <admin_user>` #
 * create aliases to manage the server storing them in ~/.bash_profile
     - `alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'`
-    - `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’`
+    - `alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'`
 * Use `psql` to work with PostgreSQL on the command line or the `pgAdmin4` GUI application (available as a homebrew cask)
 
 
