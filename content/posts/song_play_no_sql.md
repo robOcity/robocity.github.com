@@ -1,5 +1,3 @@
-
-```text
 Title: Data Modeling with Apache Cassandra
 Slug: data-modeling-with-apache-cassandra
 Date: 2019-08-01
@@ -7,7 +5,6 @@ Category: Data Engineering
 Tags: No SQL, Data Modeling, Apache Cassandra, query, table, primary key, partition key, clustering columns, database, keystore
 Author: Rob Osterburg
 Summary: See how to extract data from a CSV files, transform it and load it into Apache Cassandra.  Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables.  
-```
 
  # Data Modeling with Apache Cassandra
 

@@ -1,4 +1,3 @@
-```text
 Title: Data Modeling with PostgreSQL
 Slug: data-modeling-with-postgresql
 Date: 2019-02-22
@@ -6,7 +5,6 @@ Category: Data Engineering
 Tags: SQL, Data Modeling, PostgreSQL, postgres, query, table, primary key, relational, database
 Author: Rob Osterburg
 Summary: See how to extract data from a CSV files, transform it and load it into PostgreSQL.  Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics.  
-```
 
 # Data Modeling with Postgres
 
