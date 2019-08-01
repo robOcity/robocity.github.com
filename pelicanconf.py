@@ -18,7 +18,7 @@ PLUGIN_PATHS = ["../etc/pelican-plugins/"]
 PLUGINS = ["i18n_subsites"]
 
 # Theme
-THEME = "../etc/pelican-themes/pelican-bootstrap3"
+THEME = "../etc/pelican-themes/voidy-bootstrap"
 JINJA_ENVIRONMENT = {"extensions": ["jinja2.ext.i18n"]}
 
 # Feed generation is usually not desired when developing
