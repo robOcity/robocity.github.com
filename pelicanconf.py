@@ -18,8 +18,10 @@ PLUGIN_PATHS = ["../etc/pelican-plugins/"]
 PLUGINS = ["i18n_subsites"]
 
 # Theme
-THEME = "../etc/pelican-themes/blueidea"
+THEME = "../etc/pelican-themes/pelican-bootstrap3"
 JINJA_ENVIRONMENT = {"extensions": ["jinja2.ext.i18n"]}
+SHOW_ARTICLE_AUTHOR = True
+BOOTSTRAP_THEME = "flatly"
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
