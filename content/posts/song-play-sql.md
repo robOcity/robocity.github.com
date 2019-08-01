@@ -53,7 +53,7 @@ How can we find out what songs are subscriber's listening to?  To answer this qu
 PostgreSQL tables are managed using SQL statements that are executed using the Python psycopg2 package.  The star schema is implemented in SQL.  Data files are read using the pandas `read_json` function that returns a dataframe.  Columns and rows from the dataframe are selected and output as tuples for insertion into the database tables.  Connections to the database are managed by psycopg2 as is the cursor object used to interact with the database.  
 
 
- ### ETL Pipeline Prototype
+### ETL Pipeline Prototype
 
  Establish the data processing workflow using a small subset of the data.
 
@@ -69,7 +69,7 @@ from sql_queries import *
 
 ```
 
- ### Connect to Postgres Database
+### Connect to Postgres Database
 
  After connecting to the database and getting a cursor object, then drop and recreate all tables.
 
@@ -85,7 +85,7 @@ for sql_cmd in drop_table_queries + create_table_queries:
 
 ```
 
- ### Find data files for processing
+### Find data files for processing
 
  Use `os.walk` to find all `*.json` files under the `filepath` directory.
 
@@ -108,9 +108,9 @@ def get_files(filepath):
 
 ```
 
- ### #1: `song` Table
+### #1: `song` Table
 
- #### #Extract Data for Song Table
+#### #Extract Data for Song Table
 
  Process `song_data` by reading in a subset of the [Million Song Dataset](http://millionsongdataset.com/) and in the process extracting data from JSON files using pandas.
 
@@ -123,7 +123,7 @@ df = pd.read_json(filepath, lines=True)
 
 ```
 
- ##### Insert Data into the Song Table
+##### Insert Data into the Song Table
 
  - Method 1: select columns and return as a tuple knowing that there is one song per dataframe and results in __year as typye np.int64 and duration as type np.float64__.  Pandas uses numpy to store its numeric types, so this result is expected.
 
@@ -195,8 +195,9 @@ cur.execute(song_table_insert, song_data)
 
 ```
 
- ### #2: `artists` Table
- ##### Extract Data for Artist Table
+### #2: `artists` Table
+
+##### Extract Data for Artist Table
 
  Extract data and insert into artist table.
 
@@ -265,7 +266,7 @@ cur.execute(artist_table_insert, artist_data)
 
 ```
 
- ## Process `log_data`
+## Process `log_data`
 
  Now let's add the subscriber activity data to see which songs are popular.
 
@@ -279,9 +280,9 @@ df = pd.read_json(filepath, lines=True)
 
 ```
 
- ### #3: `time` Table
+### #3: `time` Table
 
- ##### Extract and Insert Data into Time Table
+##### Extract and Insert Data into Time Table
 
  Find what songs user's are choosing by just considering `NextSong` records.  Then convert the `ts` timestamp column to datetime and extract columns for hour, day, week of year, month, year, and weekday (see: [Accessors](https://pandas.pydata.org/pandas-docs/stable/reference/series.html#time-series-related) [dt Accessor](https://pandas.pydata.org/pandas-docs/stable/reference/series.html#api-series-dt) that allows datetime properties to be easily accessed).
 
@@ -406,9 +407,9 @@ time_df.head()
 
 
 
- ### #4: `users` Table
+### #4: `users` Table
 
- ##### Extract and Insert Data into Users Table
+##### Extract and Insert Data into Users Table
 
  Every time a user plays a song they appear in the log file, so naturally there will by duplicate userId entries.  Here we remove them to create a normalized user table.
 
@@ -498,9 +499,9 @@ for i, row in user_df.iterrows():
 
 ```
 
- ### #5: `songplays` Table
+### #5: `songplays` Table
 
- ##### Extract and Insert Data and Songplays Table
+##### Extract and Insert Data and Songplays Table
 
  To look up song or an artist, I need the unique identifier or primary key. The log files simply have the name of the song and artist.  So, I need to do a reverse lookup up to get identifiers.
 
@@ -540,7 +541,7 @@ for index, row in df.iterrows():
 
 ```
 
- ### Close Connection to Sparkify Database
+### Close Connection to Sparkify Database
 
 ```python
 conn.close()
