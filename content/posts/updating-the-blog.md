@@ -19,7 +19,6 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
 
    1. Tags for Markdown or `.md` files
 
-        ```text
         Title:
         Slug:
         Date:
@@ -27,7 +26,6 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
         Tags:
         Author:
         Summary:
-        ```
 
    2. Tags for notebook or `.ipynb` files.  Put these tags into a markdown cell at the top of your notebook.
    
@@ -49,11 +47,11 @@ Pelican uses plugins to generate HTML and CSS to create posts.  I chose [Pelican
 1. Run `jupyter nbconvert --to=markdown your-notebook.ipynb`.  Note: `jupyter nbconvert --help` has good explanations of how else to use `nbconvert` 
 1. Run `pelican content` from your blogs root directory and to build the the static files from your content
 1. Fix any warnings or errors that Pelican reports  
-1. Start Python's build-in web server by running: `python -m http.server 8000`
-1. Change to the output directory by running `cd output`
-1. Open `http://localhost:8000` in your browser and review your blogs content and appearance
-1. Keep editing and refreshing your browser until satisfied
-1. Control-c to halt `python -m http.server 8000` process
+2. Change to the output directory by running `cd output`
+3. Start Python's build-in web server by running: `python -m http.server 8000`
+4. Open `http://localhost:8000` in your browser and review your blogs content and appearance
+5. Keep editing and refreshing your browser until satisfied
+6. Control-c to halt `python -m http.server 8000` process
 
 ## Publishing to Github Pages
 
