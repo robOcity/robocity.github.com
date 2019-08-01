@@ -6,8 +6,6 @@ Tags: No SQL, Data Modeling, Apache Cassandra, query, table, primary key, partit
 Author: Rob Osterburg
 Summary: See how to extract data from a CSV files, transform it and load it into Apache Cassandra.  Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables.  
 
-# Data Modeling with Apache Cassandra
-
  The query comes first in Apache Cassandra, it drives the design of the table and its primary key.   Cassandra is a partition row store -- a type of NoSQL database -- that features high-availability and partition tolerance at the expense of consistency.  Scalability is where NoSQL databases have a decided advantage over relational databases.  To be scalable and offer fast reads and writes means that Cassandra must be able to locate data quickly, and uses the primary key to do so.  Cassandra relies upon a well designed primary key composed of a partition key and one or more clustering columns for its performance.
 
  > The primary key in Cassandra has two principle goals:

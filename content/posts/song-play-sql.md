@@ -6,10 +6,6 @@ Tags: SQL, Data Modeling, PostgreSQL, postgres, query, table, primary key, relat
 Author: Rob Osterburg
 Summary: See how to extract data from a CSV files, transform it and load it into PostgreSQL.  Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics.  
 
-# Data Modeling with Postgres
-
-## Summary
-
 Have you ever wondered how to take raw log files and transform them into a relational database?  With this [repository](https://github.com/robOcity/song-play), I will show you how to do it using [pandas](https://pandas.pydata.org/), [Postgres](https://www.postgresql.org/) and  [pscopg2](http://initd.org/psycopg/) in [Python](https://www.python.org/).  You will learn to read log files into a tabular panda's dataframe, use SQL to create a star-scheme perfect for doing aggregations and analytics in python.
 
 ## Purpose
