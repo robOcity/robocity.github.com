@@ -1,6 +1,6 @@
 Title: Data Modeling with PostgreSQL
 Slug: data-modeling-with-postgresql
-Date: 2019-02-22
+Date: 2019-07-22
 Category: Data Engineering
 Tags: SQL, Data Modeling, PostgreSQL, postgres, query, table, primary key, relational, database
 Author: Rob Osterburg
