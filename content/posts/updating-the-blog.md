@@ -59,7 +59,7 @@ Github pages supports both individuals and organizations.  *For individuals, you
 2. Run `pelican content -o output -s pelicanconf.py`
 3. Run `ghp-import output -b gh-pages`
 4. Run `git push https://github.com/<username>/<username>.github.com.git gh-pages:master`
-5. If you get a `! [rejected]        gh-pages -> master (non-fast-forward)` message, then run `git push -f https://github.com/<username>/<username>.github.com.git gh-pages:master`.
+5. If you get a `! [rejected]        gh-pages -> master (non-fast-forward)` message, then run `git push -f https://github.com/<username>/<username>.github.com.git gh-pages:master`
 
 ## Resources
 
