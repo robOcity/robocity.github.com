@@ -4,19 +4,19 @@ Date: 2019-08-01
 Category: Data Engineering
 Tags: No SQL, Data Modeling, Apache Cassandra, query, table, primary key, partition key, clustering columns, database, keystore
 Author: Rob Osterburg
-Summary: See how to extract data from a CSV files, transform it and load it into Apache Cassandra.  Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables.  
+Summary: See how to extract data from CSV files, transform it, and load it into Apache Cassandra.  Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables.  
 
- The query comes first in Apache Cassandra, it drives the design of the table and its primary key.   Cassandra is a partition row store -- a type of NoSQL database -- that features high-availability and partition tolerance at the expense of consistency.  Scalability is where NoSQL databases have a decided advantage over relational databases.  To be scalable and offer fast reads and writes means that Cassandra must be able to locate data quickly, and uses the primary key to do so.  Cassandra relies upon a well designed primary key composed of a partition key and one or more clustering columns for its performance.
+ The query comes first in Apache Cassandra.  It drives the design of the table and its primary key.   Cassandra is a partition row store -- a type of NoSQL database -- that features high-availability and partition tolerance at the expense of consistency.  Scalability is where NoSQL databases have a decided advantage over relational databases.  To be scalable and offer fast reads and writes means that Cassandra must be able to locate data quickly, and uses the primary key to do so.  Cassandra relies upon a well designed primary key composed of a partition key and one or more clustering columns for its performance.
 
  > The primary key in Cassandra has two principle goals:
  >
- >    1. Distrubute the data evenly across nodes in the cluster
+ >    1. Distribute the data evenly across nodes in the cluster
  >
  >    2. Minimize the number of partitions read
 
- Running on many nodes and offering fast reads and writes means that Cassandra must be able to locate data quickly.  This is the job of the of the primary key.  It's first element -- the partition key -- uses to map the partition key to a single node where the data are stored.  Organizing the data within the partition is the role of the second element of the primary key: the clustering columns.  Data within the partition are sorted based on the clustering columns and their data type.  For example, text fields sort in ascending lexicographic order.  The first clustering column is the primary sort, the second is next and so on.  Together -- the partition key and clustering columns -- provide a unique identifier for rows and enables Cassandra to locate them efficiently.
+ Running on many nodes and offering fast reads and writes means that Cassandra must be able to locate data quickly.  The primary key performs this job.  Its first element -- the partition key -- maps rows to the node where they are stored.  Organizing data on a node is the role of the second element of the primary key -- the clustering columns.  The first clustering column is the primary sort. The second is next, and so on.  Together -- the partition key and clustering columns -- provide a unique identifier for rows and enables Cassandra to locate them efficiently.
 
- Unlike relational systems, de-normalized data are the norm for NoSQL databases.  Designed for fast reads and writes, joining tables across nodes is too expensive an operation to support and that is why `JOIN` is not a [CQL keyword](https://docs.datastax.com/en/dse/6.7/cql/cql/cql_using/cqlSyntax.html?hl=keywords).  So, how can we design tables to provide the high performance that Cassandra promises?  It is simple: one-table-per-query and here is why this is good design guidance.  First, the table definition can be tuned for just that one query assuring that it can be optimized in isolation.   Second, performance at the expense of disk space is good economic trade-off as disk in inexpensive.
+ Unlike relational systems, de-normalized data are the norm for NoSQL databases.  Designed for fast reads and writes, joining tables across nodes is too expensive an operation to support, and that is why `JOIN` is not a [CQL keyword](https://docs.datastax.com/en/dse/6.7/cql/cql/cql_using/cqlSyntax.html?hl=keywords).  So, how can we design tables to provide the high performance that Cassandra promises?  It is simple: one-table-per-query, and here is how to do it.  First, create the query.  Then define the table to answer it.  This approach allows you to design the query to answer user's questions.  Working on one table in isolation is easy because it does not need to be normalized.  In taking this approach, Cassandra trades-off as disk space for performance and simplicity.  
 
 # Part I. ETL Pipeline for Pre-Processing the Files
 
@@ -44,7 +44,7 @@ import collections
 
 ```
 
-#### Creating list of filepaths to process original event CSV data files
+#### Creating a list of file paths to process original event CSV data files
 
 
 ```python
@@ -217,7 +217,7 @@ except Exception as e:
 
 ## Functions
 
- I am applying the don't repeating yourself (DRY) principle here and keep all the fiddly code in one place.
+ I am applying the don't repeat yourself (DRY) principle here and keep all the fiddly code in one place.
 
 
 ```python
@@ -307,7 +307,7 @@ def create_insert_query(table, columns):
 
 
 ```python
-# iterate over csv file inserting records into table
+# iterate over csv file inserting records into a table
 
 def perform_insert_query(table, columns, file="event_datafile_new.csv", verbose=True):
     """Insert data from columns into table after performing any needed type conversions.
@@ -353,11 +353,11 @@ def display_results(table, columns, where_clause, limit=5, verbose=True):
     Returns the selected rows as a pandas dataframe.
 
     Arguments:
-    table -- name of table
-    columns -- list of column names to include
-    where_clause -- selects data from table and must reference elements of primary key in order specified
-    limit -- number of results to request from the database
-    verbose -- additional information to help understand the results and how they were generated
+    table -- the name of the table
+    columns -- a list of column names to include
+    where_clause -- selects data from the table and must reference elements of the primary key in the order specified
+    limit -- the number of results to request from the database
+    verbose -- additional information to help understand the results
     """
 
     query = "SELECT " + ", ".join(columns) + \
@@ -395,11 +395,11 @@ def display_results(table, columns, where_clause, limit=5, verbose=True):
 
 
 
-**Query**: Find the _artist, song title and song's length_ that was listened to during _sessionId = 338, and itemInSession = 4_.  In designing this query it would be helpful to better understand the data stored by the app.  For example, do _sessionId_s repeat? Can multiple users have the same _sessionId_.  Here I am assuming they are unique across users.  
+**Query**: Find the _artist, song title, and song's length_ listened to during _sessionId = 338, and itemInSession = 4_.  In designing this query, it would be helpful to understand better the data stored by the app.  For example, do _sessionId_s repeat? Can multiple users have the same _sessionId_.  Here I am assuming they are unique across users.  
 
 **Table columns**: Requested information: _artist, song and length_. Primary key supporting where clause: _sessionId and itemInSession_.
 
-**Primary key**: The primary key contains both a simple partition key (_sessionId_) and a simple clustering column (_itemInSession_) enables rows to be uniquely identified.
+**Primary key**: The primary key contains both a simple partition key (_sessionId_) and a single clustering column (_itemInSession_) that together uniquely identify rows.
 
 **Where clause**: _"sessionId = 338 AND itemInSession = 4"_ restricts the results to a single song
 
@@ -610,7 +610,7 @@ display_results(table, ("artist", "song", "length"), where_clause)
  **Query**: Find the name of _artist, song_ (sorted by _itemInSession_) and user (_firstName and lastName_)
  for _userid = 10, sessionid = 182_.
 
- **Primary key**: The primary key contains both a compound partition key (_userId, sessionId_) and a simple clustering column (_itemInSession_).  Using both _userId and sessionId_ for the partition key assurs that only one node will be visited to answer this query.
+ **Primary key**: The primary key contains both a compound partition key (_userId, sessionId_) and a single clustering column (_itemInSession_).  Using both _userId and sessionId_ for the partition key assures that only one node will be visited to answer this query.
 
  **Table columns**: Requested information: _artist, song, firstName and lastName_.  Primary key supporing where clause: _userId, sessionId and itemInSession_ (added to support sorting)
 
@@ -949,9 +949,9 @@ display_results(table, ["artist", "song", "firstName", "lastName",
 
  **Query**: Find every user name (first and last) in the music app history who listened to the song 'All Hands Against His Own'
 
- **Primary key**: The primary key contains both a simple partition key (_song_) and one clustering column (_userId_ ).  The _song_ title is the focus of this query, so it is used as the partition key.  _UserId_ is unique across all users where the combination of first and last name is probably not.
+ **Primary key**: The primary key contains both a simple partition key (_song_) and one clustering column (_userId_ ).  The _song_ title is the focus of this query and the partition key too.  _UserId_ is unique across all users, where the combination of first and last names is probably not.
 
- **Table columns**: Requested information: _song, firstName and lastName_. Primary key supporing where clause: _song and userId_.
+ **Table columns**: Requested information: _song, firstName and lastName_. Primary key supporting where clause: _song and userId_.
 
  **Where clause**: _"song = 'All Hands Against His Own'"_
 
