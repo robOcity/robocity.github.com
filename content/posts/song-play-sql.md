@@ -4,39 +4,39 @@ Date: 2019-07-22
 Category: Data Engineering
 Tags: SQL, Data Modeling, PostgreSQL, postgres, query, table, primary key, relational, database
 Author: Rob Osterburg
-Summary: See how to extract data from a CSV files, transform it and load it into PostgreSQL.  Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics.  
+Summary: See how to extract data from CSV files, transform it, and load it into PostgreSQL.  Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics.  
 
 Have you ever wondered how to take raw log files and transform them into a relational database?  With this [repository](https://github.com/robOcity/song-play), I will show you how to do it using [pandas](https://pandas.pydata.org/), [Postgres](https://www.postgresql.org/) and  [pscopg2](http://initd.org/psycopg/) in [Python](https://www.python.org/).  You will learn to read log files into a tabular panda's dataframe, use SQL to create a star-scheme perfect for doing aggregations and analytics in python.
 
 ## Purpose
 
-Sparkify -- a fictitious startup -- wants to analyze the data they have been collecting on songs and user activity form their new music streaming app. They are particularly interested in finding out what songs are user's are listening to. Their data is stored JSON logs files and needs to be analyzed in order to find out.  They want to create a database optimized to analyze user's listening behavior. To perform this analysis routinely they need a database schema and an extract-transform-and-load (ETL) pipeline.
+Sparkify -- a fictitious startup -- wants to analyze the data they have been collecting on songs and user activity form their new music streaming app.  Understanding what songs are users are listening to is of particular interest. Their data is stored in JSON logs files and needs to be analyzed to figure this out.  They want to create a database optimized to analyze the user's listening behavior. To perform this analysis routinely, they need a database schema and an extract-transform-and-load (ETL) pipeline.
 
 ## Design
 
-How can we find out what songs are subscriber's listening to?  To answer this question I need to restructure the Sparkify log files into a relational database allowing it to be quantified using SQL queries.  Log files of subscriber activities are gathered using Sparkify's online transactional processing (OLTP) system that is optimized for fast writes.  Think log files.  To profit from analysis of user data the larger the data volume the better.  Analyzing this data is the realm of data warehouses that ingest and restructure transactional data for analysis.  Star schemas simplify analytic queries by restructuring the data in a more normalize form.  Think of tables of data where each row has a unique identifier or primary key.  This is know as the second-normal-form and tables of this kind are common in data warehouses.  The idea of star schema is simple, one central fact table that is related to dimension tables by their primary keys.  Star schemas are common in data warehouses -- prevalent example of an online analytical processing systems (OLAP).
+What songs are popular with subscribers?  To answer this question, I need to restructure the Sparkify log files into a relational database allowing it to be quantified using SQL queries.  Log files of subscriber activities are gathered using Sparkify's online transactional processing (OLTP) system optimized for fast writes.  Think log files.  To profit from the analysis of user data, the larger the data volume, the better.  Analyzing this data is the realm of data warehouses that ingest and restructure transactional data for analysis.  Star schemas simplify analytic queries by restructuring and normalizing the data.  Think of tables of data where each row has a unique identifier or primary key.  Known as the second-normal-form, tables of this kind are common in data warehouses.  The idea of star schema is simple, one central fact table that is related to dimension tables by their primary keys.  Star schemas are standard in data warehouses -- a typical example of an online analytical processing system (OLAP).
 
 ## Files Descriptions
 
 1. `data` directory - Holds the song data and the log data.
 
-2. `create_tables.py` - Uses `sql_queries.py` to delete and re-create the database and all its tables.  After running this function the database is ready for data to be imported.
+2. `create_tables.py` - Uses `sql_queries.py` to delete and re-create the database and all its tables.  After running this function, the database is ready for data is ready for importing.
 
-3. `environment.yml` - Python packages required to run this application.
+3. `environment.yml` - The Python packages required to run this application.
 
-4. `etl_prototype.py` - Prototype for the data processing pipeline that loads data from one song and log data file.
+4. `etl_prototype.py` - This is a prototype for the data processing pipeline that loads data from one song and one log data file.
  
 5. `etl.ipynb` - Exported from `etl.py` using tooling provided by the [Python Plugin](https://code.visualstudio.com/docs/languages/python) for [Visual Studio Code](https://code.visualstudio.com/).
 
-6. `sql_queries.py` - Creates, inserts and drops the tables that implement the star schema.
+6. `sql_queries.py` - Creates, inserts, and drops the tables that implement the star schema.
 
-7. `test.ipynb` - Tests whether data has been inserted into all of the database's tables.
+7. `test.ipynb` - Tests whether all the data is present in the resulting database tables.
 
 ## Running
 
 1. Install: Download this project from Github [https://github.com/robOcity/song_play](https://github.com/robOcity/song_play) by running `git clone https://github.com/robOcity/song_play`.
 
-2. Configure: Configure you Python environment by running `conda env create -f environment.yml`.  Regrettable, if you are using pip you can't there from here.  In other words, conda does not support creating a `requirments.txt` file directly.
+2. Configure: Configure your Python environment by running `conda env create -f environment.yml`.  Regrettable, if you are using `pip` you can't get there from here.  In other words, `conda` does not support creating a `requirments.txt` file directly.
 
 3. Run:  
    1. Start and configure your Postgres database (not covered here)
@@ -46,7 +46,7 @@ How can we find out what songs are subscriber's listening to?  To answer this qu
    
 ## Implementation
 
-PostgreSQL tables are managed using SQL statements that are executed using the Python psycopg2 package.  The star schema is implemented in SQL.  Data files are read using the pandas `read_json` function that returns a dataframe.  Columns and rows from the dataframe are selected and output as tuples for insertion into the database tables.  Connections to the database are managed by psycopg2 as is the cursor object used to interact with the database.  
+PostgreSQL tables are managed using SQL statements that are executed using the Python psycopg2 package creating dimensional tables that comprise a star-schema.  Data files are read using the pandas `read_json` function that returns a dataframe.  Columns and rows from the dataframe are selected and output as tuples for insertion into the database tables.  Connections to the database are managed by psycopg2, as is the cursor object used to interact with the database.  
 
 
 ### ETL Pipeline Prototype
@@ -108,7 +108,7 @@ def get_files(filepath):
 
 #### #Extract Data for Song Table
 
- Process `song_data` by reading in a subset of the [Million Song Dataset](http://millionsongdataset.com/) and in the process extracting data from JSON files using pandas.
+Run these commands to process the `song_data` by reading in a subset of the [Million Song Dataset](http://millionsongdataset.com/) and extracting the data from the JSON files using pandas.
 
 
 ```python
@@ -121,7 +121,7 @@ df = pd.read_json(filepath, lines=True)
 
 ##### Insert Data into the Song Table
 
- - Method 1: select columns and return as a tuple knowing that there is one song per dataframe and results in __year as typye np.int64 and duration as type np.float64__.  Pandas uses numpy to store its numeric types, so this result is expected.
+ - Method 1: select columns and return as a tuple, knowing that there is one song per dataframe and results in __year as typye np.int64 and duration as type np.float64__.  Pandas is implemented using numpy, and numpy (abbreviated np) data types are common.
 
 
 ```python
@@ -133,7 +133,7 @@ song_data = next(
 
 ```
 
- - Method 2: Select columns, select first row, get values as numpy array and convert to a list that results in __year as typye int and duration as type float__.  Inserting numpy numeric types into the database using psycopg2 causes errors, so I will use this approach.  This type conversion occurs because it is behavior of [numpy.ndarray.tolist](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist) upon which [pandas.Series.tolist](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.tolist.html) is based.  Mystery solved!
+ - Method 2: Select columns, select first row, get values as numpy array, and convert to a list that results in __year as type int and duration as type float__.  But inserting numpy numeric types into the database using psycopg2 causes errors, so I convert them to Python types first.  This type conversion occurs because it is behavior of [numpy.ndarray.tolist](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist) upon which [pandas.Series.tolist](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.tolist.html) is based.  Mystery solved!
 
 
 ```python
@@ -195,7 +195,7 @@ cur.execute(song_table_insert, song_data)
 
 ##### Extract Data for Artist Table
 
- Extract data and insert into artist table.
+ Extract the data and insert it into the artist table.
 
 
 ```python
@@ -280,7 +280,7 @@ df = pd.read_json(filepath, lines=True)
 
 ##### Extract and Insert Data into Time Table
 
- Find what songs user's are choosing by just considering `NextSong` records.  Then convert the `ts` timestamp column to datetime and extract columns for hour, day, week of year, month, year, and weekday (see: [Accessors](https://pandas.pydata.org/pandas-docs/stable/reference/series.html#time-series-related) [dt Accessor](https://pandas.pydata.org/pandas-docs/stable/reference/series.html#api-series-dt) that allows datetime properties to be easily accessed).
+ Find what songs users are choosing by just considering `NextSong` records.  Then convert the `ts` timestamp column to datetime and extract columns for an hour, day, week of the year, month, year, and weekday (see: [Accessors](https://pandas.pydata.org/pandas-docs/stable/reference/series.html#time-series-related) [dt Accessor](https://pandas.pydata.org/pandas-docs/stable/reference/series.html#api-series-dt) that allows datetime properties to be easily accessed).
 
 
 ```python
@@ -407,7 +407,7 @@ time_df.head()
 
 ##### Extract and Insert Data into Users Table
 
- Every time a user plays a song they appear in the log file, so naturally there will by duplicate userId entries.  Here we remove them to create a normalized user table.
+ Every time a user plays a song, they appear in the log file, so naturally, there are duplicate userId entries.  Here we remove them to create a normalized user table.
 
 
 ```python
@@ -499,7 +499,7 @@ for i, row in user_df.iterrows():
 
 ##### Extract and Insert Data and Songplays Table
 
- To look up song or an artist, I need the unique identifier or primary key. The log files simply have the name of the song and artist.  So, I need to do a reverse lookup up to get identifiers.
+To look up a song or an artist using the primary key that uniquely identifies it.  The log files only have the name of the song and artist.  So, I need to do a reverse lookup up to get identifiers.
 
  ```sql
  SELECT s.song_id, a.artist_id FROM dim_song s
@@ -507,7 +507,7 @@ for i, row in user_df.iterrows():
  WHERE s.title = %s AND a.name = %s AND s.duration = %s;
  ```
 
- Iterating over the rows of the dataframe holding the log data.  First, I extract the find the unique identifiers, Next, I combine them with other data from the log data to insert the user's songplay activity into the `song_play` table.
+ Iterating over the rows of the dataframe holding the log data.  First, I extract the find the unique identifiers.  Next, I combine them with other data from the log data to insert the user's songplay activity into the `song_play` table.
 
 
 ```python
@@ -553,14 +553,14 @@ conn.close()
 
 3. [PostgreSQL Keyword List](https://www.postgresql.org/docs/current/sql-keywords-appendix.html) - Note: _USER_ is a reserved keyword in Postgres and cannot be used as a table name.
 
-4. [Psycopg2 - Fast execution helpers](http://initd.org/psycopg/docs/extras.html#fast-execution-helpers) - How to use the `executemany()` method to insert many rows at once into a table.
+4. [Psycopg2 - Fast execution helpers](http://initd.org/psycopg/docs/extras.html#fast-execution-helpers) - How to use the `executemany()` method to insert many rows into a table, at once.
 
 5. [Using PostgreSQL SERIAL To Create Auto-increment Column](http://www.postgresqltutorial.com/postgresql-serial/) - How to create a primary key that increments automatically.
 
 6. [How to insert current_timestamp into Postgres via python](https://stackoverflow.com/questions/6018214/how-to-insert-current-timestamp-into-postgres-via-python) - Explains how to easily insert timestamps into PostgreSQL by converting them to datetime objects in Python and then letting [pscopg2](http://initd.org/psycopg/) handle the rest. 
 
-7. [Pandas convert dataframe to array of tuples](https://stackoverflow.com/questions/9758450/pandas-convert-dataframe-to-array-of-tuples) - Examples and explanation of how to convert rows of [pandas](https://pandas.pydata.org/) dataframe into tuples for insertion into the database.  
+7. [Pandas convert dataframe to an array of tuples](https://stackoverflow.com/questions/9758450/pandas-convert-dataframe-to-array-of-tuples) - Examples and explanation of how to convert rows of [pandas](https://pandas.pydata.org/) dataframe into tuples for insertion into the database.  
 
 8. [Psycopg2 Extras - Fast execution helpers](http://initd.org/psycopg/docs/extras.html?highlight=executemany) - Explanation and examples of how to insert many records into a table in one transaction using psycopg2's `executemany()` method.  
 
-9. [How to UPSERT (MERGE, INSERT … ON DUPLICATE UPDATE) in PostgreSQL?](https://stackoverflow.com/questions/17267417/how-to-upsert-merge-insert-on-duplicate-update-in-postgresql?noredirect=1&lq=1) - How to handle duplicate primary keys in PostgreSQL INSERT statements that is informally referred to as `upsert`.  
+9. [How to UPSERT (MERGE, INSERT … ON DUPLICATE UPDATE) in PostgreSQL?](https://stackoverflow.com/questions/17267417/how-to-upsert-merge-insert-on-duplicate-update-in-postgresql?noredirect=1&lq=1) - How to handle duplicate primary keys in PostgreSQL INSERT statements informally called `upsert`.  
