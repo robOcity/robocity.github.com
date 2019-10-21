@@ -1,4 +1,4 @@
-title: How do college town home prices fare during recession?
+title: How do college-town home prices fare during a recession?
 slug: how-do-college-town-home-prices-fare-during-recession
 date: 2019-05-30
 Modified: 2019-06-19
@@ -6,27 +6,27 @@ author: Rob Osterburg
 category: Data Science
 tags: pandas, statistics, analysis wrangling, seaborn, scipy.stats, ttest_ind, boxplot, violinplot, timeseries, quarterly data, quarter, datetime, datetimeindex, read_csv, read_excel
 
-During recession home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first a few definitions.  
+During a recession, home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first, a few definitions.  
 
 * A _quarter_ is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December.
 
-* A _recession_ is defined as starting with two consecutive quarters of GDP decline, and ending with two consecutive quarters of GDP growth.
+* A _recession_ is defined as starting with two consecutive quarters of GDP decline and ending with two consecutive quarters of GDP growth.
 
-* A _recession bottom_ is the quarter within a recession which had the lowest GDP.
+* A _recession bottom_ is the quarter within a recession, that had the lowest GDP.
 
-* A _university town_ is a city which has a high percentage of college students compared to the total population of the city.
+* A _university town_ is a city that has a high percentage of college students compared to the total population of the city.
 
 ## Hypothesis
 
-**College towns have their mean housing prices less effected by recessions. Run a t-test to compare the ratio of the mean price of houses in university towns the quarter before the recession starts compared to the recession bottom.  Values less than one show home price increases and greater than one show home price declines.**
+**College towns have their mean housing prices less affected by recessions. Run a t-test to compare the ratio of the mean price of houses in university towns the quarter before the recession starts compared to the recession bottom.  Values less than one show home price increases, and values greater than one, show home price declines.**
 
 ## Data
 
-* From the [Zillow research data site](http://www.zillow.com/research/data/) there is housing data for the United States. In particular the data file for [all homes at a city level](http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv), ```zillow_homes_prices_by_city.csv```, has median home sale prices at a fine grained level.
+* From the [Zillow research data site](http://www.zillow.com/research/data/) there is housing data for the United States. In particular, the data file for [all homes at a city level](http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv), ```zillow_homes_prices_by_city.csv```, has median home sale prices at a fine-grained level.
 
-* From the Wikipedia page on college towns is a list of [college towns in the United States](https://en.wikipedia.org/wiki/List_of_college_towns#College_towns_in_the_United_States) which has been pasted into the file ```college_towns.txt```.
+* From the Wikipedia page on college towns is a list of [college towns in the United States](https://en.wikipedia.org/wiki/List_of_college_towns#College_towns_in_the_United_States)  and saved as ```college_towns.txt```.
 
-* From Bureau of Economic Analysis, US Department of Commerce, the [GDP over time](http://www.bea.gov/national/index.htm#gdp) of the United States in current dollars (use the chained value in 2009 dollars), in quarterly intervals, in the file ```gdplev.xls```. For this project, I will only look at GDP data from the first quarter of 2000 onward.
+* From Bureau of Economic Analysis, US Department of Commerce, the [GDP over time](http://www.bea.gov/national/index.htm#gdp) of the United States in current dollars (use the chained value in 2009 dollars), in quarterly intervals, in the file ```gdplev.xls```. For this project, I only look at GDP data from the first quarter of 2000 onward.
 
 
 ```python
@@ -50,7 +50,7 @@ def get_list_of_university_towns():
     DataFrame( [ ["Michigan", "Ann Arbor"], ["Michigan", "Yipsilanti"] ], 
     columns=["State", "RegionName"]  )
 
-    The following cleaning needs to be done:
+    Accomplish the following cleaning:
 
     1. For "State", removing characters from "[" to the end.
     2. For "RegionName", when applicable, removing every character from " (" to the end.
@@ -382,7 +382,7 @@ def recession_prep(df):
     In particular, determine if GDP is increasing or decreasing by using the shift method
     to create a Series of duplicated values that have been shifted by the number of
     rows specified.  Together the shifted columns allow for the quarter in which a recession
-    starts and ends to be identified."""
+    starts and ends is identified."""
 
     df = qtr_to_prd(df).set_index('date')
     df['delta'] = gdp_change(df)
@@ -800,14 +800,14 @@ convert_housing_data_to_quarters().to_csv(filepath)
 def run_ttest():
     '''First creates new data showing the decline or growth of housing prices
     between the recession start and the recession bottom. Then runs a ttest
-    comparing the university town values to the non-university towns values,
+    comparing the university town values to non-university towns values,
     return whether the alternative hypothesis (that the two groups are the same)
-    is true or not as well as the p-value of the confidence. 
+    is true or not and its p-value. 
 
     Return the tuple (different, p, better) where different=True if the t-test is
-    True at a p<0.01 (we reject the null hypothesis), or different=False if 
+    True at a p<0.01 (we reject the null hypothesis), or different=False, if 
     otherwise (we cannot reject the null hypothesis). The variable p should
-    be equal to the exact p value returned from scipy.stats.ttest_ind(). The
+    be equal to the exact p-value returned from scipy.stats.ttest_ind(). The
     value for better should be either "university town" or "non-university town"
     depending on which has a lower mean price ratio (which is equivalent to a
     reduced market loss).'''
@@ -896,7 +896,7 @@ plot_df = create_plotting_frame()
 
 ### Comparing College and Regular Towns
 
-A price ratio of greater than one indicates that median home prices increased during the recession and values less than one home price decreases.  The ratio is formed by dividing the value from the bottom by that of its start.  Looking closely at the plot reveals that college towns have a _subtly_ higher median value (indicated by the line in the middle of the box) than other towns.  The median value is unaffected by outliers (show as dots) that comprise less than 1% of all towns.  Home prices in college towns were more stable showing less variance in home prices.
+A price ratio of greater than one indicates that median home prices increased during the recession and values less than one home price decreases.  The ratio is formed by dividing the value from the bottom by that of its start.  Looking closely at the plot reveals that college towns have a _subtly_ higher median value (indicated by the line in the middle of the box) than other towns.  The median value is unaffected by outliers (shown as dots) that comprise less than 1% of all towns.  Home prices in college towns were more stable, showing less variance in home prices.
 
 
 ```python
@@ -908,7 +908,7 @@ sns.despine(offset=10, trim=True)
 ![Box plot of home prices by town type]({static}/images/college_towns_blog_post_28_0.png)
 
 
-### State Level Median Home Prices
+### State-Level Median Home Prices
 
 Let's see how values compare by state with New Mexico standing out as one of the housing markets during the recession.  The violin plot shows the distribution of home price values by town type for each state.
 
@@ -930,7 +930,7 @@ sns.violinplot(x='State', y='Intuitive_Price_Ratio', hue='Town', data=plot_df, s
 
 ### Best and Worst State Housing Markets
 
-How did home prices change on the state-level? Let's the best and worst states by sorting price ratio and extract the states with best and worst performing home markets.  
+How did home prices change on the state-level? Let's the best and worst states by sorting the price ratio and extract the states with the best and worst-performing home markets.  
 
 * Best: New Mexico
 * Worst: Nevada
@@ -1074,7 +1074,7 @@ sorted_states_df.tail(10)
 
 ### Best and Worst College Towns Housing Markets
 
-Silver City, New Mexico the home of New Mexico Tech had a median home price increase of 33% the best in the country.  The 27% decline in Riverside, California is the worst of any college town analyzed.  Hopefully they have fully recovered.  
+Silver City, New Mexico, the home of New Mexico Tech, had a median home price increase of 33% the best in the country.  The 27% decline in Riverside, California is the worst of any college town analyzed.  Hopefully, they have fully recovered.  
 
 
 ```python
