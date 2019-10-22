@@ -72,7 +72,7 @@
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
     <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
 
     <link href="/theme/css/pygments/native.css" rel="stylesheet">
@@ -97,6 +97,9 @@ Data and Code            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
                         <li class="active">
                             <a href="/category/data-science.html">Data science</a>
                         </li>
@@ -139,6 +142,8 @@ Data and Code            </a>
     </span>
 
 
+            <span class="label label-default">By</span>
+            <a href="/author/rob-osterburg.html"><i class="fa fa-user"></i> Rob Osterburg</a>
 
 
 
@@ -341,7 +346,7 @@ Data and Code            </a>
 <li>start and stop the server: <code>su - &lt;admin_user&gt;</code> #</li>
 <li>create aliases to manage the server storing them in ~/.bash_profile<ul>
 <li><code>alias pgq='pg_ctl -D /usr/local/var/postgres stop -s -m fast'</code></li>
-<li><code>alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start’</code></li>
+<li><code>alias pgs='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'</code></li>
 </ul>
 </li>
 <li>Use <code>psql</code> to work with PostgreSQL on the command line or the <code>pgAdmin4</code> GUI application (available as a homebrew cask)</li>
@@ -677,8 +682,8 @@ simpler way to implement the same functionality.</em></p>
 
 
 <p>For more information see:
-<em> <a href="https://www.postgresql.org/docs/current/static/rules-views.html">PostgreSQL Views and the Rule System Documentation</a>
-</em> <a href="https://www.postgresql.org/docs/current/static/rules-materializedviews.html">PostgreSQL Materialized Views Documentation</a></p>
+* <a href="https://www.postgresql.org/docs/current/static/rules-views.html">PostgreSQL Views and the Rule System Documentation</a>
+* <a href="https://www.postgresql.org/docs/current/static/rules-materializedviews.html">PostgreSQL Materialized Views Documentation</a></p>
 <h2>Temporary Tables</h2>
 <p>Temporary tables are alternative to Views and Subqueries.  Here are two ways to
 create a temporary table in SQL.</p>
@@ -980,6 +985,23 @@ operate rows adjacent to the current row.</p>
 <script src="/theme/js/respond.min.js"></script>
 
 
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
 
 
 </body>

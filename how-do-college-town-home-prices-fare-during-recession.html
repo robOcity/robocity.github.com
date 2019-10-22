@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-    <title>How do college town home prices fare during recession? - Data and Code</title>
+    <title>How do college-town home prices fare during a recession? - Data and Code</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -13,13 +13,13 @@
 
         <meta name="author" content="Rob Osterburg" />
         <meta name="keywords" content="pandas,statistics,analysis wrangling,seaborn,scipy.stats,ttest_ind,boxplot,violinplot,timeseries,quarterly data,quarter,datetime,datetimeindex,read_csv,read_excel" />
-        <meta name="description" content="During recession home prices suffer. How do college towns compare to other communities? Let&#39;s find out. But first a few definitions. A quarter is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December. A …" />
+        <meta name="description" content="During a recession, home prices suffer. How do college towns compare to other communities? Let&#39;s find out. But first, a few definitions. A quarter is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December …" />
 
         <meta property="og:site_name" content="Data and Code" />
         <meta property="og:type" content="article"/>
-        <meta property="og:title" content="How do college town home prices fare during recession?"/>
+        <meta property="og:title" content="How do college-town home prices fare during a recession?"/>
         <meta property="og:url" content="/how-do-college-town-home-prices-fare-during-recession.html"/>
-        <meta property="og:description" content="During recession home prices suffer. How do college towns compare to other communities? Let&#39;s find out. But first a few definitions. A quarter is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December. A …"/>
+        <meta property="og:description" content="During a recession, home prices suffer. How do college towns compare to other communities? Let&#39;s find out. But first, a few definitions. A quarter is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December …"/>
         <meta property="article:published_time" content="2019-05-30" />
             <meta property="article:section" content="Data Science" />
             <meta property="article:tag" content="pandas" />
@@ -42,7 +42,7 @@
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
     <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
 
     <link href="/theme/css/pygments/native.css" rel="stylesheet">
@@ -67,6 +67,9 @@ Data and Code            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
                         <li class="active">
                             <a href="/category/data-science.html">Data science</a>
                         </li>
@@ -94,8 +97,8 @@ Data and Code            </a>
                 <h1>
                     <a href="/how-do-college-town-home-prices-fare-during-recession.html"
                        rel="bookmark"
-                       title="Permalink to How do college town home prices fare during recession?">
-                        How do college town home prices fare during recession?
+                       title="Permalink to How do college-town home prices fare during a recession?">
+                        How do college-town home prices fare during a recession?
                     </a>
                 </h1>
             </header>
@@ -109,6 +112,8 @@ Data and Code            </a>
     </span>
 
 
+            <span class="label label-default">By</span>
+            <a href="/author/rob-osterburg.html"><i class="fa fa-user"></i> Rob Osterburg</a>
 
 
 
@@ -145,33 +150,33 @@ Data and Code            </a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <p>During recession home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first a few definitions.  </p>
+                <p>During a recession, home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first, a few definitions.  </p>
 <ul>
 <li>
 <p>A <em>quarter</em> is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December.</p>
 </li>
 <li>
-<p>A <em>recession</em> is defined as starting with two consecutive quarters of GDP decline, and ending with two consecutive quarters of GDP growth.</p>
+<p>A <em>recession</em> is defined as starting with two consecutive quarters of GDP decline and ending with two consecutive quarters of GDP growth.</p>
 </li>
 <li>
-<p>A <em>recession bottom</em> is the quarter within a recession which had the lowest GDP.</p>
+<p>A <em>recession bottom</em> is the quarter within a recession, that had the lowest GDP.</p>
 </li>
 <li>
-<p>A <em>university town</em> is a city which has a high percentage of college students compared to the total population of the city.</p>
+<p>A <em>university town</em> is a city that has a high percentage of college students compared to the total population of the city.</p>
 </li>
 </ul>
 <h2>Hypothesis</h2>
-<p><strong>College towns have their mean housing prices less effected by recessions. Run a t-test to compare the ratio of the mean price of houses in university towns the quarter before the recession starts compared to the recession bottom.  Values less than one show home price increases and greater than one show home price declines.</strong></p>
+<p><strong>College towns have their mean housing prices less affected by recessions. Run a t-test to compare the ratio of the mean price of houses in university towns the quarter before the recession starts compared to the recession bottom.  Values less than one show home price increases, and values greater than one, show home price declines.</strong></p>
 <h2>Data</h2>
 <ul>
 <li>
-<p>From the <a href="http://www.zillow.com/research/data/">Zillow research data site</a> there is housing data for the United States. In particular the data file for <a href="http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv">all homes at a city level</a>, <code>zillow_homes_prices_by_city.csv</code>, has median home sale prices at a fine grained level.</p>
+<p>From the <a href="http://www.zillow.com/research/data/">Zillow research data site</a> there is housing data for the United States. In particular, the data file for <a href="http://files.zillowstatic.com/research/public/City/City_Zhvi_AllHomes.csv">all homes at a city level</a>, <code>zillow_homes_prices_by_city.csv</code>, has median home sale prices at a fine-grained level.</p>
 </li>
 <li>
-<p>From the Wikipedia page on college towns is a list of <a href="https://en.wikipedia.org/wiki/List_of_college_towns#College_towns_in_the_United_States">college towns in the United States</a> which has been pasted into the file <code>college_towns.txt</code>.</p>
+<p>From the Wikipedia page on college towns is a list of <a href="https://en.wikipedia.org/wiki/List_of_college_towns#College_towns_in_the_United_States">college towns in the United States</a>  and saved as <code>college_towns.txt</code>.</p>
 </li>
 <li>
-<p>From Bureau of Economic Analysis, US Department of Commerce, the <a href="http://www.bea.gov/national/index.htm#gdp">GDP over time</a> of the United States in current dollars (use the chained value in 2009 dollars), in quarterly intervals, in the file <code>gdplev.xls</code>. For this project, I will only look at GDP data from the first quarter of 2000 onward.</p>
+<p>From Bureau of Economic Analysis, US Department of Commerce, the <a href="http://www.bea.gov/national/index.htm#gdp">GDP over time</a> of the United States in current dollars (use the chained value in 2009 dollars), in quarterly intervals, in the file <code>gdplev.xls</code>. For this project, I only look at GDP data from the first quarter of 2000 onward.</p>
 </li>
 </ul>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
@@ -192,7 +197,7 @@ Data and Code            </a>
 <span class="sd">    DataFrame( [ [&quot;Michigan&quot;, &quot;Ann Arbor&quot;], [&quot;Michigan&quot;, &quot;Yipsilanti&quot;] ], </span>
 <span class="sd">    columns=[&quot;State&quot;, &quot;RegionName&quot;]  )</span>
 
-<span class="sd">    The following cleaning needs to be done:</span>
+<span class="sd">    Accomplish the following cleaning:</span>
 
 <span class="sd">    1. For &quot;State&quot;, removing characters from &quot;[&quot; to the end.</span>
 <span class="sd">    2. For &quot;RegionName&quot;, when applicable, removing every character from &quot; (&quot; to the end.</span>
@@ -512,7 +517,7 @@ Data and Code            </a>
 <span class="sd">    In particular, determine if GDP is increasing or decreasing by using the shift method</span>
 <span class="sd">    to create a Series of duplicated values that have been shifted by the number of</span>
 <span class="sd">    rows specified.  Together the shifted columns allow for the quarter in which a recession</span>
-<span class="sd">    starts and ends to be identified.&quot;&quot;&quot;</span>
+<span class="sd">    starts and ends is identified.&quot;&quot;&quot;</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="n">qtr_to_prd</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
     <span class="n">df</span><span class="p">[</span><span class="s1">&#39;delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdp_change</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
@@ -921,14 +926,14 @@ Data and Code            </a>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_ttest</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;First creates new data showing the decline or growth of housing prices</span>
 <span class="sd">    between the recession start and the recession bottom. Then runs a ttest</span>
-<span class="sd">    comparing the university town values to the non-university towns values,</span>
+<span class="sd">    comparing the university town values to non-university towns values,</span>
 <span class="sd">    return whether the alternative hypothesis (that the two groups are the same)</span>
-<span class="sd">    is true or not as well as the p-value of the confidence. </span>
+<span class="sd">    is true or not and its p-value. </span>
 
 <span class="sd">    Return the tuple (different, p, better) where different=True if the t-test is</span>
-<span class="sd">    True at a p&lt;0.01 (we reject the null hypothesis), or different=False if </span>
+<span class="sd">    True at a p&lt;0.01 (we reject the null hypothesis), or different=False, if </span>
 <span class="sd">    otherwise (we cannot reject the null hypothesis). The variable p should</span>
-<span class="sd">    be equal to the exact p value returned from scipy.stats.ttest_ind(). The</span>
+<span class="sd">    be equal to the exact p-value returned from scipy.stats.ttest_ind(). The</span>
 <span class="sd">    value for better should be either &quot;university town&quot; or &quot;non-university town&quot;</span>
 <span class="sd">    depending on which has a lower mean price ratio (which is equivalent to a</span>
 <span class="sd">    reduced market loss).&#39;&#39;&#39;</span>
@@ -1011,7 +1016,7 @@ Data and Code            </a>
 
 
 <h3>Comparing College and Regular Towns</h3>
-<p>A price ratio of greater than one indicates that median home prices increased during the recession and values less than one home price decreases.  The ratio is formed by dividing the value from the bottom by that of its start.  Looking closely at the plot reveals that college towns have a <em>subtly</em> higher median value (indicated by the line in the middle of the box) than other towns.  The median value is unaffected by outliers (show as dots) that comprise less than 1% of all towns.  Home prices in college towns were more stable showing less variance in home prices.</p>
+<p>A price ratio of greater than one indicates that median home prices increased during the recession and values less than one home price decreases.  The ratio is formed by dividing the value from the bottom by that of its start.  Looking closely at the plot reveals that college towns have a <em>subtly</em> higher median value (indicated by the line in the middle of the box) than other towns.  The median value is unaffected by outliers (shown as dots) that comprise less than 1% of all towns.  Home prices in college towns were more stable, showing less variance in home prices.</p>
 <div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">)})</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Town&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;Intuitive_Price_Ratio&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;Town&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">plot_df</span><span class="p">)</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -1019,7 +1024,7 @@ Data and Code            </a>
 
 
 <p><img alt="Box plot of home prices by town type" src="/images/college_towns_blog_post_28_0.png"></p>
-<h3>State Level Median Home Prices</h3>
+<h3>State-Level Median Home Prices</h3>
 <p>Let's see how values compare by state with New Mexico standing out as one of the housing markets during the recession.  The violin plot shows the distribution of home price values by town type for each state.</p>
 <div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">6</span><span class="p">)})</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;State&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;Intuitive_Price_Ratio&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;Town&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">plot_df</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -1032,7 +1037,7 @@ Data and Code            </a>
 
 <p><img alt="Violin plot of home prices by town type and state" src="/images/college_towns_blog_post_30_1.png"></p>
 <h3>Best and Worst State Housing Markets</h3>
-<p>How did home prices change on the state-level? Let's the best and worst states by sorting price ratio and extract the states with best and worst performing home markets.  </p>
+<p>How did home prices change on the state-level? Let's the best and worst states by sorting the price ratio and extract the states with the best and worst-performing home markets.  </p>
 <ul>
 <li>Best: New Mexico</li>
 <li>Worst: Nevada</li>
@@ -1163,7 +1168,7 @@ Data and Code            </a>
 </div>
 
 <h3>Best and Worst College Towns Housing Markets</h3>
-<p>Silver City, New Mexico the home of New Mexico Tech had a median home price increase of 33% the best in the country.  The 27% decline in Riverside, California is the worst of any college town analyzed.  Hopefully they have fully recovered.  </p>
+<p>Silver City, New Mexico, the home of New Mexico Tech, had a median home price increase of 33% the best in the country.  The 27% decline in Riverside, California is the worst of any college town analyzed.  Hopefully, they have fully recovered.  </p>
 <div class="highlight"><pre><span></span><span class="c1"># best and worst college towns</span>
 <span class="n">sorted_college_df</span> <span class="o">=</span> <span class="n">plot_df</span><span class="p">[</span><span class="n">plot_df</span><span class="o">.</span><span class="n">Town</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;College&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;Intuitive_Price_Ratio&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="n">top_10</span> <span class="o">=</span> <span class="n">sorted_college_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -1441,6 +1446,23 @@ Data and Code            </a>
 <script src="/theme/js/respond.min.js"></script>
 
 
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
 
 
 </body>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
 <head>
-    <title>postgresql - Data and Code</title>
+    <title>PostgreSQL - Data and Code</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -11,7 +11,7 @@
 
 
     <meta name="author" content="Rob Osterburg" />
-    <meta name="keywords" content="postgresql" />
+    <meta name="keywords" content="PostgreSQL" />
 
     <!-- Open Graph tags -->
         <meta property="og:site_name" content="Data and Code" />
@@ -23,7 +23,7 @@
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
     <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
 
     <link href="/theme/css/pygments/native.css" rel="stylesheet">
@@ -49,6 +49,9 @@ Data and Code            </a>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                         <li >
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
+                        <li >
                             <a href="/category/data-science.html">Data science</a>
                         </li>
                         <li >
@@ -69,6 +72,13 @@ Data and Code            </a>
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
+            <article>
+                <h2><a href="/data-modeling-with-postgresql.html">Data Modeling with PostgreSQL</a></h2>
+                <div class="summary"><p>See how to extract data from CSV files, transform it, and load it into PostgreSQL.  Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics.</p>
+                    <a class="btn btn-default btn-xs" href="/data-modeling-with-postgresql.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
             <article>
                 <h2><a href="/using-postgresql-for-data-science-basics.html">Using PostgreSQL for Data Science</a></h2>
                 <div class="summary"><p>Notes and examples of how to use PostgreSQL for Data Science.</p>
@@ -144,6 +154,23 @@ Data and Code            </a>
 <script src="/theme/js/respond.min.js"></script>
 
 
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
 
 
 </body>

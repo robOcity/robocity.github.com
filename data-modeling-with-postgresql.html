@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Data Modeling with PostgreSQL - Data and Code</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/data-modeling-with-postgresql.html">
+
+        <meta name="author" content="Rob Osterburg" />
+        <meta name="keywords" content="SQL,Data Modeling,PostgreSQL,postgres,query,table,primary key,relational,database" />
+        <meta name="description" content="See how to extract data from CSV files, transform it, and load it into PostgreSQL. Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics." />
+
+        <meta property="og:site_name" content="Data and Code" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Data Modeling with PostgreSQL"/>
+        <meta property="og:url" content="/data-modeling-with-postgresql.html"/>
+        <meta property="og:description" content="See how to extract data from CSV files, transform it, and load it into PostgreSQL. Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics."/>
+        <meta property="article:published_time" content="2019-07-22" />
+            <meta property="article:section" content="Data Engineering" />
+            <meta property="article:tag" content="SQL" />
+            <meta property="article:tag" content="Data Modeling" />
+            <meta property="article:tag" content="PostgreSQL" />
+            <meta property="article:tag" content="postgres" />
+            <meta property="article:tag" content="query" />
+            <meta property="article:tag" content="table" />
+            <meta property="article:tag" content="primary key" />
+            <meta property="article:tag" content="relational" />
+            <meta property="article:tag" content="database" />
+            <meta property="article:author" content="Rob Osterburg" />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Data and Code            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
+                        <li >
+                            <a href="/category/data-science.html">Data science</a>
+                        </li>
+                        <li >
+                            <a href="/category/tutorial.html">Tutorial</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/data-modeling-with-postgresql.html"
+                       rel="bookmark"
+                       title="Permalink to Data Modeling with PostgreSQL">
+                        Data Modeling with PostgreSQL
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2019-07-22T00:00:00-06:00"> Mon 22 July 2019</time>
+    </span>
+
+
+            <span class="label label-default">By</span>
+            <a href="/author/rob-osterburg.html"><i class="fa fa-user"></i> Rob Osterburg</a>
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/sql.html">SQL</a>
+        /
+	<a href="/tag/data-modeling.html">Data Modeling</a>
+        /
+	<a href="/tag/postgresql.html">PostgreSQL</a>
+        /
+	<a href="/tag/postgres.html">postgres</a>
+        /
+	<a href="/tag/query.html">query</a>
+        /
+	<a href="/tag/table.html">table</a>
+        /
+	<a href="/tag/primary-key.html">primary key</a>
+        /
+	<a href="/tag/relational.html">relational</a>
+        /
+	<a href="/tag/database.html">database</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Have you ever wondered how to take raw log files and transform them into a relational database?  With this <a href="https://github.com/robOcity/song-play">repository</a>, I will show you how to do it using <a href="https://pandas.pydata.org/">pandas</a>, <a href="https://www.postgresql.org/">Postgres</a> and  <a href="http://initd.org/psycopg/">pscopg2</a> in <a href="https://www.python.org/">Python</a>.  You will learn to read log files into a tabular panda's dataframe, use SQL to create a star-scheme perfect for doing aggregations and analytics in python.</p>
+<h2>Purpose</h2>
+<p>Sparkify -- a fictitious startup -- wants to analyze the data they have been collecting on songs and user activity form their new music streaming app.  Understanding what songs are users are listening to is of particular interest. Their data is stored in JSON logs files and needs to be analyzed to figure this out.  They want to create a database optimized to analyze the user's listening behavior. To perform this analysis routinely, they need a database schema and an extract-transform-and-load (ETL) pipeline.</p>
+<h2>Design</h2>
+<p>What songs are popular with subscribers?  To answer this question, I need to restructure the Sparkify log files into a relational database allowing it to be quantified using SQL queries.  Log files of subscriber activities are gathered using Sparkify's online transactional processing (OLTP) system optimized for fast writes.  Think log files.  To profit from the analysis of user data, the larger the data volume, the better.  Analyzing this data is the realm of data warehouses that ingest and restructure transactional data for analysis.  Star schemas simplify analytic queries by restructuring and normalizing the data.  Think of tables of data where each row has a unique identifier or primary key.  Known as the second-normal-form, tables of this kind are common in data warehouses.  The idea of star schema is simple, one central fact table that is related to dimension tables by their primary keys.  Star schemas are standard in data warehouses -- a typical example of an online analytical processing system (OLAP).</p>
+<h2>Files Descriptions</h2>
+<ol>
+<li>
+<p><code>data</code> directory - Holds the song data and the log data.</p>
+</li>
+<li>
+<p><code>create_tables.py</code> - Uses <code>sql_queries.py</code> to delete and re-create the database and all its tables.  After running this function, the database is ready for data is ready for importing.</p>
+</li>
+<li>
+<p><code>environment.yml</code> - The Python packages required to run this application.</p>
+</li>
+<li>
+<p><code>etl_prototype.py</code> - This is a prototype for the data processing pipeline that loads data from one song and one log data file.</p>
+</li>
+<li>
+<p><code>etl.ipynb</code> - Exported from <code>etl.py</code> using tooling provided by the <a href="https://code.visualstudio.com/docs/languages/python">Python Plugin</a> for <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</p>
+</li>
+<li>
+<p><code>sql_queries.py</code> - Creates, inserts, and drops the tables that implement the star schema.</p>
+</li>
+<li>
+<p><code>test.ipynb</code> - Tests whether all the data is present in the resulting database tables.</p>
+</li>
+</ol>
+<h2>Running</h2>
+<ol>
+<li>
+<p>Install: Download this project from Github <a href="https://github.com/robOcity/song_play">https://github.com/robOcity/song_play</a> by running <code>git clone https://github.com/robOcity/song_play</code>.</p>
+</li>
+<li>
+<p>Configure: Configure your Python environment by running <code>conda env create -f environment.yml</code>.  Regrettable, if you are using <code>pip</code> you can't get there from here.  In other words, <code>conda</code> does not support creating a <code>requirments.txt</code> file directly.</p>
+</li>
+<li>
+<p>Run:  </p>
+</li>
+<li>Start and configure your Postgres database (not covered here)</li>
+<li>Change directories into the <code>song_play</code> directory</li>
+<li>Run <code>python create_tables.py</code> </li>
+<li>Run <code>python etl.py</code>  </li>
+</ol>
+<h2>Implementation</h2>
+<p>PostgreSQL tables are managed using SQL statements that are executed using the Python psycopg2 package creating dimensional tables that comprise a star-schema.  Data files are read using the pandas <code>read_json</code> function that returns a dataframe.  Columns and rows from the dataframe are selected and output as tuples for insertion into the database tables.  Connections to the database are managed by psycopg2, as is the cursor object used to interact with the database.  </p>
+<h3>ETL Pipeline Prototype</h3>
+<p>Establish the data processing workflow using a small subset of the data.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">sql_queries</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+
+<h3>Connect to Postgres Database</h3>
+<p>After connecting to the database and getting a cursor object, then drop and recreate all tables.</p>
+<div class="highlight"><pre><span></span><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+    <span class="s2">&quot;host=127.0.0.1 dbname=sparkifydb user=student password=student&quot;</span>
+<span class="p">)</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">set_session</span><span class="p">(</span><span class="n">autocommit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">sql_cmd</span> <span class="ow">in</span> <span class="n">drop_table_queries</span> <span class="o">+</span> <span class="n">create_table_queries</span><span class="p">:</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_cmd</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>Find data files for processing</h3>
+<p>Use <code>os.walk</code> to find all <code>*.json</code> files under the <code>filepath</code> directory.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Let&#39;s apply the DRY principle and write a function to load our</span>
+<span class="c1"># data.</span>
+
+
+<span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return all JSON files under filepath as a list&quot;&quot;&quot;</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;*.json&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">all_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">all_files</span>
+</pre></div>
+
+
+<h3>#1: <code>song</code> Table</h3>
+<h4>#Extract Data for Song Table</h4>
+<p>Run these commands to process the <code>song_data</code> by reading in a subset of the <a href="http://millionsongdataset.com/">Million Song Dataset</a> and extracting the data from the JSON files using pandas.</p>
+<div class="highlight"><pre><span></span><span class="n">song_root_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;song_data&quot;</span>
+<span class="n">song_files</span> <span class="o">=</span> <span class="n">get_files</span><span class="p">(</span><span class="n">song_root_dir</span><span class="p">)</span>
+<span class="n">filepath</span> <span class="o">=</span> <span class="n">song_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<h5>Insert Data into the Song Table</h5>
+<ul>
+<li>Method 1: select columns and return as a tuple, knowing that there is one song per dataframe and results in <strong>year as typye np.int64 and duration as type np.float64</strong>.  Pandas is implemented using numpy, and numpy (abbreviated np) data types are common.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">song_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;song_id&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;artist_id&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span>
+        <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<ul>
+<li>Method 2: Select columns, select first row, get values as numpy array, and convert to a list that results in <strong>year as type int and duration as type float</strong>.  But inserting numpy numeric types into the database using psycopg2 causes errors, so I convert them to Python types first.  This type conversion occurs because it is behavior of <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist">numpy.ndarray.tolist</a> upon which <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.tolist.html">pandas.Series.tolist</a> is based.  Mystery solved!</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># Select and insert data into the songs table</span>
+<span class="n">song_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;song_id&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;artist_id&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]]</span>
+<span class="n">song_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>song_id</th>
+      <th>title</th>
+      <th>artist_id</th>
+      <th>year</th>
+      <th>duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SONHOTT12A8C13493C</td>
+      <td>Something Girls</td>
+      <td>AR7G5I41187FB4CE6C</td>
+      <td>1982</td>
+      <td>233.40363</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">song_data</span> <span class="o">=</span> <span class="n">song_df</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">song_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="k">else</span> <span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">song_data</span><span class="p">]</span>
+<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">song_table_insert</span><span class="p">,</span> <span class="n">song_data</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>#2: <code>artists</code> Table</h3>
+<h5>Extract Data for Artist Table</h5>
+<p>Extract the data and insert it into the artist table.</p>
+<div class="highlight"><pre><span></span><span class="n">artist_df</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df</span><span class="p">[</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;artist_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;artist_name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;artist_location&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;artist_latitude&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;artist_longitude&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">artist_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>artist_id</th>
+      <th>artist_name</th>
+      <th>artist_location</th>
+      <th>artist_latitude</th>
+      <th>artist_longitude</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AR7G5I41187FB4CE6C</td>
+      <td>Adam Ant</td>
+      <td>London, England</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">artist_data</span> <span class="o">=</span> <span class="n">artist_df</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">artist_table_insert</span><span class="p">,</span> <span class="n">artist_data</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Process <code>log_data</code></h2>
+<p>Now let's add the subscriber activity data to see which songs are popular.</p>
+<div class="highlight"><pre><span></span><span class="n">log_data_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;log_data&quot;</span>
+<span class="n">log_files</span> <span class="o">=</span> <span class="n">get_files</span><span class="p">(</span><span class="n">log_data_root</span><span class="p">)</span>
+<span class="c1"># just read first file to test functionality</span>
+<span class="n">filepath</span> <span class="o">=</span> <span class="n">log_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>#3: <code>time</code> Table</h3>
+<h5>Extract and Insert Data into Time Table</h5>
+<p>Find what songs users are choosing by just considering <code>NextSong</code> records.  Then convert the <code>ts</code> timestamp column to datetime and extract columns for an hour, day, week of the year, month, year, and weekday (see: <a href="https://pandas.pydata.org/pandas-docs/stable/reference/series.html#time-series-related">Accessors</a> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/series.html#api-series-dt">dt Accessor</a> that allows datetime properties to be easily accessed).</p>
+<div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">ts</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">ts</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">))</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;NextSong&quot;</span><span class="p">])]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">ts</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">))</span>
+<span class="n">df</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="s2">&quot;UTC&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">time_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span>
+        <span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+        <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+        <span class="s2">&quot;week_of_year&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">week</span><span class="p">,</span>
+        <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+        <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+        <span class="s2">&quot;weekday&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">weekday</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="c1"># Here we want native pandas datatypes, so I&#39;ll user iterrows.</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">time_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">time_table_insert</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">time_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timestamp</th>
+      <th>hour</th>
+      <th>day</th>
+      <th>week_of_year</th>
+      <th>month</th>
+      <th>year</th>
+      <th>weekday</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018-11-11 02:33:56.796000+00:00</td>
+      <td>2</td>
+      <td>11</td>
+      <td>45</td>
+      <td>11</td>
+      <td>2018</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018-11-11 02:36:10.796000+00:00</td>
+      <td>2</td>
+      <td>11</td>
+      <td>45</td>
+      <td>11</td>
+      <td>2018</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018-11-11 02:40:34.796000+00:00</td>
+      <td>2</td>
+      <td>11</td>
+      <td>45</td>
+      <td>11</td>
+      <td>2018</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018-11-11 04:36:13.796000+00:00</td>
+      <td>4</td>
+      <td>11</td>
+      <td>45</td>
+      <td>11</td>
+      <td>2018</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018-11-11 04:36:46.796000+00:00</td>
+      <td>4</td>
+      <td>11</td>
+      <td>45</td>
+      <td>11</td>
+      <td>2018</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>#4: <code>users</code> Table</h3>
+<h5>Extract and Insert Data into Users Table</h5>
+<p>Every time a user plays a song, they appear in the log file, so naturally, there are duplicate userId entries.  Here we remove them to create a normalized user table.</p>
+<div class="highlight"><pre><span></span><span class="n">user_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span> <span class="s2">&quot;lastName&quot;</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">]]</span>
+<span class="n">user_df</span> <span class="o">=</span> <span class="n">user_df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">)</span>
+<span class="n">user_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>userId</th>
+      <th>firstName</th>
+      <th>lastName</th>
+      <th>gender</th>
+      <th>level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2</th>
+      <td>69</td>
+      <td>Anabelle</td>
+      <td>Simpson</td>
+      <td>F</td>
+      <td>free</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>32</td>
+      <td>Lily</td>
+      <td>Burns</td>
+      <td>F</td>
+      <td>free</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>75</td>
+      <td>Joseph</td>
+      <td>Gutierrez</td>
+      <td>M</td>
+      <td>free</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>92</td>
+      <td>Ryann</td>
+      <td>Smith</td>
+      <td>F</td>
+      <td>free</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>49</td>
+      <td>Chloe</td>
+      <td>Cuevas</td>
+      <td>F</td>
+      <td>free</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">user_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">user_table_insert</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>#5: <code>songplays</code> Table</h3>
+<h5>Extract and Insert Data and Songplays Table</h5>
+<p>To look up a song or an artist using the primary key that uniquely identifies it.  The log files only have the name of the song and artist.  So, I need to do a reverse lookup up to get identifiers.</p>
+<p><code>sql
+ SELECT s.song_id, a.artist_id FROM dim_song s
+ JOIN dim_artist a ON s.artist_id = a.artist_id
+ WHERE s.title = %s AND a.name = %s AND s.duration = %s;</code></p>
+<p>Iterating over the rows of the dataframe holding the log data.  First, I extract the find the unique identifiers.  Next, I combine them with other data from the log data to insert the user's songplay activity into the <code>song_play</code> table.</p>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+    <span class="c1"># get songid and artistid from song and artist tables</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">song_select</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">song</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">length</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">songid</span><span class="p">,</span> <span class="n">artistid</span> <span class="o">=</span> <span class="n">results</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">songid</span><span class="p">,</span> <span class="n">artistid</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="c1"># insert songplay record</span>
+    <span class="n">songplay_data</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">userId</span><span class="p">,</span>
+        <span class="n">songid</span><span class="p">,</span>
+        <span class="n">artistid</span><span class="p">,</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">sessionId</span><span class="p">,</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">ts</span><span class="p">,</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">level</span><span class="p">,</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">userAgent</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">songplay_table_insert</span><span class="p">,</span> <span class="n">songplay_data</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>Close Connection to Sparkify Database</h3>
+<div class="highlight"><pre><span></span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<h2>References</h2>
+<ol>
+<li>
+<p><a href="http://millionsongdataset.com/faq/">Million Song Dataset - FAQ with fields and data types</a> - Lists the fields and data-types used in the <a href="http://millionsongdataset.com/">Million Song Dataset</a>.</p>
+</li>
+<li>
+<p><a href="http://www.postgresonline.com/journal/archives/3-Converting-from-Unix-Timestamp-to-PostgreSQL-Timestamp-or-Date.html">Converting from Unix Timestamp to PostgreSQL Timestamp or Date</a> - Explans how to go from Unix epoch time to a PostgreSQL timestamp value.</p>
+</li>
+<li>
+<p><a href="https://www.postgresql.org/docs/current/sql-keywords-appendix.html">PostgreSQL Keyword List</a> - Note: <em>USER</em> is a reserved keyword in Postgres and cannot be used as a table name.</p>
+</li>
+<li>
+<p><a href="http://initd.org/psycopg/docs/extras.html#fast-execution-helpers">Psycopg2 - Fast execution helpers</a> - How to use the <code>executemany()</code> method to insert many rows into a table, at once.</p>
+</li>
+<li>
+<p><a href="http://www.postgresqltutorial.com/postgresql-serial/">Using PostgreSQL SERIAL To Create Auto-increment Column</a> - How to create a primary key that increments automatically.</p>
+</li>
+<li>
+<p><a href="https://stackoverflow.com/questions/6018214/how-to-insert-current-timestamp-into-postgres-via-python">How to insert current_timestamp into Postgres via python</a> - Explains how to easily insert timestamps into PostgreSQL by converting them to datetime objects in Python and then letting <a href="http://initd.org/psycopg/">pscopg2</a> handle the rest. </p>
+</li>
+<li>
+<p><a href="https://stackoverflow.com/questions/9758450/pandas-convert-dataframe-to-array-of-tuples">Pandas convert dataframe to an array of tuples</a> - Examples and explanation of how to convert rows of <a href="https://pandas.pydata.org/">pandas</a> dataframe into tuples for insertion into the database.  </p>
+</li>
+<li>
+<p><a href="http://initd.org/psycopg/docs/extras.html?highlight=executemany">Psycopg2 Extras - Fast execution helpers</a> - Explanation and examples of how to insert many records into a table in one transaction using psycopg2's <code>executemany()</code> method.  </p>
+</li>
+<li>
+<p><a href="https://stackoverflow.com/questions/17267417/how-to-upsert-merge-insert-on-duplicate-update-in-postgresql?noredirect=1&amp;lq=1">How to UPSERT (MERGE, INSERT … ON DUPLICATE UPDATE) in PostgreSQL?</a> - How to handle duplicate primary keys in PostgreSQL INSERT statements informally called <code>upsert</code>.  </p>
+</li>
+</ol>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Links -->
+<li class="list-group-item">
+  <h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+  <ul class="list-group" id="links">
+    <li class="list-group-item">
+      <a href="https://chrisalbon.com/" target="_blank">Chris Albon - Data Science & Artificial Intelligence</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.pbpython.com/" target="_blank">Practical Business Python</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.3blue1brown.com/" target="_blank">Animated Math</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://flowingdata.com/" target="_blank">Flowing Data</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://talkpython.fm/" target="_blank">Talk Python To Me</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://albertocairo.com/" target="_blank">Alberto Cairo</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://harangdev.github.io/" target="_blank">Data PlayGround</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://matthewdevaney.com/" target="_blank">Matthew Devaney's Blog</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Links -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
+
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2019 Rob Osterburg
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+
+
+</body>
+</html>

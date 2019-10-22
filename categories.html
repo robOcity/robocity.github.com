@@ -22,7 +22,7 @@
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
     <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
 
     <link href="/theme/css/pygments/native.css" rel="stylesheet">
@@ -47,6 +47,9 @@ Data and Code            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
                         <li >
                             <a href="/category/data-science.html">Data science</a>
                         </li>
@@ -74,12 +77,25 @@ Data and Code            </a>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-data-engineering">Data Engineering <span class="badge pull-right">2</span></a>
+                    </h4>
+                </div>
+                <div id="collapse-data-engineering" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <p><span class="categories-timestamp"><time datetime="2019-08-01T00:00:00-06:00">Thu 01 August 2019</time></span> <a href="/data-modeling-with-apache-cassandra.html">Data Modeling with Apache Cassandra</a></p>
+                        <p><span class="categories-timestamp"><time datetime="2019-07-22T00:00:00-06:00">Mon 22 July 2019</time></span> <a href="/data-modeling-with-postgresql.html">Data Modeling with PostgreSQL</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse-data-science">Data Science <span class="badge pull-right">2</span></a>
                     </h4>
                 </div>
                 <div id="collapse-data-science" class="panel-collapse collapse">
                     <div class="panel-body">
-                        <p><span class="categories-timestamp"><time datetime="2019-05-30T00:00:00-06:00">Thu 30 May 2019</time></span> <a href="/how-do-college-town-home-prices-fare-during-recession.html">How do college town home prices fare during recession?</a></p>
+                        <p><span class="categories-timestamp"><time datetime="2019-05-30T00:00:00-06:00">Thu 30 May 2019</time></span> <a href="/how-do-college-town-home-prices-fare-during-recession.html">How do college-town home prices fare during a recession?</a></p>
                         <p><span class="categories-timestamp"><time datetime="2019-02-28T00:00:00-07:00">Thu 28 February 2019</time></span> <a href="/using-postgresql-for-data-science-basics.html">Using PostgreSQL for Data Science</a></p>
                     </div>
                 </div>
@@ -92,7 +108,7 @@ Data and Code            </a>
                 </div>
                 <div id="collapse-tutorial" class="panel-collapse collapse">
                     <div class="panel-body">
-                        <p><span class="categories-timestamp"><time datetime="2019-05-15T00:00:00-06:00">Wed 15 May 2019</time></span> <a href="/using-jupyter-notebooks-to-blog-with-pelican.html">Blogging with Pelican, Jupyter Notebooks and nbconvert</a></p>
+                        <p><span class="categories-timestamp"><time datetime="2019-05-15T00:00:00-06:00">Wed 15 May 2019</time></span> <a href="/using-jupyter-notebooks-to-blog-with-pelican.html">Blogging with Pelican, Jupyter notebooks and nbconvert</a></p>
                         <p><span class="categories-timestamp"><time datetime="2017-08-15T00:00:00-06:00">Tue 15 August 2017</time></span> <a href="/web-scraping-with-python_an-introductory-tutorial.html">Web Scraping with Python: An Introductory Tutorial</a></p>
                     </div>
                 </div>
@@ -167,6 +183,23 @@ Data and Code            </a>
 <script src="/theme/js/respond.min.js"></script>
 
 
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
 
 
 </body>

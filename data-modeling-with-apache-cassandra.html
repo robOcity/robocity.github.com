@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Data Modeling with Apache Cassandra - Data and Code</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/data-modeling-with-apache-cassandra.html">
+
+        <meta name="author" content="Rob Osterburg" />
+        <meta name="keywords" content="No SQL,Data Modeling,Apache Cassandra,query,table,primary key,partition key,clustering columns,database,keystore" />
+        <meta name="description" content="See how to extract data from CSV files, transform it, and load it into Apache Cassandra. Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables." />
+
+        <meta property="og:site_name" content="Data and Code" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Data Modeling with Apache Cassandra"/>
+        <meta property="og:url" content="/data-modeling-with-apache-cassandra.html"/>
+        <meta property="og:description" content="See how to extract data from CSV files, transform it, and load it into Apache Cassandra. Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables."/>
+        <meta property="article:published_time" content="2019-08-01" />
+            <meta property="article:section" content="Data Engineering" />
+            <meta property="article:tag" content="No SQL" />
+            <meta property="article:tag" content="Data Modeling" />
+            <meta property="article:tag" content="Apache Cassandra" />
+            <meta property="article:tag" content="query" />
+            <meta property="article:tag" content="table" />
+            <meta property="article:tag" content="primary key" />
+            <meta property="article:tag" content="partition key" />
+            <meta property="article:tag" content="clustering columns" />
+            <meta property="article:tag" content="database" />
+            <meta property="article:tag" content="keystore" />
+            <meta property="article:author" content="Rob Osterburg" />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Data and Code            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
+                        <li >
+                            <a href="/category/data-science.html">Data science</a>
+                        </li>
+                        <li >
+                            <a href="/category/tutorial.html">Tutorial</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/data-modeling-with-apache-cassandra.html"
+                       rel="bookmark"
+                       title="Permalink to Data Modeling with Apache Cassandra">
+                        Data Modeling with Apache Cassandra
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2019-08-01T00:00:00-06:00"> Thu 01 August 2019</time>
+    </span>
+
+
+            <span class="label label-default">By</span>
+            <a href="/author/rob-osterburg.html"><i class="fa fa-user"></i> Rob Osterburg</a>
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="/tag/no-sql.html">No SQL</a>
+        /
+	<a href="/tag/data-modeling.html">Data Modeling</a>
+        /
+	<a href="/tag/apache-cassandra.html">Apache Cassandra</a>
+        /
+	<a href="/tag/query.html">query</a>
+        /
+	<a href="/tag/table.html">table</a>
+        /
+	<a href="/tag/primary-key.html">primary key</a>
+        /
+	<a href="/tag/partition-key.html">partition key</a>
+        /
+	<a href="/tag/clustering-columns.html">clustering columns</a>
+        /
+	<a href="/tag/database.html">database</a>
+        /
+	<a href="/tag/keystore.html">keystore</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>The query comes first in Apache Cassandra.  It drives the design of the table and its primary key.   Cassandra is a partition row store -- a type of NoSQL database -- that features high-availability and partition tolerance at the expense of consistency.  Scalability is where NoSQL databases have a decided advantage over relational databases.  To be scalable and offer fast reads and writes means that Cassandra must be able to locate data quickly, and uses the primary key to do so.  Cassandra relies upon a well designed primary key composed of a partition key and one or more clustering columns for its performance.</p>
+<blockquote>
+<p>The primary key in Cassandra has two principle goals:</p>
+<ol>
+<li>
+<p>Distribute the data evenly across nodes in the cluster</p>
+</li>
+<li>
+<p>Minimize the number of partitions read</p>
+</li>
+</ol>
+</blockquote>
+<p>Running on many nodes and offering fast reads and writes means that Cassandra must be able to locate data quickly.  The primary key performs this job.  Its first element -- the partition key -- maps rows to the node where they are stored.  Organizing data on a node is the role of the second element of the primary key -- the clustering columns.  The first clustering column is the primary sort. The second is next, and so on.  Together -- the partition key and clustering columns -- provide a unique identifier for rows and enables Cassandra to locate them efficiently.</p>
+<p>Unlike relational systems, de-normalized data are the norm for NoSQL databases.  Designed for fast reads and writes, joining tables across nodes is too expensive an operation to support, and that is why <code>JOIN</code> is not a <a href="https://docs.datastax.com/en/dse/6.7/cql/cql/cql_using/cqlSyntax.html?hl=keywords">CQL keyword</a>.  So, how can we design tables to provide the high performance that Cassandra promises?  It is simple: one-table-per-query, and here is how to do it.  First, create the query.  Then define the table to answer it.  This approach allows you to design the query to answer user's questions.  Working on one table in isolation is easy because it does not need to be normalized.  In taking this approach, Cassandra trades-off as disk space for performance and simplicity.  </p>
+<h1>Part I. ETL Pipeline for Pre-Processing the Files</h1>
+<h2>Extract data from CSV files</h2>
+<ul>
+<li>Find all the event logs generated by user's playing songs using the music app</li>
+<li>Append the data from every line in every file to a list</li>
+<li>Write out the data to a <strong>single</strong> CSV file for analysis: <code>event_datafile_new.csv</code></li>
+</ul>
+<h4>Import Python packages</h4>
+<div class="highlight"><pre><span></span><span class="c1"># Import Python packages</span>
+<span class="kn">from</span> <span class="nn">cassandra.cluster</span> <span class="kn">import</span> <span class="n">Cluster</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">cassandra</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+</pre></div>
+
+
+<h4>Creating a list of file paths to process original event CSV data files</h4>
+<div class="highlight"><pre><span></span><span class="c1"># get the current folder and subfolder event data</span>
+<span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/event_data&#39;</span>
+
+<span class="c1"># find all directories (roots) under filepath</span>
+<span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+
+    <span class="c1"># join the file path and roots with the subdirectories using glob</span>
+    <span class="n">file_path_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_path_list</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">18</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">15</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">14</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">27</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">13</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">26</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">19</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">25</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">29</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">24</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">22</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">30</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">28</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">21</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">23</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">workspace</span><span class="o">/</span><span class="n">event_data</span><span class="o">/</span><span class="mi">2018</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">20</span><span class="o">-</span><span class="n">events</span><span class="p">.</span><span class="n">csv</span>
+</pre></div>
+
+
+<h4>Read in the data from all the CSV files</h4>
+<div class="highlight"><pre><span></span><span class="c1"># read music app event data from csv files</span>
+
+<span class="c1"># list to data read from csv files</span>
+<span class="n">full_data_rows_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># iterate over files</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_path_list</span><span class="p">:</span>
+
+    <span class="c1"># reading csv file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="c1"># creating a csv reader object</span>
+        <span class="n">csvreader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">csvreader</span><span class="p">)</span>
+
+        <span class="c1"># append lines of file to list</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csvreader</span><span class="p">:</span>
+            <span class="n">full_data_rows_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">full_data_rows_list</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="mi">8056</span>
+</pre></div>
+
+
+<h4>Write out the data to one CSV file</h4>
+<div class="highlight"><pre><span></span><span class="c1"># write the extracted to one csv file</span>
+<span class="c1"># removing a subset of columns and removing blank lines</span>
+
+<span class="n">csv</span><span class="o">.</span><span class="n">register_dialect</span><span class="p">(</span><span class="s1">&#39;myDialect&#39;</span><span class="p">,</span> <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_ALL</span><span class="p">,</span> <span class="n">skipinitialspace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;event_datafile_new.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;myDialect&#39;</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">&#39;artist&#39;</span><span class="p">,</span> <span class="s1">&#39;firstName&#39;</span><span class="p">,</span> <span class="s1">&#39;gender&#39;</span><span class="p">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="p">,</span> <span class="s1">&#39;lastName&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;length&#39;</span><span class="p">,</span>                <span class="s1">&#39;level&#39;</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;sessionId&#39;</span><span class="p">,</span> <span class="s1">&#39;song&#39;</span><span class="p">,</span> <span class="s1">&#39;userId&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">full_data_rows_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">((</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                         <span class="n">row</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">16</span><span class="p">]))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># check the number of rows in your csv file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;event_datafile_new.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="mi">6821</span>
+</pre></div>
+
+
+<h2>Part II. Load the data into Apache Cassandra</h2>
+<ul>
+<li>Data elements<ul>
+<li>artist</li>
+<li>firstName of user</li>
+<li>gender of user</li>
+<li>item number in session</li>
+<li>last name of user</li>
+<li>length of the song</li>
+<li>level (paid or free song)</li>
+<li>location of the user</li>
+<li>sessionId</li>
+<li>song title</li>
+<li>userId</li>
+</ul>
+</li>
+</ul>
+<p>The de-normalized data should similar to what is in <font color=red><strong>event_datafile_new.csv</strong></font> after the code above is run:<br></p>
+<p><img src="images/image_event_datafile_new.jpg"></p>
+<h2>Prepare Apache Cassandra cluster and keyspace</h2>
+<h4>Creating a Cluster</h4>
+<div class="highlight"><pre><span></span><span class="c1"># This should make a connection to a Cassandra instance your local machine</span>
+<span class="c1"># (127.0.0.1)</span>
+
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">([</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">])</span>
+
+<span class="c1"># To establish connection and begin executing queries, need a session</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+</pre></div>
+
+
+<h4>Create Keyspace</h4>
+<div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    CREATE KEYSPACE IF NOT EXISTS project2</span>
+<span class="s2">    WITH REPLICATION = </span>
+<span class="s2">    {&#39;class&#39;: &#39;SimpleStrategy&#39;, &#39;replication_factor&#39;: 1};</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+
+
+<h4>Set Keyspace</h4>
+<div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">set_keyspace</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Functions</h2>
+<p>I am applying the don't repeat yourself (DRY) principle here and keep all the fiddly code in one place.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_drop_query</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the CQL query to drop a table.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    table -- table to drop</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;DROP TABLE IF EXISTS {table};&quot;</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">perform_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Runs the query and returns results as a pandas dataframe.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    session -- run query on this Cassandra session object</span>
+<span class="sd">    query -- CQL query to run</span>
+<span class="sd">    verbose -- diagnostics flag useful in debugging issues&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;query: {query}&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="c1"># generators can only be consummed once</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">results: &quot;</span> <span class="o">+</span> <span class="mi">60</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s2">&quot;row:        {row}&quot;</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]))</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;df.shape:   {df.shape}&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;df.columns: {df.columns}&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lookup_values</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the values for the columns provided.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    keys -- column names as a list or tuple</span>
+<span class="sd">    line -- data values parsed from a line in the CSV data file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name_to_index</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;artist&quot;</span><span class="p">:</span>        <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>                                                    <span class="s2">&quot;firstName&quot;</span><span class="p">:</span>     <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>                                                    <span class="s2">&quot;gender&quot;</span><span class="p">:</span>        <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>                                                     <span class="s2">&quot;itemInSession&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>                                                    <span class="s2">&quot;lastName&quot;</span><span class="p">:</span>      <span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>                                                    <span class="s2">&quot;length&quot;</span><span class="p">:</span>        <span class="nb">float</span><span class="p">(</span>
+        <span class="n">line</span><span class="p">[</span><span class="mi">5</span><span class="p">]),</span>                                                    <span class="s2">&quot;level&quot;</span><span class="p">:</span>         <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>                                                    <span class="s2">&quot;location&quot;</span><span class="p">:</span>      <span class="n">line</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>                                                    <span class="s2">&quot;sessionId&quot;</span><span class="p">:</span>     <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">]),</span>                                                    <span class="s2">&quot;song&quot;</span><span class="p">:</span>          <span class="n">line</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>                                                    <span class="s2">&quot;userId&quot;</span><span class="p">:</span>        <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">10</span><span class="p">])})</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">name_to_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_insert_query</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the CQL query to insert data from select columns into a table.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    table -- where the data will be inserted</span>
+<span class="sd">    columns -- columns to insert</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;INSERT INTO {table} &quot;</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;) &quot;</span>
+    <span class="c1"># note: trailing comma after last %s is a syntax error</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;VALUES (&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))])</span> <span class="o">+</span> <span class="s2">&quot;);&quot;</span>
+    <span class="k">return</span> <span class="n">query</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># iterate over csv file inserting records into a table</span>
+
+<span class="k">def</span> <span class="nf">perform_insert_query</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="s2">&quot;event_datafile_new.csv&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Insert data from columns into table after performing any needed type conversions.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    table -- where to insert data into</span>
+<span class="sd">    columns -- CSV data columns to extract, perform type conversion and insert</span>
+<span class="sd">    verbose -- diagnostics flag useful in debugging issues</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">create_insert_query</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">csvreader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">csvreader</span><span class="p">)</span>  <span class="c1"># skip header line</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">csvreader</span><span class="p">):</span>
+
+            <span class="n">data_to_insert</span> <span class="o">=</span> <span class="n">lookup_values</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;inserting line {i} &quot;</span> <span class="o">+</span> <span class="mi">20</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;line: {line}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;columns: {columns}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;query: {query}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;data_to_insert: {data_to_insert}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">data_to_insert</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Exception: {e}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;query: {query}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;data_to_insert: {data_to_insert}&quot;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;line: {line}&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">display_results</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">where_clause</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the selected rows as a pandas dataframe.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">    table -- the name of the table</span>
+<span class="sd">    columns -- a list of column names to include</span>
+<span class="sd">    where_clause -- selects data from the table and must reference elements of the primary key in the order specified</span>
+<span class="sd">    limit -- the number of results to request from the database</span>
+<span class="sd">    verbose -- additional information to help understand the results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> \
+        <span class="n">f</span><span class="s2">&quot; FROM {table} WHERE {where_clause}&quot;</span>
+    <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; LIMIT {limit}&quot;</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot;;&quot;</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;query:      {query}&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="c1"># generators can only be consummed once</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">results: &quot;</span> <span class="o">+</span> <span class="mi">60</span><span class="o">*</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s2">&quot;row:        {row}&quot;</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]))</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;df.shape:   {df.shape}&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;df.columns: {df.columns}&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+</pre></div>
+
+
+<hr>
+<h2>Perform Query 1 -- Session Item</h2>
+<p><strong>Query</strong>: Find the <em>artist, song title, and song's length</em> listened to during <em>sessionId = 338, and itemInSession = 4</em>.  In designing this query, it would be helpful to understand better the data stored by the app.  For example, do <em>sessionId_s repeat? Can multiple users have the same _sessionId</em>.  Here I am assuming they are unique across users.  </p>
+<p><strong>Table columns</strong>: Requested information: <em>artist, song and length</em>. Primary key supporting where clause: <em>sessionId and itemInSession</em>.</p>
+<p><strong>Primary key</strong>: The primary key contains both a simple partition key (<em>sessionId</em>) and a single clustering column (<em>itemInSession</em>) that together uniquely identify rows.</p>
+<p><strong>Where clause</strong>: <em>"sessionId = 338 AND itemInSession = 4"</em> restricts the results to a single song</p>
+<div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="s2">&quot;session_item_table&quot;</span>
+
+<span class="n">perform_query</span><span class="p">(</span><span class="n">create_drop_query</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nv">query</span>: <span class="nv">DROP</span> <span class="nv">TABLE</span> <span class="k">IF</span> <span class="nv">EXISTS</span> <span class="nv">session_item_table</span><span class="c1">;</span>
+
+<span class="nv">results</span>: <span class="o">------------------------------------------------------------</span>
+
+<span class="nv">df</span>.<span class="nv">shape</span>:   <span class="ss">(</span><span class="mi">0</span>, <span class="mi">0</span><span class="ss">)</span>
+<span class="nv">df</span>.<span class="nv">columns</span>: <span class="nv">Index</span><span class="ss">(</span>[], <span class="nv">dtype</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">object</span><span class="s1">&#39;</span><span class="ss">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="c1"># assume that combination of sessionId and itemInSession are unique across users</span>
+<span class="n">create_session_item_table_query</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">CREATE TABLE IF NOT EXISTS {table} (sessionId int, itemInSession int, artist text, song text, length float,</span>
+<span class="s2">    PRIMARY KEY(sessionId, itemInSession)</span>
+<span class="s2">);&quot;&quot;&quot;</span>
+
+<span class="n">perform_query</span><span class="p">(</span><span class="n">create_session_item_table_query</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nv">query</span>: 
+<span class="nv">CREATE</span> <span class="nv">TABLE</span> <span class="k">IF</span> <span class="nv">NOT</span> <span class="nv">EXISTS</span> <span class="nv">session_item_table</span> <span class="ss">(</span><span class="nv">sessionId</span> <span class="nv">int</span>, <span class="nv">itemInSession</span> <span class="nv">int</span>, <span class="nv">artist</span> <span class="nv">text</span>, <span class="nv">song</span> <span class="nv">text</span>, <span class="nv">length</span> <span class="nv">float</span>,
+    <span class="nv">PRIMARY</span> <span class="nv">KEY</span><span class="ss">(</span><span class="nv">sessionId</span>, <span class="nv">itemInSession</span><span class="ss">)</span>
+<span class="ss">)</span><span class="c1">;</span>
+
+<span class="nv">results</span>: <span class="o">------------------------------------------------------------</span>
+
+<span class="nv">df</span>.<span class="nv">shape</span>:   <span class="ss">(</span><span class="mi">0</span>, <span class="mi">0</span><span class="ss">)</span>
+<span class="nv">df</span>.<span class="nv">columns</span>: <span class="nv">Index</span><span class="ss">(</span>[], <span class="nv">dtype</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">object</span><span class="s1">&#39;</span><span class="ss">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;sessionId&quot;</span><span class="p">,</span> <span class="s2">&quot;itemInSession&quot;</span><span class="p">,</span> <span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">)</span>
+
+<span class="n">perform_insert_query</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="p">,)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">0</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Rokia TraorÃ</span><span class="se">\x83</span><span class="s1">Â©&#39;</span><span class="p">,</span> <span class="s1">&#39;Stefany&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;White&#39;</span><span class="p">,</span> <span class="s1">&#39;274.88608&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Lubbock, TX&#39;</span><span class="p">,</span> <span class="s1">&#39;693&#39;</span><span class="p">,</span> <span class="s1">&#39;Zen&#39;</span><span class="p">,</span> <span class="s1">&#39;83&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;length&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_item_table</span> <span class="o">(</span><span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">length</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">693</span><span class="o">,</span> <span class="nt">0</span><span class="o">,</span> <span class="s1">&#39;Rokia TraorÃ\x83Â©&#39;</span><span class="o">,</span> <span class="s1">&#39;Zen&#39;</span><span class="o">,</span> <span class="nt">274</span><span class="p">.</span><span class="nc">88608</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">1</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Camila&#39;</span><span class="p">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="p">,</span> <span class="s1">&#39;230.81751&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxnard-Thousand Oaks-Ventura, CA&#39;</span><span class="p">,</span> <span class="s1">&#39;555&#39;</span><span class="p">,</span> <span class="s1">&#39;Abrazame  (Version Acustica)&#39;</span><span class="p">,</span> <span class="s1">&#39;40&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;length&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_item_table</span> <span class="o">(</span><span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">length</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">555</span><span class="o">,</span> <span class="nt">1</span><span class="o">,</span> <span class="s1">&#39;Camila&#39;</span><span class="o">,</span> <span class="s1">&#39;Abrazame  (Version Acustica)&#39;</span><span class="o">,</span> <span class="nt">230</span><span class="p">.</span><span class="nc">81751</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">2</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Carl Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="p">,</span> <span class="s1">&#39;196.67546&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxnard-Thousand Oaks-Ventura, CA&#39;</span><span class="p">,</span> <span class="s1">&#39;698&#39;</span><span class="p">,</span> <span class="s2">&quot;You Ain&#39;t Right (Album Version)&quot;</span><span class="p">,</span> <span class="s1">&#39;40&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;length&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_item_table</span> <span class="o">(</span><span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">length</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">698</span><span class="o">,</span> <span class="nt">0</span><span class="o">,</span> <span class="s1">&#39;Carl Thomas&#39;</span><span class="o">,</span> <span class="s2">&quot;You Ain&#39;t Right (Album Version)&quot;</span><span class="o">,</span> <span class="nt">196</span><span class="p">.</span><span class="nc">67546</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">3</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;N.E.R.D.&#39;</span><span class="p">,</span> <span class="s1">&#39;James&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Martin&#39;</span><span class="p">,</span> <span class="s1">&#39;242.99057&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Dallas-Fort Worth-Arlington, TX&#39;</span><span class="p">,</span> <span class="s1">&#39;78&#39;</span><span class="p">,</span> <span class="s1">&#39;Provider (Remix Radio Edit)&#39;</span><span class="p">,</span> <span class="s1">&#39;79&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;length&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_item_table</span> <span class="o">(</span><span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">length</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">78</span><span class="o">,</span> <span class="nt">0</span><span class="o">,</span> <span class="s1">&#39;N.E.R.D.&#39;</span><span class="o">,</span> <span class="s1">&#39;Provider (Remix Radio Edit)&#39;</span><span class="o">,</span> <span class="nt">242</span><span class="p">.</span><span class="nc">99057</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">4</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Lil Jon / The East Side Boyz / DJ Flexx&#39;</span><span class="p">,</span> <span class="s1">&#39;Jacqueline&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;Lynch&#39;</span><span class="p">,</span> <span class="s1">&#39;285.30893&#39;</span><span class="p">,</span> <span class="s1">&#39;paid&#39;</span><span class="p">,</span> <span class="s1">&#39;Atlanta-Sandy Springs-Roswell, GA&#39;</span><span class="p">,</span> <span class="s1">&#39;589&#39;</span><span class="p">,</span> <span class="s1">&#39;Aww Skeet Skeet&#39;</span><span class="p">,</span> <span class="s1">&#39;29&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;length&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_item_table</span> <span class="o">(</span><span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">length</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">589</span><span class="o">,</span> <span class="nt">3</span><span class="o">,</span> <span class="s1">&#39;Lil Jon / The East Side Boyz / DJ Flexx&#39;</span><span class="o">,</span> <span class="s1">&#39;Aww Skeet Skeet&#39;</span><span class="o">,</span> <span class="nt">285</span><span class="p">.</span><span class="nc">30893</span><span class="o">)</span>
+</pre></div>
+
+
+<h4>Results of the query</h4>
+<div class="highlight"><pre><span></span><span class="n">where_clause</span> <span class="o">=</span> <span class="s2">&quot;sessionId = 338 AND itemInSession = 4&quot;</span>
+
+<span class="n">display_results</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">),</span> <span class="n">where_clause</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">query</span><span class="o">:</span>      <span class="n">SELECT</span> <span class="n">artist</span><span class="o">,</span> <span class="n">song</span><span class="o">,</span> <span class="n">length</span> <span class="n">FROM</span> <span class="n">session_item_table</span> <span class="n">WHERE</span> <span class="n">sessionId</span> <span class="o">=</span> <span class="mi">338</span> <span class="n">AND</span> <span class="n">itemInSession</span> <span class="o">=</span> <span class="mi">4</span> <span class="n">LIMIT</span> <span class="mi">5</span><span class="o">;</span>
+
+<span class="n">results</span><span class="o">:</span> <span class="o">------------------------------------------------------------</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Faithless&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Music Matters (Mark Knight Dub)&#39;</span><span class="o">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">495.30731201171875</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">shape</span><span class="o">:</span>   <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">columns</span><span class="o">:</span> <span class="n">Index</span><span class="o">([</span><span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;length&#39;</span><span class="o">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>artist</th>
+      <th>song</th>
+      <th>length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Faithless</td>
+      <td>Music Matters (Mark Knight Dub)</td>
+      <td>495.307312</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr>
+<h2>Perform Query 2 -- User / Session</h2>
+<p><strong>Query</strong>: Find the name of <em>artist, song</em> (sorted by <em>itemInSession</em>) and user (<em>firstName and lastName</em>)
+ for <em>userid = 10, sessionid = 182</em>.</p>
+<p><strong>Primary key</strong>: The primary key contains both a compound partition key (<em>userId, sessionId</em>) and a single clustering column (<em>itemInSession</em>).  Using both <em>userId and sessionId</em> for the partition key assures that only one node will be visited to answer this query.</p>
+<p><strong>Table columns</strong>: Requested information: <em>artist, song, firstName and lastName</em>.  Primary key supporing where clause: <em>userId, sessionId and itemInSession</em> (added to support sorting)</p>
+<p><strong>Where clause</strong>: <em>"userId = 10 AND sessionId = 182"</em></p>
+<div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="s2">&quot;session_user_table&quot;</span>
+
+<span class="n">perform_query</span><span class="p">(</span><span class="n">create_drop_query</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nv">query</span>: <span class="nv">DROP</span> <span class="nv">TABLE</span> <span class="k">IF</span> <span class="nv">EXISTS</span> <span class="nv">session_user_table</span><span class="c1">;</span>
+
+<span class="nv">results</span>: <span class="o">------------------------------------------------------------</span>
+
+<span class="nv">df</span>.<span class="nv">shape</span>:   <span class="ss">(</span><span class="mi">0</span>, <span class="mi">0</span><span class="ss">)</span>
+<span class="nv">df</span>.<span class="nv">columns</span>: <span class="nv">Index</span><span class="ss">(</span>[], <span class="nv">dtype</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">object</span><span class="s1">&#39;</span><span class="ss">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">create_user_session_table_query</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">CREATE TABLE IF NOT EXISTS {table} (</span>
+<span class="s2">    userId int,</span>
+<span class="s2">    sessionId int,</span>
+<span class="s2">    itemInSession int,</span>
+<span class="s2">    artist text,</span>
+<span class="s2">    song text, </span>
+<span class="s2">    firstName text, </span>
+<span class="s2">    lastName text, </span>
+<span class="s2">PRIMARY KEY((userId, sessionId), itemInSession)) WITH CLUSTERING ORDER BY (itemInSession ASC);&quot;&quot;&quot;</span>
+
+<span class="n">perform_query</span><span class="p">(</span><span class="n">create_user_session_table_query</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nv">query</span>: 
+<span class="nv">CREATE</span> <span class="nv">TABLE</span> <span class="k">IF</span> <span class="nv">NOT</span> <span class="nv">EXISTS</span> <span class="nv">session_user_table</span> <span class="ss">(</span>
+    <span class="nv">userId</span> <span class="nv">int</span>,
+    <span class="nv">sessionId</span> <span class="nv">int</span>,
+    <span class="nv">itemInSession</span> <span class="nv">int</span>,
+    <span class="nv">artist</span> <span class="nv">text</span>,
+    <span class="nv">song</span> <span class="nv">text</span>, 
+    <span class="nv">firstName</span> <span class="nv">text</span>, 
+    <span class="nv">lastName</span> <span class="nv">text</span>, 
+<span class="nv">PRIMARY</span> <span class="nv">KEY</span><span class="ss">((</span><span class="nv">userId</span>, <span class="nv">sessionId</span><span class="ss">)</span>, <span class="nv">itemInSession</span><span class="ss">))</span> <span class="nv">WITH</span> <span class="nv">CLUSTERING</span> <span class="nv">ORDER</span> <span class="nv">BY</span> <span class="ss">(</span><span class="nv">itemInSession</span> <span class="nv">ASC</span><span class="ss">)</span><span class="c1">;</span>
+
+<span class="nv">results</span>: <span class="o">------------------------------------------------------------</span>
+
+<span class="nv">df</span>.<span class="nv">shape</span>:   <span class="ss">(</span><span class="mi">0</span>, <span class="mi">0</span><span class="ss">)</span>
+<span class="nv">df</span>.<span class="nv">columns</span>: <span class="nv">Index</span><span class="ss">(</span>[], <span class="nv">dtype</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">object</span><span class="s1">&#39;</span><span class="ss">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">perform_insert_query</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="s2">&quot;sessionId&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;itemInSession&quot;</span><span class="p">,</span> <span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span> <span class="s2">&quot;lastName&quot;</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">0</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Rokia TraorÃ</span><span class="se">\x83</span><span class="s1">Â©&#39;</span><span class="p">,</span> <span class="s1">&#39;Stefany&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;White&#39;</span><span class="p">,</span> <span class="s1">&#39;274.88608&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Lubbock, TX&#39;</span><span class="p">,</span> <span class="s1">&#39;693&#39;</span><span class="p">,</span> <span class="s1">&#39;Zen&#39;</span><span class="p">,</span> <span class="s1">&#39;83&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_user_table</span> <span class="o">(</span><span class="nt">userId</span><span class="o">,</span> <span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">83</span><span class="o">,</span> <span class="nt">693</span><span class="o">,</span> <span class="nt">0</span><span class="o">,</span> <span class="s1">&#39;Rokia TraorÃ\x83Â©&#39;</span><span class="o">,</span> <span class="s1">&#39;Zen&#39;</span><span class="o">,</span> <span class="s1">&#39;Stefany&#39;</span><span class="o">,</span> <span class="s1">&#39;White&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">1</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Camila&#39;</span><span class="p">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="p">,</span> <span class="s1">&#39;230.81751&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxnard-Thousand Oaks-Ventura, CA&#39;</span><span class="p">,</span> <span class="s1">&#39;555&#39;</span><span class="p">,</span> <span class="s1">&#39;Abrazame  (Version Acustica)&#39;</span><span class="p">,</span> <span class="s1">&#39;40&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_user_table</span> <span class="o">(</span><span class="nt">userId</span><span class="o">,</span> <span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">40</span><span class="o">,</span> <span class="nt">555</span><span class="o">,</span> <span class="nt">1</span><span class="o">,</span> <span class="s1">&#39;Camila&#39;</span><span class="o">,</span> <span class="s1">&#39;Abrazame  (Version Acustica)&#39;</span><span class="o">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="o">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">2</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Carl Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="p">,</span> <span class="s1">&#39;196.67546&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxnard-Thousand Oaks-Ventura, CA&#39;</span><span class="p">,</span> <span class="s1">&#39;698&#39;</span><span class="p">,</span> <span class="s2">&quot;You Ain&#39;t Right (Album Version)&quot;</span><span class="p">,</span> <span class="s1">&#39;40&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_user_table</span> <span class="o">(</span><span class="nt">userId</span><span class="o">,</span> <span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">40</span><span class="o">,</span> <span class="nt">698</span><span class="o">,</span> <span class="nt">0</span><span class="o">,</span> <span class="s1">&#39;Carl Thomas&#39;</span><span class="o">,</span> <span class="s2">&quot;You Ain&#39;t Right (Album Version)&quot;</span><span class="o">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="o">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">3</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;N.E.R.D.&#39;</span><span class="p">,</span> <span class="s1">&#39;James&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Martin&#39;</span><span class="p">,</span> <span class="s1">&#39;242.99057&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Dallas-Fort Worth-Arlington, TX&#39;</span><span class="p">,</span> <span class="s1">&#39;78&#39;</span><span class="p">,</span> <span class="s1">&#39;Provider (Remix Radio Edit)&#39;</span><span class="p">,</span> <span class="s1">&#39;79&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_user_table</span> <span class="o">(</span><span class="nt">userId</span><span class="o">,</span> <span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">79</span><span class="o">,</span> <span class="nt">78</span><span class="o">,</span> <span class="nt">0</span><span class="o">,</span> <span class="s1">&#39;N.E.R.D.&#39;</span><span class="o">,</span> <span class="s1">&#39;Provider (Remix Radio Edit)&#39;</span><span class="o">,</span> <span class="s1">&#39;James&#39;</span><span class="o">,</span> <span class="s1">&#39;Martin&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">4</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Lil Jon / The East Side Boyz / DJ Flexx&#39;</span><span class="p">,</span> <span class="s1">&#39;Jacqueline&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;Lynch&#39;</span><span class="p">,</span> <span class="s1">&#39;285.30893&#39;</span><span class="p">,</span> <span class="s1">&#39;paid&#39;</span><span class="p">,</span> <span class="s1">&#39;Atlanta-Sandy Springs-Roswell, GA&#39;</span><span class="p">,</span> <span class="s1">&#39;589&#39;</span><span class="p">,</span> <span class="s1">&#39;Aww Skeet Skeet&#39;</span><span class="p">,</span> <span class="s1">&#39;29&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;sessionId&#39;</span><span class="o">,</span> <span class="s1">&#39;itemInSession&#39;</span><span class="o">,</span> <span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">session_user_table</span> <span class="o">(</span><span class="nt">userId</span><span class="o">,</span> <span class="nt">sessionId</span><span class="o">,</span> <span class="nt">itemInSession</span><span class="o">,</span> <span class="nt">artist</span><span class="o">,</span> <span class="nt">song</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="nt">29</span><span class="o">,</span> <span class="nt">589</span><span class="o">,</span> <span class="nt">3</span><span class="o">,</span> <span class="s1">&#39;Lil Jon / The East Side Boyz / DJ Flexx&#39;</span><span class="o">,</span> <span class="s1">&#39;Aww Skeet Skeet&#39;</span><span class="o">,</span> <span class="s1">&#39;Jacqueline&#39;</span><span class="o">,</span> <span class="s1">&#39;Lynch&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<h4>Results of the query</h4>
+<div class="highlight"><pre><span></span><span class="n">display_results</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;lastName&quot;</span><span class="p">),</span> <span class="s2">&quot;userId = 10 AND sessionId = 182&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">query</span><span class="o">:</span>      <span class="n">SELECT</span> <span class="n">artist</span><span class="o">,</span> <span class="n">song</span><span class="o">,</span> <span class="n">firstName</span><span class="o">,</span> <span class="n">lastName</span> <span class="n">FROM</span> <span class="n">session_user_table</span> <span class="n">WHERE</span> <span class="n">userId</span> <span class="o">=</span> <span class="mi">10</span> <span class="n">AND</span> <span class="n">sessionId</span> <span class="o">=</span> <span class="mi">182</span> <span class="n">LIMIT</span> <span class="mi">5</span><span class="o">;</span>
+
+<span class="n">results</span><span class="o">:</span> <span class="o">------------------------------------------------------------</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Down To The Bone&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s2">&quot;Keep On Keepin&#39; On&quot;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Three Drives&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Greece 2000&#39;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Sebastien Tellier&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Kilometer&#39;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Lonnie Gordon&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Catch You Baby (Steve Pitron &amp; Max Sanna Radio Edit)&#39;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">shape</span><span class="o">:</span>   <span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">columns</span><span class="o">:</span> <span class="n">Index</span><span class="o">([</span><span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstname&#39;</span><span class="o">,</span> <span class="s1">&#39;lastname&#39;</span><span class="o">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>artist</th>
+      <th>song</th>
+      <th>firstname</th>
+      <th>lastname</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Down To The Bone</td>
+      <td>Keep On Keepin' On</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Three Drives</td>
+      <td>Greece 2000</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Sebastien Tellier</td>
+      <td>Kilometer</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Lonnie Gordon</td>
+      <td>Catch You Baby (Steve Pitron &amp; Max Sanna Radio...</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h4>Verify the results of the query <em>showing</em> sort order</h4>
+<div class="highlight"><pre><span></span><span class="n">display_results</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span> <span class="s2">&quot;lastName&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="s2">&quot;itemInSession&quot;</span><span class="p">],</span> <span class="s2">&quot;userId = 10 AND sessionId = 182&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">query</span><span class="o">:</span>      <span class="n">SELECT</span> <span class="n">artist</span><span class="o">,</span> <span class="n">song</span><span class="o">,</span> <span class="n">firstName</span><span class="o">,</span> <span class="n">lastName</span><span class="o">,</span> <span class="n">userId</span><span class="o">,</span> <span class="n">itemInSession</span> <span class="n">FROM</span> <span class="n">session_user_table</span> <span class="n">WHERE</span> <span class="n">userId</span> <span class="o">=</span> <span class="mi">10</span> <span class="n">AND</span> <span class="n">sessionId</span> <span class="o">=</span> <span class="mi">182</span> <span class="n">LIMIT</span> <span class="mi">5</span><span class="o">;</span>
+
+<span class="n">results</span><span class="o">:</span> <span class="o">------------------------------------------------------------</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Down To The Bone&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s2">&quot;Keep On Keepin&#39; On&quot;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">,</span> <span class="n">userid</span><span class="o">=</span><span class="mi">10</span><span class="o">,</span> <span class="n">iteminsession</span><span class="o">=</span><span class="mi">0</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Three Drives&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Greece 2000&#39;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">,</span> <span class="n">userid</span><span class="o">=</span><span class="mi">10</span><span class="o">,</span> <span class="n">iteminsession</span><span class="o">=</span><span class="mi">1</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Sebastien Tellier&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Kilometer&#39;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">,</span> <span class="n">userid</span><span class="o">=</span><span class="mi">10</span><span class="o">,</span> <span class="n">iteminsession</span><span class="o">=</span><span class="mi">2</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">artist</span><span class="o">=</span><span class="s1">&#39;Lonnie Gordon&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;Catch You Baby (Steve Pitron &amp; Max Sanna Radio Edit)&#39;</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sylvie&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Cruz&#39;</span><span class="o">,</span> <span class="n">userid</span><span class="o">=</span><span class="mi">10</span><span class="o">,</span> <span class="n">iteminsession</span><span class="o">=</span><span class="mi">3</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">shape</span><span class="o">:</span>   <span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">columns</span><span class="o">:</span> <span class="n">Index</span><span class="o">([</span><span class="s1">&#39;artist&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;firstname&#39;</span><span class="o">,</span> <span class="s1">&#39;lastname&#39;</span><span class="o">,</span> <span class="s1">&#39;userid&#39;</span><span class="o">,</span> <span class="s1">&#39;iteminsession&#39;</span><span class="o">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>artist</th>
+      <th>song</th>
+      <th>firstname</th>
+      <th>lastname</th>
+      <th>userid</th>
+      <th>iteminsession</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Down To The Bone</td>
+      <td>Keep On Keepin' On</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Three Drives</td>
+      <td>Greece 2000</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+      <td>10</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Sebastien Tellier</td>
+      <td>Kilometer</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+      <td>10</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Lonnie Gordon</td>
+      <td>Catch You Baby (Steve Pitron &amp; Max Sanna Radio...</td>
+      <td>Sylvie</td>
+      <td>Cruz</td>
+      <td>10</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Perform Query 3 -- All Hands Listener's</h2>
+<p><strong>Query</strong>: Find every user name (first and last) in the music app history who listened to the song 'All Hands Against His Own'</p>
+<p><strong>Primary key</strong>: The primary key contains both a simple partition key (<em>song</em>) and one clustering column (<em>userId</em> ).  The <em>song</em> title is the focus of this query and the partition key too.  <em>UserId</em> is unique across all users, where the combination of first and last names is probably not.</p>
+<p><strong>Table columns</strong>: Requested information: <em>song, firstName and lastName</em>. Primary key supporting where clause: <em>song and userId</em>.</p>
+<p><strong>Where clause</strong>: <em>"song = 'All Hands Against His Own'"</em></p>
+<div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="s2">&quot;all_hands_listeners&quot;</span>
+
+<span class="n">perform_query</span><span class="p">(</span><span class="n">create_drop_query</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nv">query</span>: <span class="nv">DROP</span> <span class="nv">TABLE</span> <span class="k">IF</span> <span class="nv">EXISTS</span> <span class="nv">all_hands_listeners</span><span class="c1">;</span>
+
+<span class="nv">results</span>: <span class="o">------------------------------------------------------------</span>
+
+<span class="nv">df</span>.<span class="nv">shape</span>:   <span class="ss">(</span><span class="mi">0</span>, <span class="mi">0</span><span class="ss">)</span>
+<span class="nv">df</span>.<span class="nv">columns</span>: <span class="nv">Index</span><span class="ss">(</span>[], <span class="nv">dtype</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">object</span><span class="s1">&#39;</span><span class="ss">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">all_hands_users_query</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">CREATE TABLE IF NOT EXISTS {table} (</span>
+<span class="s2">    song text,</span>
+<span class="s2">    userId int,</span>
+<span class="s2">    lastName text,</span>
+<span class="s2">    firstName text,</span>
+<span class="s2">    PRIMARY KEY(song, userId)</span>
+<span class="s2">);&quot;&quot;&quot;</span>
+
+<span class="n">perform_query</span><span class="p">(</span><span class="n">all_hands_users_query</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nv">query</span>: 
+<span class="nv">CREATE</span> <span class="nv">TABLE</span> <span class="k">IF</span> <span class="nv">NOT</span> <span class="nv">EXISTS</span> <span class="nv">all_hands_listeners</span> <span class="ss">(</span>
+    <span class="nv">song</span> <span class="nv">text</span>,
+    <span class="nv">userId</span> <span class="nv">int</span>,
+    <span class="nv">lastName</span> <span class="nv">text</span>,
+    <span class="nv">firstName</span> <span class="nv">text</span>,
+    <span class="nv">PRIMARY</span> <span class="nv">KEY</span><span class="ss">(</span><span class="nv">song</span>, <span class="nv">userId</span><span class="ss">)</span>
+<span class="ss">)</span><span class="c1">;</span>
+
+<span class="nv">results</span>: <span class="o">------------------------------------------------------------</span>
+
+<span class="nv">df</span>.<span class="nv">shape</span>:   <span class="ss">(</span><span class="mi">0</span>, <span class="mi">0</span><span class="ss">)</span>
+<span class="nv">df</span>.<span class="nv">columns</span>: <span class="nv">Index</span><span class="ss">(</span>[], <span class="nv">dtype</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">object</span><span class="s1">&#39;</span><span class="ss">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">perform_insert_query</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="s2">&quot;lastName&quot;</span><span class="p">,</span> <span class="s2">&quot;firstName&quot;</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">0</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Rokia TraorÃ</span><span class="se">\x83</span><span class="s1">Â©&#39;</span><span class="p">,</span> <span class="s1">&#39;Stefany&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;White&#39;</span><span class="p">,</span> <span class="s1">&#39;274.88608&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Lubbock, TX&#39;</span><span class="p">,</span> <span class="s1">&#39;693&#39;</span><span class="p">,</span> <span class="s1">&#39;Zen&#39;</span><span class="p">,</span> <span class="s1">&#39;83&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">all_hands_listeners</span> <span class="o">(</span><span class="nt">song</span><span class="o">,</span> <span class="nt">userId</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;Zen&#39;</span><span class="o">,</span> <span class="nt">83</span><span class="o">,</span> <span class="s1">&#39;White&#39;</span><span class="o">,</span> <span class="s1">&#39;Stefany&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">1</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Camila&#39;</span><span class="p">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="p">,</span> <span class="s1">&#39;230.81751&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxnard-Thousand Oaks-Ventura, CA&#39;</span><span class="p">,</span> <span class="s1">&#39;555&#39;</span><span class="p">,</span> <span class="s1">&#39;Abrazame  (Version Acustica)&#39;</span><span class="p">,</span> <span class="s1">&#39;40&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">all_hands_listeners</span> <span class="o">(</span><span class="nt">song</span><span class="o">,</span> <span class="nt">userId</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;Abrazame  (Version Acustica)&#39;</span><span class="o">,</span> <span class="nt">40</span><span class="o">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="o">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">2</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Carl Thomas&#39;</span><span class="p">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="p">,</span> <span class="s1">&#39;196.67546&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxnard-Thousand Oaks-Ventura, CA&#39;</span><span class="p">,</span> <span class="s1">&#39;698&#39;</span><span class="p">,</span> <span class="s2">&quot;You Ain&#39;t Right (Album Version)&quot;</span><span class="p">,</span> <span class="s1">&#39;40&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">all_hands_listeners</span> <span class="o">(</span><span class="nt">song</span><span class="o">,</span> <span class="nt">userId</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="s2">&quot;You Ain&#39;t Right (Album Version)&quot;</span><span class="o">,</span> <span class="nt">40</span><span class="o">,</span> <span class="s1">&#39;Garrison&#39;</span><span class="o">,</span> <span class="s1">&#39;Tucker&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">3</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;N.E.R.D.&#39;</span><span class="p">,</span> <span class="s1">&#39;James&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Martin&#39;</span><span class="p">,</span> <span class="s1">&#39;242.99057&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">,</span> <span class="s1">&#39;Dallas-Fort Worth-Arlington, TX&#39;</span><span class="p">,</span> <span class="s1">&#39;78&#39;</span><span class="p">,</span> <span class="s1">&#39;Provider (Remix Radio Edit)&#39;</span><span class="p">,</span> <span class="s1">&#39;79&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">all_hands_listeners</span> <span class="o">(</span><span class="nt">song</span><span class="o">,</span> <span class="nt">userId</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;Provider (Remix Radio Edit)&#39;</span><span class="o">,</span> <span class="nt">79</span><span class="o">,</span> <span class="s1">&#39;Martin&#39;</span><span class="o">,</span> <span class="s1">&#39;James&#39;</span><span class="o">)</span>
+
+<span class="nt">inserting</span> <span class="nt">line</span> <span class="nt">4</span> <span class="nt">--------------------</span>
+<span class="nt">line</span><span class="o">:</span> <span class="cp">[</span><span class="s1">&#39;Lil Jon / The East Side Boyz / DJ Flexx&#39;</span><span class="p">,</span> <span class="s1">&#39;Jacqueline&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;Lynch&#39;</span><span class="p">,</span> <span class="s1">&#39;285.30893&#39;</span><span class="p">,</span> <span class="s1">&#39;paid&#39;</span><span class="p">,</span> <span class="s1">&#39;Atlanta-Sandy Springs-Roswell, GA&#39;</span><span class="p">,</span> <span class="s1">&#39;589&#39;</span><span class="p">,</span> <span class="s1">&#39;Aww Skeet Skeet&#39;</span><span class="p">,</span> <span class="s1">&#39;29&#39;</span><span class="cp">]</span>
+<span class="nt">columns</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;song&#39;</span><span class="o">,</span> <span class="s1">&#39;userId&#39;</span><span class="o">,</span> <span class="s1">&#39;lastName&#39;</span><span class="o">,</span> <span class="s1">&#39;firstName&#39;</span><span class="o">)</span>
+<span class="nt">query</span><span class="o">:</span> <span class="nt">INSERT</span> <span class="nt">INTO</span> <span class="nt">all_hands_listeners</span> <span class="o">(</span><span class="nt">song</span><span class="o">,</span> <span class="nt">userId</span><span class="o">,</span> <span class="nt">lastName</span><span class="o">,</span> <span class="nt">firstName</span><span class="o">)</span> <span class="nt">VALUES</span> <span class="o">(%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">,</span> <span class="o">%</span><span class="nt">s</span><span class="o">);</span>
+<span class="nt">data_to_insert</span><span class="o">:</span> <span class="o">(</span><span class="s1">&#39;Aww Skeet Skeet&#39;</span><span class="o">,</span> <span class="nt">29</span><span class="o">,</span> <span class="s1">&#39;Lynch&#39;</span><span class="o">,</span> <span class="s1">&#39;Jacqueline&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<h4>Results of the query</h4>
+<div class="highlight"><pre><span></span><span class="n">display_results</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;firstName&quot;</span><span class="p">,</span> <span class="s2">&quot;lastName&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;song = &#39;All Hands Against His Own&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">query</span><span class="o">:</span>      <span class="n">SELECT</span> <span class="n">firstName</span><span class="o">,</span> <span class="n">lastName</span> <span class="n">FROM</span> <span class="n">all_hands_listeners</span> <span class="n">WHERE</span> <span class="n">song</span> <span class="o">=</span> <span class="s1">&#39;All Hands Against His Own&#39;</span> <span class="n">LIMIT</span> <span class="mi">5</span><span class="o">;</span>
+
+<span class="n">results</span><span class="o">:</span> <span class="o">------------------------------------------------------------</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Jacqueline&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Lynch&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Tegan&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Levine&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sara&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Johnson&#39;</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">shape</span><span class="o">:</span>   <span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">columns</span><span class="o">:</span> <span class="n">Index</span><span class="o">([</span><span class="s1">&#39;firstname&#39;</span><span class="o">,</span> <span class="s1">&#39;lastname&#39;</span><span class="o">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>firstname</th>
+      <th>lastname</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Jacqueline</td>
+      <td>Lynch</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Tegan</td>
+      <td>Levine</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Sara</td>
+      <td>Johnson</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h4>Verify the results of the query <em>showing</em> song title</h4>
+<div class="highlight"><pre><span></span><span class="n">display_results</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;userId&quot;</span><span class="p">,</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span> <span class="s2">&quot;lastName&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;song = &#39;All Hands Against His Own&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">query</span><span class="o">:</span>      <span class="n">SELECT</span> <span class="n">userId</span><span class="o">,</span> <span class="n">firstName</span><span class="o">,</span> <span class="n">lastName</span><span class="o">,</span> <span class="n">song</span> <span class="n">FROM</span> <span class="n">all_hands_listeners</span> <span class="n">WHERE</span> <span class="n">song</span> <span class="o">=</span> <span class="s1">&#39;All Hands Against His Own&#39;</span> <span class="n">LIMIT</span> <span class="mi">5</span><span class="o">;</span>
+
+<span class="n">results</span><span class="o">:</span> <span class="o">------------------------------------------------------------</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">userid</span><span class="o">=</span><span class="mi">29</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Jacqueline&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Lynch&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;All Hands Against His Own&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">userid</span><span class="o">=</span><span class="mi">80</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Tegan&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Levine&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;All Hands Against His Own&#39;</span><span class="o">)</span>
+<span class="n">row</span><span class="o">:</span>        <span class="n">Row</span><span class="o">(</span><span class="n">userid</span><span class="o">=</span><span class="mi">95</span><span class="o">,</span> <span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;Sara&#39;</span><span class="o">,</span> <span class="n">lastname</span><span class="o">=</span><span class="s1">&#39;Johnson&#39;</span><span class="o">,</span> <span class="n">song</span><span class="o">=</span><span class="s1">&#39;All Hands Against His Own&#39;</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">shape</span><span class="o">:</span>   <span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+<span class="n">df</span><span class="o">.</span><span class="na">columns</span><span class="o">:</span> <span class="n">Index</span><span class="o">([</span><span class="s1">&#39;userid&#39;</span><span class="o">,</span> <span class="s1">&#39;firstname&#39;</span><span class="o">,</span> <span class="s1">&#39;lastname&#39;</span><span class="o">,</span> <span class="s1">&#39;song&#39;</span><span class="o">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>userid</th>
+      <th>firstname</th>
+      <th>lastname</th>
+      <th>song</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>29</td>
+      <td>Jacqueline</td>
+      <td>Lynch</td>
+      <td>All Hands Against His Own</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>80</td>
+      <td>Tegan</td>
+      <td>Levine</td>
+      <td>All Hands Against His Own</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>95</td>
+      <td>Sara</td>
+      <td>Johnson</td>
+      <td>All Hands Against His Own</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Drop the tables before closing out the sessions</h2>
+<div class="highlight"><pre><span></span><span class="n">perform_query</span><span class="p">(</span><span class="n">create_drop_query</span><span class="p">(</span><span class="s2">&quot;session_user_table&quot;</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">perform_query</span><span class="p">(</span><span class="n">create_drop_query</span><span class="p">(</span><span class="s2">&quot;session_user_table&quot;</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span></span><span class="n">perform_query</span><span class="p">(</span><span class="n">create_drop_query</span><span class="p">(</span><span class="s2">&quot;all_hands_users&quot;</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<h2>Close the session and cluster connection¶</h2>
+<div class="highlight"><pre><span></span><span class="n">session</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</pre></div>
+
+
+<h2>References</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/CAP_theorem">CAP Theorem</a>.</li>
+<li><a href="https://www.datastax.com/dev/blog/basic-rules-of-cassandra-data-modeling">Basic Rules of Cassandra Data Modeling</a></li>
+<li><a href="https://www.datastax.com/dev/blog/the-most-important-thing-to-know-in-cassandra-data-modeling-the-primary-key">The most important thing to know in Cassandra data modeling: The primary key</a></li>
+<li><a href="https://docs.datastax.com/en/dse/6.7/cql/cql/cql_using/cqlSyntax.html?hl=keywords">CQL keyword</a></li>
+<li><a href="https://github.com/robOcity/song-play-nosql">Repository</a></li>
+</ul>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Links -->
+<li class="list-group-item">
+  <h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+  <ul class="list-group" id="links">
+    <li class="list-group-item">
+      <a href="https://chrisalbon.com/" target="_blank">Chris Albon - Data Science & Artificial Intelligence</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.pbpython.com/" target="_blank">Practical Business Python</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://www.3blue1brown.com/" target="_blank">Animated Math</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://flowingdata.com/" target="_blank">Flowing Data</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://talkpython.fm/" target="_blank">Talk Python To Me</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://albertocairo.com/" target="_blank">Alberto Cairo</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://harangdev.github.io/" target="_blank">Data PlayGround</a>
+    </li>
+    <li class="list-group-item">
+      <a href="https://matthewdevaney.com/" target="_blank">Matthew Devaney's Blog</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Links -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
+
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2019 Rob Osterburg
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+
+
+</body>
+</html>

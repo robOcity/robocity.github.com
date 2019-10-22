@@ -22,7 +22,7 @@
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
     <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
 
     <link href="/theme/css/pygments/native.css" rel="stylesheet">
@@ -48,6 +48,9 @@ Data and Code            </a>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                         <li >
+                            <a href="/category/data-engineering.html">Data engineering</a>
+                        </li>
+                        <li >
                             <a href="/category/data-science.html">Data science</a>
                         </li>
                         <li >
@@ -69,20 +72,31 @@ Data and Code            </a>
     <div class="row">
         <div class="col-sm-9">
             <article>
-                <h2><a href="/how-do-college-town-home-prices-fare-during-recession.html">How do college town home prices fare during recession?</a></h2>
-                <div class="summary"><p>During recession home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first a few definitions.  </p>
+                <h2><a href="/data-modeling-with-apache-cassandra.html">Data Modeling with Apache Cassandra</a></h2>
+                <div class="summary"><p>See how to extract data from CSV files, transform it, and load it into Apache Cassandra.  Understand how Cassandra -- or any partition row store databases -- provides scalability and fast reads and writes by adding redundant or de-normalized tables.</p>
+                    <a class="btn btn-default btn-xs" href="/data-modeling-with-apache-cassandra.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
+            <article>
+                <h2><a href="/data-modeling-with-postgresql.html">Data Modeling with PostgreSQL</a></h2>
+                <div class="summary"><p>See how to extract data from CSV files, transform it, and load it into PostgreSQL.  Learn how to extract log data from CSV files using pandas, transform it with SQL and python, and then load it into a star-scheme perfect for aggregations and analytics.</p>
+                    <a class="btn btn-default btn-xs" href="/data-modeling-with-postgresql.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
+            <article>
+                <h2><a href="/how-do-college-town-home-prices-fare-during-recession.html">How do college-town home prices fare during a recession?</a></h2>
+                <div class="summary"><p>During a recession, home prices suffer.  How do college towns compare to other communities?  Let's find out.  But first, a few definitions.  </p>
 <ul>
 <li>
-<p>A <em>quarter</em> is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December.</p>
-</li>
-<li>
-<p>A …</p></li></ul>
+<p>A <em>quarter</em> is a specific three month period, Q1 is January through March, Q2 is April through June, Q3 is July through September, Q4 is October through December …</p></li></ul>
                     <a class="btn btn-default btn-xs" href="/how-do-college-town-home-prices-fare-during-recession.html">more ...</a>
                 </div>
             </article>
             <hr/>
             <article>
-                <h2><a href="/using-jupyter-notebooks-to-blog-with-pelican.html">Blogging with Pelican, Jupyter Notebooks and nbconvert</a></h2>
+                <h2><a href="/using-jupyter-notebooks-to-blog-with-pelican.html">Blogging with Pelican, Jupyter notebooks and nbconvert</a></h2>
                 <div class="summary"><p>Using Pelican to generate a blog from Jupyter notebook files</p>
                     <a class="btn btn-default btn-xs" href="/using-jupyter-notebooks-to-blog-with-pelican.html">more ...</a>
                 </div>
@@ -95,34 +109,16 @@ Data and Code            </a>
                 </div>
             </article>
             <hr/>
-            <article>
-                <h2><a href="/web-scraping-with-python_an-introductory-tutorial.html">Web Scraping with Python: An Introductory Tutorial</a></h2>
-                <div class="summary"><h2>Key Packages</h2>
-<ul>
-<li>
-<p>requests -- Issues HTTP requests to web servers and handles the response </p>
-</li>
-<li>
-<p>beautifulsoup4 -- Parse the returned web page and makes it searchable</p>
-</li>
-<li>
-<p>These packages are <em>not</em> in Python's standard library, here is how to install them:</p>
-<ul>
-<li>
-<p>Standard Python: <code>pip install requests beautifulsoup4</code></p>
-</li>
-<li>
-<p>Anaconda Python: <code>conda install requests beautifulsoup4</code></p>
-</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Requests …</span></pre></div>
-                    <a class="btn btn-default btn-xs" href="/web-scraping-with-python_an-introductory-tutorial.html">more ...</a>
-                </div>
-            </article>
-            <hr/>
 
+        <ul class="pagination">
+                <li class="prev disabled"><a href="#">&laquo;</a></li>
+                    <li class="active"><a
+                            href="/author/rob-osterburg.html">1</a></li>
+                    <li class=""><a
+                            href="/author/rob-osterburg2.html">2</a></li>
+                <li class="next"><a
+                        href="/author/rob-osterburg2.html">&raquo;</a></li>
+        </ul>
         </div>
         <div class="col-sm-3" id="sidebar">
             <aside>
@@ -190,6 +186,23 @@ Data and Code            </a>
 <script src="/theme/js/respond.min.js"></script>
 
 
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-142581046-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
 
 
 </body>
